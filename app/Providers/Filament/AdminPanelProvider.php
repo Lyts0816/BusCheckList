@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->unsavedChangesAlerts()
             ->brandName('BUS INVENTORY AND CHECKLIST SYSTEM')
-            ->favicon(asset('images/png.png'))
+            ->favicon(asset('images/bus.png'))
             ->spa()
             ->id('admin')
             ->path('admin')

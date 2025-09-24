@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\Buses\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -9,22 +9,21 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UsersTable
+class BusesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID')
-                    ->hidden(),
-                TextColumn::make('name')
+                    ->label('ID'),
+                TextColumn::make('bus_number')
                     ->searchable(),
-                TextColumn::make('role')
-                    ->label('Role')
-                    ->sortable(),
-                TextColumn::make('email')
-                    ->label('Email address')
+                TextColumn::make('model')
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->searchable(),
+                TextColumn::make('base_location')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

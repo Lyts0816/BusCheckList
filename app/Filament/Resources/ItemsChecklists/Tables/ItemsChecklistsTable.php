@@ -16,7 +16,8 @@ class ItemsChecklistsTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->hidden(),
                 TextColumn::make('item_type')
                     ->searchable(),
                 TextColumn::make('item_name')

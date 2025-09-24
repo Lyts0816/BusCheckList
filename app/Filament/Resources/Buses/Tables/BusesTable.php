@@ -16,7 +16,8 @@ class BusesTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->hidden(),
                 TextColumn::make('bus_number')
                     ->searchable(),
                 TextColumn::make('model')

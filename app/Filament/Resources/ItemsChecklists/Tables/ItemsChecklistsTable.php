@@ -20,7 +20,7 @@ class ItemsChecklistsTable
                     ->hidden(),
                 TextColumn::make('item_type')
                     ->searchable(),
-                TextColumn::make('item_name')
+                TextColumn::make('item_model')
                     ->searchable(),
                 TextColumn::make('bus.bus_number')
                     ->label('Bus Number')

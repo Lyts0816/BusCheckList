@@ -10,7 +10,7 @@ class ItemsChecklist extends Model
 
     protected $fillable = [
         'item_type',
-        'item_name',
+        'item_model',
         'bus_id',
         'item_asset_code',
         'status',

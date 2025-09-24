@@ -13,9 +13,13 @@ class ItemsChecklistForm
     {
         return $schema
             ->components([
-                TextInput::make('item_type')
+                Select::make('item_type')
+                    ->options([
+                        'CCTV' => 'CCTV',
+                        'DVR' => 'DVR',
+                    ])
                     ->required(),
-                TextInput::make('item_name')
+                TextInput::make('item_model')
                     ->required(),
                 Select::make('bus_id')
                     ->label('Bus Number')

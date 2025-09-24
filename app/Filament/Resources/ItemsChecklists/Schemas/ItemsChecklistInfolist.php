@@ -12,7 +12,7 @@ class ItemsChecklistInfolist
         return $schema
             ->components([
                 TextEntry::make('item_type'),
-                TextEntry::make('item_name'),
+                TextEntry::make('item_model'),
                 TextEntry::make('bus_id')
                     ->numeric(),
                 TextEntry::make('item_asset_code'),

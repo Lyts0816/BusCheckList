@@ -21,6 +21,11 @@ class Bus extends Model
         return $this->hasMany(ItemsChecklist::class, 'bus_id');
     }
 
+    public function dailyChecklists()
+    {
+        return $this->hasMany(BusDailyChecklist::class, 'bus_id');
+    }
+
 }
 
 

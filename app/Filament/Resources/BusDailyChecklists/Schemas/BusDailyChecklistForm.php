@@ -21,10 +21,14 @@ class BusDailyChecklistForm
                     ->searchable()
                     ->preload()
                     ->required(),
+
                 DatePicker::make('check_date')
+                    ->default(now())
                     ->required(),
+
                 Toggle::make('checked')
                     ->required(),
+                    
                 Textarea::make('remarks')
                     ->columnSpanFull(),
             ]);

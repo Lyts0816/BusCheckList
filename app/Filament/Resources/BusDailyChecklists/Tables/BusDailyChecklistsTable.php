@@ -18,6 +18,8 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
+use Filament\Forms\Components\DatePicker;
+
 class BusDailyChecklistsTable
 {
     public static function configure(Table $table): Table
@@ -67,6 +69,7 @@ class BusDailyChecklistsTable
                         $month = $data['value'] ?? null;
                         return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('check_date', (int) $m));
                     }),
+
                 SelectFilter::make('year')
                     ->label('Year')
                     ->options(function (): array {
@@ -82,9 +85,22 @@ class BusDailyChecklistsTable
                         return $query->when($year, fn (Builder $q, $y) => $q->whereYear('check_date', (int) $y));
                     }),
 
-                    TernaryFilter::make('checked')
+                Filter::make('check_date')
+                    ->form([
+                        DatePicker::make('date')
+                            ->label('Specific Date')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['date'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('check_date', $date),
+                        );
+                    }),
+
+                TernaryFilter::make('checked')
                         ->label('Checked')
                         ->boolean()
+                        
              ]
             )
             ->recordActions([

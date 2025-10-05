@@ -41,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
                 'logout' => MenuItem::make()->label('Sign Out'),
             ])
             ->login()
+            ->databaseNotifications()
             ->colors([
                 'primary' => Color::Yellow,
             ])

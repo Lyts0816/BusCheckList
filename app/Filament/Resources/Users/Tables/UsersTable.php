@@ -9,6 +9,10 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+
+use Filament\Actions\ExportAction;
+use App\Filament\Exports\UserExporter;
+
 class UsersTable
 {
     public static function configure(Table $table): Table
@@ -42,6 +46,11 @@ class UsersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Export')
+                    ->exporter(UserExporter::class)
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

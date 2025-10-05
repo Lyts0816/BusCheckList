@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

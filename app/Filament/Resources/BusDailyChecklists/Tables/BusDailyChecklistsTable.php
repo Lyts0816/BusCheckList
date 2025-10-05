@@ -14,11 +14,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\BusDailyChecklist;
 use Filament\Tables\Filters\Filter;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use App\Filament\Exports\ProductExporter;
+use Filament\Actions\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 use Filament\Forms\Components\DatePicker;
+use App\Filament\Exports\BusDailyChecklistExporter;
 
 class BusDailyChecklistsTable
 {
@@ -103,6 +104,11 @@ class BusDailyChecklistsTable
                         
              ]
             )
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Export')
+                    ->exporter(BusDailyChecklistExporter::class)
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

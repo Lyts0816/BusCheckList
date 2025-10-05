@@ -2,25 +2,22 @@
 
 namespace App\Filament\Resources\BusDailyChecklists\Tables;
 
+use App\Filament\Exports\BusDailyChecklistExporter;
+use App\Models\BusDailyChecklist;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\BusDailyChecklist;
-use Filament\Tables\Filters\Filter;
-use App\Filament\Exports\ProductExporter;
-use Filament\Actions\ExportAction;
-use pxlrbt\FilamentExcel\Exports\ExcelExport;
-
-use Filament\Forms\Components\DatePicker;
-use App\Filament\Exports\BusDailyChecklistExporter;
-use Filament\Actions\Exports\Enums\ExportFormat;
 
 class BusDailyChecklistsTable
 {
@@ -69,6 +66,7 @@ class BusDailyChecklistsTable
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         $month = $data['value'] ?? null;
+
                         return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('check_date', (int) $m));
                     }),
 
@@ -84,13 +82,14 @@ class BusDailyChecklistsTable
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $year = $data['value'] ?? null;
+
                         return $query->when($year, fn (Builder $q, $y) => $q->whereYear('check_date', (int) $y));
                     }),
 
                 Filter::make('check_date')
                     ->form([
                         DatePicker::make('date')
-                            ->label('Specific Date')
+                            ->label('Specific Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -100,23 +99,23 @@ class BusDailyChecklistsTable
                     }),
 
                 TernaryFilter::make('checked')
-                        ->label('Checked')
-                        ->boolean()
-                        
-             ]
+                    ->label('Checked')
+                    ->boolean(),
+
+            ]
             )
             ->headerActions([
                 ExportAction::make()
                     ->label('Export')
                     ->exporter(BusDailyChecklistExporter::class)
-                    ->formats([ExportFormat::Xlsx])
+                    ->formats([ExportFormat::Xlsx]),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([
-                
+
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

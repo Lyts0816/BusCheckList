@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use App\Filament\Widgets\StatsOverviewWidget;
 
 class BusDailyChecklistResource extends Resource
 {
@@ -37,6 +38,13 @@ class BusDailyChecklistResource extends Resource
     public static function table(Table $table): Table
     {
         return BusDailyChecklistsTable::configure($table);
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            StatsOverviewWidget::class
+        ];
     }
 
     public static function getRelations(): array

@@ -8,6 +8,13 @@ use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Number;
 
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\CellVerticalAlignment;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Writer\XLSX\Entity\SheetView;
+use OpenSpout\Writer\XLSX\Writer;
+
 class BusDailyChecklistExporter extends Exporter
 {
     protected static ?string $model = BusDailyChecklist::class;
@@ -27,6 +34,27 @@ class BusDailyChecklistExporter extends Exporter
             ExportColumn::make('created_at'),
             ExportColumn::make('updated_at'),
         ];
+    }
+
+    public function getXlsxHeaderCellStyle(): ?Style
+    {
+        return (new Style())
+        ->setFontBold()
+        ->setFontSize(12)
+        ->setFontName('Arial Black');
+    }
+
+    public function configureXlsxWriterBeforeClose(Writer $writer): Writer
+    {
+        $sheetView = new SheetView();
+        $sheetView->setFreezeRow(2);
+        $sheetView->setFreezeColumn('B');
+        
+        $sheet = $writer->getCurrentSheet();
+        $sheet->setSheetView($sheetView);
+        $sheet->setName('export');
+        
+        return $writer;
     }
 
     public static function getCompletedNotificationBody(Export $export): string

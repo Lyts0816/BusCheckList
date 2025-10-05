@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->font('Poppins')
             ->sidebarWidth('16rem')
+            ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth('full')
             ->profile()
             ->passwordReset()

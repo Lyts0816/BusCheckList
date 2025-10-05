@@ -20,6 +20,7 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 use Filament\Forms\Components\DatePicker;
 use App\Filament\Exports\BusDailyChecklistExporter;
+use Filament\Actions\Exports\Enums\ExportFormat;
 
 class BusDailyChecklistsTable
 {
@@ -108,6 +109,7 @@ class BusDailyChecklistsTable
                 ExportAction::make()
                     ->label('Export')
                     ->exporter(BusDailyChecklistExporter::class)
+                    ->formats([ExportFormat::Xlsx])
             ])
             ->recordActions([
                 ViewAction::make(),

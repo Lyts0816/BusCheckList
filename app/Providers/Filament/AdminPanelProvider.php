@@ -6,7 +6,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -40,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(false)
             ->passwordReset()
             ->userMenuItems([
-                'logout' => MenuItem::make()->label('Sign Out'),
+
             ])
             ->login()
             ->databaseNotifications()

@@ -9,14 +9,11 @@ class Peripherals extends Model
     protected $table = 'peripherals';
 
     protected $fillable = [
-        'user',
-        'department',
         'item_type',
-        'model',
-        'serial_number',
         'asset_code',
+        'serial_number',
+        'model',
         'date_acquired',
-        'status',
         'description',
     ];
 }

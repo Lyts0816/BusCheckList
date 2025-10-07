@@ -12,21 +12,15 @@ class PeripheralsForm
     {
         return $schema
             ->components([
-                TextInput::make('user')
-                    ->required(),
-                TextInput::make('department'),
                 TextInput::make('item_type')
-                    ->required(),
-                TextInput::make('model')
-                    ->required(),
-                TextInput::make('serial_number')
                     ->required(),
                 TextInput::make('asset_code')
                     ->required(),
+                TextInput::make('serial_number')
+                    ->required(),
+                TextInput::make('model')
+                    ->required(),
                 DatePicker::make('date_acquired'),
-                TextInput::make('status')
-                    ->required()
-                    ->default('active'),
                 TextInput::make('description'),
             ]);
     }

@@ -15,7 +15,7 @@ class ItemsChecklist extends Model
         'item_asset_code',
         'status',
         'date_checked',
-        'remarks'
+        'remarks',
     ];
 
     public function bus()

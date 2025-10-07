@@ -15,25 +15,17 @@ class PeripheralsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID'),
-                TextColumn::make('user')
-                    ->searchable(),
-                TextColumn::make('department')
-                    ->searchable(),
                 TextColumn::make('item_type')
                     ->searchable(),
-                TextColumn::make('model')
+                TextColumn::make('asset_code')
                     ->searchable(),
                 TextColumn::make('serial_number')
                     ->searchable(),
-                TextColumn::make('asset_code')
+                TextColumn::make('model')
                     ->searchable(),
                 TextColumn::make('date_acquired')
                     ->date()
                     ->sortable(),
-                TextColumn::make('status')
-                    ->searchable(),
                 TextColumn::make('description')
                     ->searchable(),
                 TextColumn::make('created_at')

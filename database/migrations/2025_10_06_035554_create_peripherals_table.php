@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('peripherals', function (Blueprint $table) {
             $table->id();
-            $table->string('item_type', 50);
-            $table->string('asset_code', 50)->unique();
-            $table->string('serial_number', 50);
-            $table->string('model', 50);
+            $table->string('item_type', 50)->required();
+            $table->string('asset_code', 50)->nullable();
+            $table->string('serial_number', 50)->nullable();
+            $table->string('model', 50)->nullable();
             $table->date('date_acquired')->nullable();
             $table->string('description', 255)->nullable();
             $table->timestamps();

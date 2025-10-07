@@ -16,15 +16,11 @@ class SystemUnitInfolist
                 TextEntry::make('model'),
                 TextEntry::make('date_aquired')
                     ->date(),
-                TextEntry::make('OS')
-                    ->date(),
-                TextEntry::make('windows_serial_number')
-                    ->date(),
+                TextEntry::make('OS'),
+                TextEntry::make('windows_serial_number'),
                 TextEntry::make('microsoft_serial_number'),
-                TextEntry::make('ram')
-                    ->date(),
-                TextEntry::make('storage')
-                    ->date(),
+                TextEntry::make('ram'),
+                TextEntry::make('storage'),
                 TextEntry::make('processor'),
                 TextEntry::make('ip_address'),
                 TextEntry::make('description'),

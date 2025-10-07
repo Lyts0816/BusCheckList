@@ -21,9 +21,15 @@ class AssignedComputerInfolist
                         TextEntry::make('systemUnit.asset_code')->label('Asset Code'),
                         TextEntry::make('systemUnit.serial_number')->label('Serial Number'),
                         TextEntry::make('systemUnit.model')->label('Model'),
+                        TextEntry::make('systemUnit.date_aquired')->label('Date Acquired')->date(),
+                        TextEntry::make('systemUnit.OS')->label('Operating System'),
+                        TextEntry::make('systemUnit.windows_serial_number')->label('Windows Serial Number'),
+                        TextEntry::make('systemUnit.microsoft_serial_number')->label('Microsoft Serial Number'),
                         TextEntry::make('systemUnit.ram')->label('RAM'),
                         TextEntry::make('systemUnit.storage')->label('Storage'),
-                        TextEntry::make('systemUnit.date_aquired')->label('Date Acquired'),
+                        TextEntry::make('systemUnit.processor')->label('Processor'),
+                        TextEntry::make('systemUnit.ip_address')->label('IP Address'),
+                        TextEntry::make('systemUnit.description')->label('Description'),
                     ])
                     ->columns(2)
                     ->columnSpan(2)

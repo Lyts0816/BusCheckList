@@ -16,4 +16,19 @@ class Peripherals extends Model
         'date_acquired',
         'description',
     ];
+
+    public function assignedKeyboards()
+    {
+        return $this->hasMany(AssignedComputer::class, 'keyboard_id');
+    }
+    public function assignedMice()
+    {
+        return $this->hasMany(AssignedComputer::class, 'mouse_id');
+    }
+    public function assignedMonitors(){
+        return $this->hasMany(AssignedComputer::class, 'monitor_id');
+    }
+    public function assignedUps(){
+        return $this->hasMany(AssignedComputer::class, 'ups_id');
+    }
 }

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SystemUnit extends Model
 {
+    protected $table = 'system_units';
+
     protected $fillable = [
         'asset_code',
         'serial_number',
@@ -20,4 +22,9 @@ class SystemUnit extends Model
         'ip_address',
         'description',
     ];
+
+    public function assignedComputers()
+    {
+        return $this->hasMany(AssignedComputer::class, 'system_unit_id');
+    }
 }

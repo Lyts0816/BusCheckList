@@ -18,11 +18,13 @@ class AssignedComputerForm
                     ->required(),
 
                 TextInput::make('department')
-                    ->label('Department'),
+                    ->label('Department')
+                    ->required(),
 
                 Select::make('system_unit_id')
                     ->label('System Unit')
                     ->relationship('systemUnit', 'serial_number')
+                    ->preload()
                     ->searchable()
                     ->required(),
 

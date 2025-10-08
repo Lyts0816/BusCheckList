@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssignedComputer extends Model
 {
+    protected $table = 'assigned_computers';
+    
     protected $fillable = [
         'system_unit_id',
         'keyboard_id',
@@ -18,7 +20,7 @@ class AssignedComputer extends Model
 
     public function systemUnit()
     {
-        return $this->belongsTo(SystemUnit::class);
+        return $this->belongsTo(SystemUnit::class, 'system_unit_id');
     }
 
     public function keyboard()

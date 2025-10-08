@@ -85,7 +85,7 @@ class BusDailyChecklistsTable
                     }),
 
                 Filter::make('check_date')
-                    ->form([
+                    ->schema([
                         DatePicker::make('date')
                             ->label('Specific Date'),
                     ])

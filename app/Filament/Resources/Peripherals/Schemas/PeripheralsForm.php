@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Peripherals\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
 
 class PeripheralsForm
 {
@@ -12,7 +13,13 @@ class PeripheralsForm
     {
         return $schema
             ->components([
-                TextInput::make('item_type')
+                Select::make('item_type')
+                    ->options([
+                        'Keyboard' => 'Keyboard',
+                        'Mouse' => 'Mouse',
+                        'Monitor' => 'Monitor',
+                        'UPS' => 'UPS',
+                    ])
                     ->required(),
                 TextInput::make('asset_code')
                     ->required(),

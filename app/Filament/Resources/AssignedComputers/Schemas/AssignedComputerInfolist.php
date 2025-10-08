@@ -14,7 +14,7 @@ class AssignedComputerInfolist
             ->inlineLabel()
             ->components([
                 TextEntry::make('assigned_to'),
-                TextEntry::make('assigned_date'),
+                TextEntry::make('department'),
 
                 Section::make('System Unit')
                     ->schema([

@@ -43,7 +43,7 @@ class BusDailyChecklistResource extends Resource
     protected function getHeaderWidgets(): array
     {
         return [
-            StatsOverviewWidget::class
+            
         ];
     }
 

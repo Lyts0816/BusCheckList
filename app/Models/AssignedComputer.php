@@ -13,11 +13,7 @@ class AssignedComputer extends Model
         'monitor_id',
         'ups_id',
         'assigned_to',
-        'assigned_date',
-    ];
-
-    protected $casts = [
-        'assigned_date' => 'date',
+        'department',
     ];
 
     public function systemUnit()

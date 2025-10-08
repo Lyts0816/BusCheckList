@@ -32,8 +32,7 @@ class AssignedComputersTable
                     ->sortable(),
                 TextColumn::make('assigned_to')
                     ->searchable(),
-                TextColumn::make('assigned_date')
-                    ->date()
+                TextColumn::make('department')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

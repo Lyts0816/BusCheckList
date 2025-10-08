@@ -15,14 +15,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class AssignedComputerResource extends Resource
 {
     protected static ?string $model = AssignedComputer::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-computer-desktop';
 
     protected static ?string $recordTitleAttribute = 'Assign Computer';
+
+    protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
 
     public static function form(Schema $schema): Schema
     {

@@ -13,48 +13,46 @@ class AssignedComputerForm
     {
         return $schema
             ->components([
+                TextInput::make('assigned_to')
+                    ->label('Assigned To')
+                    ->required(),
+
+                TextInput::make('department')
+                    ->label('Department'),
+
                 Select::make('system_unit_id')
                     ->label('System Unit')
-                    ->relationship('systemUnit', 'serial_number') // or 'asset_code' or 'model'
+                    ->relationship('systemUnit', 'serial_number')
                     ->searchable()
                     ->required(),
 
                 Select::make('keyboard_id')
                     ->label('Keyboard')
-                    ->relationship('keyboard', 'serial_number')
+                    ->relationship('keyboard', 'serial_number', fn ($query) => $query->where('item_type', 'Keyboard'))
                     ->searchable()
                     ->preload()
-                    ->nullable(),
+                    ->nullable(),       
 
                 Select::make('mouse_id')
                     ->label('Mouse')
-                    ->relationship('mouse', 'serial_number')
+                    ->relationship('mouse', 'serial_number', fn ($query) => $query->where('item_type', 'Mouse'))
                     ->searchable()
                     ->preload()
                     ->nullable(),
 
                 Select::make('monitor_id')
                     ->label('Monitor')
-                    ->relationship('monitor', 'serial_number')
+                    ->relationship('monitor', 'serial_number', fn ($query) => $query->where('item_type', 'Monitor'))
                     ->searchable()
                     ->preload()
                     ->nullable(),
 
                 Select::make('ups_id')
                     ->label('UPS')
-                    ->relationship('ups', 'serial_number')
+                    ->relationship('ups', 'serial_number', fn ($query) => $query->where('item_type', 'UPS'))
                     ->searchable()
                     ->preload()
                     ->nullable(),
-
-                TextInput::make('assigned_to')
-                    ->label('Assigned To')
-                    ->required(),
-
-                DatePicker::make('assigned_date')
-                    ->label('Assigned Date')
-                    ->default(now())
-                    ->required(),
             ]);
     }
 }

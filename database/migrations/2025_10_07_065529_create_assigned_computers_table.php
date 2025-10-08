@@ -46,7 +46,7 @@ return new class extends Migration
 
             // Assignment info
             $table->string('assigned_to');
-            $table->date('assigned_date')->nullable();
+            $table->string('department');
 
             $table->timestamps();
         });

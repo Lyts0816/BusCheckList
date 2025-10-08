@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\AssignedComputers\Tables;
 
-use App\Filament\Exports\AssignedComputerExporter;
 use App\Models\AssignedComputer;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,9 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-
-use Filament\Actions\ExportAction;
-use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\BulkAction;
 
 class AssignedComputersTable

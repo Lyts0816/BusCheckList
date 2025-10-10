@@ -26,12 +26,14 @@ class AssignedComputerForm
                     ->relationship('systemUnit', 'serial_number')
                     ->preload()
                     ->searchable()
+                    ->searchPrompt('Search system unit by serial number...')
                     ->required(),
 
                 Select::make('keyboard_id')
                     ->label('Keyboard')
                     ->relationship('keyboard', 'serial_number', fn ($query) => $query->where('item_type', 'Keyboard'))
                     ->searchable()
+                    ->searchPrompt('Search keyboard by serial number...')
                     ->preload()
                     ->nullable(),       
 
@@ -39,6 +41,7 @@ class AssignedComputerForm
                     ->label('Mouse')
                     ->relationship('mouse', 'serial_number', fn ($query) => $query->where('item_type', 'Mouse'))
                     ->searchable()
+                    ->searchPrompt('Search mouse by serial number...')
                     ->preload()
                     ->nullable(),
 
@@ -46,6 +49,7 @@ class AssignedComputerForm
                     ->label('Monitor')
                     ->relationship('monitor', 'serial_number', fn ($query) => $query->where('item_type', 'Monitor'))
                     ->searchable()
+                    ->searchPrompt('Search monitor by serial number...')
                     ->preload()
                     ->nullable(),
 
@@ -53,6 +57,7 @@ class AssignedComputerForm
                     ->label('UPS')
                     ->relationship('ups', 'serial_number', fn ($query) => $query->where('item_type', 'UPS'))
                     ->searchable()
+                    ->searchPrompt('Search UPS by serial number...')
                     ->preload()
                     ->nullable(),
             ]);

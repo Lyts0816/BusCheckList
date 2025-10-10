@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('item_type', 50)->required();
             $table->string('asset_code', 50)->nullable();
-            $table->string('serial_number', 50)->nullable();
+            $table->string('serial_number', 50)->nullable()->unique();
             $table->string('model', 50)->nullable();
             $table->date('date_acquired')->nullable();
             $table->string('description', 255)->nullable();

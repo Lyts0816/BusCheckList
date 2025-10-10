@@ -21,12 +21,11 @@ class PeripheralsForm
                         'UPS' => 'UPS',
                     ])
                     ->required(),
-                TextInput::make('asset_code')
-                    ->required(),
+                TextInput::make('asset_code'),
                 TextInput::make('serial_number')
-                    ->required(),
-                TextInput::make('model')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
+                TextInput::make('model'),
                 DatePicker::make('date_acquired'),
                 TextInput::make('description'),
             ]);

@@ -13,7 +13,8 @@ class SystemUnitForm
         return $schema
             ->components([
                 TextInput::make('asset_code'),
-                TextInput::make('serial_number'),
+                TextInput::make('serial_number')
+                ->unique(ignoreRecord: true),
                 TextInput::make('model'),
                 DatePicker::make('date_aquired'),
                 TextInput::make('OS')

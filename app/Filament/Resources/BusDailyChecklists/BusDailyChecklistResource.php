@@ -13,17 +13,19 @@ use App\Models\BusDailyChecklist;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\Widgets\StatsOverviewWidget;
+
+use UnitEnum;
 
 class BusDailyChecklistResource extends Resource
 {
     protected static ?string $model = BusDailyChecklist::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|BackedEnum|null $navigationIcon = 'ionicon-bus-outline';
 
     protected static ?string $recordTitleAttribute = 'Bus Daily Checklist';
+
+        protected static UnitEnum|string|null $navigationGroup = 'Bus Checklists';
 
     public static function form(Schema $schema): Schema
     {

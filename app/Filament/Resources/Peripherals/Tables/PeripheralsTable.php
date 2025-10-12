@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\Select;
 
 class PeripheralsTable
 {
@@ -44,8 +45,15 @@ class PeripheralsTable
             ])
             ->filters([
                 SelectFilter::make('model')
-                    ->options(
-                        Peripherals::distinct()->pluck('model')->toArray()
+                    ->label('Model')
+                    ->options(fn () => Peripherals::query()
+                        ->whereNotNull('model')
+                        ->where('model', '!=', '')
+                        ->select('model')
+                        ->distinct()
+                        ->orderBy('model')
+                        ->pluck('model', 'model')
+                        ->toArray()
                     ),
                 Filter::make('created_at')
                     ->schema([

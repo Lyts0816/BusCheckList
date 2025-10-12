@@ -13,8 +13,8 @@ use App\Models\Bus;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class BusResource extends Resource
 {
@@ -23,6 +23,8 @@ class BusResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'ionicon-bus-outline';
 
     protected static ?string $recordTitleAttribute = 'Buses';
+
+        protected static UnitEnum|string|null $navigationGroup = 'Bus Checklists';
 
     public static function form(Schema $schema): Schema
     {

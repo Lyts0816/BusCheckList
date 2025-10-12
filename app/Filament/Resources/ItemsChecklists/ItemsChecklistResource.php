@@ -14,14 +14,17 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ItemsChecklistResource extends Resource
 {
     protected static ?string $model = ItemsChecklist::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|BackedEnum|null $navigationIcon = 'ionicon-bus-outline';
 
     protected static ?string $recordTitleAttribute = 'Items Checklist & Monitoring';
+
+        protected static UnitEnum|string|null $navigationGroup = 'Bus Checklists';
 
     public static function form(Schema $schema): Schema
     {

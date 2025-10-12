@@ -25,7 +25,7 @@ class BusDailyChecklistsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->hidden(),
+                    ->searchable(),
                 TextColumn::make('bus.bus_number')
                     ->label('Bus Number')
                     ->searchable()
@@ -44,6 +44,7 @@ class BusDailyChecklistsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->searchPlaceholder('Search')
             ->defaultSort('id', direction: 'desc')
             ->filters([
                 SelectFilter::make('month')

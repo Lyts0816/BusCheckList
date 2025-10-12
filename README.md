@@ -38,7 +38,7 @@ This system centralizes asset tracking and checklist operations, making it easy 
 
 - **[Laravel](https://laravel.com)** – The PHP framework for web artisans.  
 - **[FilamentPHP](https://filamentphp.com)** – A beautiful admin panel and form builder for Laravel.  
-- **MySQL / MariaDB** – Reliable and efficient database backend.  
+- **MySQL – Reliable and efficient database backend.  
 - **TailwindCSS** – For sleek, responsive UI.  
 
 ---

@@ -21,7 +21,7 @@ class PrintersInfolist
                     ->label('Printer Asset Code'),
                 TextEntry::make('printer_serial_number')
                     ->label('Printer Serial Number'),
-                TextEntry::make('date_acquired')
+                TextEntry::make('date_aquired')
                     ->label('Date Acquired')
                     ->date(),
                 TextEntry::make('description')

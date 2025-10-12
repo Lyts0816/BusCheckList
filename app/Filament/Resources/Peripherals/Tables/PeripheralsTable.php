@@ -10,10 +10,9 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\BulkAction;
 
 class PeripheralsTable
 {
@@ -21,6 +20,8 @@ class PeripheralsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID'),
                 TextColumn::make('item_type')
                     ->searchable(),
                 TextColumn::make('asset_code')
@@ -43,6 +44,7 @@ class PeripheralsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', direction: 'desc')
             ->filters([
                 SelectFilter::make('model')
                     ->label('Model')
@@ -55,26 +57,95 @@ class PeripheralsTable
                         ->pluck('model', 'model')
                         ->toArray()
                     ),
-                Filter::make('created_at')
-                    ->schema([
-                        DatePicker::make('created_from')
-                            ->label('Created From'),
+
+                    SelectFilter::make('month')
+                    ->label('Month')
+                    ->options([
+                        '1' => 'January',
+                        '2' => 'February',
+                        '3' => 'March',
+                        '4' => 'April',
+                        '5' => 'May',
+                        '6' => 'June',
+                        '7' => 'July',
+                        '8' => 'August',
+                        '9' => 'September',
+                        '10' => 'October',
+                        '11' => 'November',
+                        '12' => 'December',
                     ])
-                    ->query(function ($query, array $data) {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn ($query, $date) => $query->whereDate('created_at', '>=', $date),
-                            );
+                    ->query(function (Builder $query, array $data): Builder {
+                        $month = $data['value'] ?? null;
+
+                        return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('date_acquired', (int) $m));
+                    }),
+
+                    SelectFilter::make('year')
+                    ->label('Year')
+                    ->options(function (): array {
+                        return Peripherals::query()
+                            ->selectRaw('YEAR(date_acquired) as year')
+                            ->distinct()
+                            ->orderBy('year', 'desc')
+                            ->pluck('year', 'year')
+                            ->toArray();
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $year = $data['value'] ?? null;
+
+                        return $query->when($year, fn (Builder $q, $y) => $q->whereYear('date_acquired', (int) $y));
                     }),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
+            ->headerActions([
+                \Filament\Actions\Action::make('export_csv')
+                    ->label('Export all records')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        // Get the current page URL with all query parameters
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        // Parse query parameters
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        // Build export URL with current filters
+                        $exportUrl = route('export.peripherals');
+                        $exportParams = [];
+
+                        // Extract search parameter from tableSearch
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        // Build final URL
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        // Redirect to export URL
+                        return redirect($exportUrl);
+                    }),
+            ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.peripherals') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
                 ]),
             ]);
     }

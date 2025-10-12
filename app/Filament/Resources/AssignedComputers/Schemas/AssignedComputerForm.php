@@ -17,9 +17,17 @@ class AssignedComputerForm
                     ->label('Assigned To')
                     ->required(),
 
-                TextInput::make('department')
-                    ->label('Department')
-                    ->required(),
+                Select::make('department')
+                    ->required()
+                    ->options([
+                        'MIS' => 'MIS',
+                        'HR' => 'HR',
+                        'Operations' => 'Operations',
+                        'Production' => 'Production',
+                        'Accounting' => 'Accounting',
+                        'Cash' => 'Cash',
+                        'Clinic' => 'Clinic',
+                    ]),
 
                 Select::make('system_unit_id')
                     ->label('System Unit')

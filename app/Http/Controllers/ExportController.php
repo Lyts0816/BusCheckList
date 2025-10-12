@@ -14,7 +14,7 @@ class ExportController extends Controller
         $query = AssignedComputer::with([
             'systemUnit',
             'keyboard',
-            'mouse', 
+            'mouse',
             'monitor',
             'ups'
         ]);
@@ -29,28 +29,28 @@ class ExportController extends Controller
                 $searchTerm = $request->search;
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('assigned_to', 'like', "%{$searchTerm}%")
-                      ->orWhere('department', 'like', "%{$searchTerm}%")
-                      ->orWhereHas('systemUnit', function ($sq) use ($searchTerm) {
-                          $sq->where('asset_code', 'like', "%{$searchTerm}%")
-                            ->orWhere('serial_number', 'like', "%{$searchTerm}%")
-                            ->orWhere('model', 'like', "%{$searchTerm}%");
-                      })
-                      ->orWhereHas('keyboard', function ($kq) use ($searchTerm) {
-                          $kq->where('asset_code', 'like', "%{$searchTerm}%")
-                            ->orWhere('serial_number', 'like', "%{$searchTerm}%");
-                      })
-                      ->orWhereHas('mouse', function ($mq) use ($searchTerm) {
-                          $mq->where('asset_code', 'like', "%{$searchTerm}%")
-                            ->orWhere('serial_number', 'like', "%{$searchTerm}%");
-                      })
-                      ->orWhereHas('monitor', function ($monq) use ($searchTerm) {
-                          $monq->where('asset_code', 'like', "%{$searchTerm}%")
-                              ->orWhere('serial_number', 'like', "%{$searchTerm}%");
-                      })
-                      ->orWhereHas('ups', function ($uq) use ($searchTerm) {
-                          $uq->where('asset_code', 'like', "%{$searchTerm}%")
-                            ->orWhere('serial_number', 'like', "%{$searchTerm}%");
-                      });
+                        ->orWhere('department', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('systemUnit', function ($sq) use ($searchTerm) {
+                            $sq->where('asset_code', 'like', "%{$searchTerm}%")
+                                ->orWhere('serial_number', 'like', "%{$searchTerm}%")
+                                ->orWhere('model', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('keyboard', function ($kq) use ($searchTerm) {
+                            $kq->where('asset_code', 'like', "%{$searchTerm}%")
+                                ->orWhere('serial_number', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('mouse', function ($mq) use ($searchTerm) {
+                            $mq->where('asset_code', 'like', "%{$searchTerm}%")
+                                ->orWhere('serial_number', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('monitor', function ($monq) use ($searchTerm) {
+                            $monq->where('asset_code', 'like', "%{$searchTerm}%")
+                                ->orWhere('serial_number', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('ups', function ($uq) use ($searchTerm) {
+                            $uq->where('asset_code', 'like', "%{$searchTerm}%")
+                                ->orWhere('serial_number', 'like', "%{$searchTerm}%");
+                        });
                 });
             }
 

@@ -33,9 +33,10 @@ class PrintersForm
                 TextInput::make('printer_asset_code')
                     ->nullable(),
                 TextInput::make('printer_serial_number')
-                    ->required()
+                    ->label('Printer Serial Number')
+                    ->nullable()
                     ->unique(ignoreRecord: true),
-                DatePicker::make('date_acquired')
+                DatePicker::make('date_aquired')
                     ->label('Date Acquired')
                     ->nullable(),
                 TextInput::make('description'),

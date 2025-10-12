@@ -13,8 +13,8 @@ use App\Models\Printer;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+
 use UnitEnum;
 
 class PrintersResource extends Resource
@@ -25,7 +25,9 @@ class PrintersResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Printers';
 
-        protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
+    protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
+
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

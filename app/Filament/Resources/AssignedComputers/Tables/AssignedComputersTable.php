@@ -50,63 +50,57 @@ class AssignedComputersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', direction: 'desc')
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('department')
-                    ->label('Department')
-                    ->options(function () {
-                        return \App\Models\AssignedComputer::query()
-                            ->distinct()
-                            ->pluck('department', 'department')
-                            ->filter(fn($v) => !empty($v));
-                    }),
+                //
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
             ->headerActions([
-                \Filament\Actions\Action::make('export_csv')
-                    ->label('Export all record')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('success')
-                    ->action(function () {
-                        // Get the current page URL with all query parameters
-                        $currentUrl = request()->fullUrl();
-                        $parsedUrl = parse_url($currentUrl);
-                        
-                        // Parse query parameters
-                        $queryParams = [];
-                        if (isset($parsedUrl['query'])) {
-                            parse_str($parsedUrl['query'], $queryParams);
-                        }
-                        
-                        // Build export URL with current filters
-                        $exportUrl = route('export.assigned-computers');
-                        $exportParams = [];
-                        
-                        // Extract search parameter from tableSearch
-                        if (isset($queryParams['tableSearch'])) {
-                            $exportParams['search'] = $queryParams['tableSearch'];
-                        }
-                        
-                        // Extract other relevant filters
-                        foreach ($queryParams as $key => $value) {
-                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
-                                // Parse Filament filter format
-                                if ($key === 'tableFilters[department][value]') {
-                                    $exportParams['department'] = $value;
-                                }
+            \Filament\Actions\Action::make('export_csv')
+                ->label('Export all record')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    // Get the current page URL with all query parameters
+                    $currentUrl = request()->fullUrl();
+                    $parsedUrl = parse_url($currentUrl);
+
+                    // Parse query parameters
+                    $queryParams = [];
+                    if (isset($parsedUrl['query'])) {
+                        parse_str($parsedUrl['query'], $queryParams);
+                    }
+
+                    // Build export URL with current filters
+                    $exportUrl = route('export.assigned-computers');
+                    $exportParams = [];
+
+                    // Extract search parameter from tableSearch
+                    if (isset($queryParams['tableSearch'])) {
+                        $exportParams['search'] = $queryParams['tableSearch'];
+                    }
+
+                    // Extract other relevant filters
+                    foreach ($queryParams as $key => $value) {
+                        if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                            // Parse Filament filter format
+                            if ($key === 'tableFilters[department][value]') {
+                                $exportParams['department'] = $value;
                             }
                         }
-                        
-                        // Build final URL
-                        if (!empty($exportParams)) {
-                            $exportUrl .= '?' . http_build_query($exportParams);
-                        }
-                        
-                        // Redirect to export URL
-                        return redirect($exportUrl);
-                    }),
+                    }
+
+                    // Build final URL
+                    if (!empty($exportParams)) {
+                        $exportUrl .= '?' . http_build_query($exportParams);
+                    }
+
+                    // Redirect to export URL
+                    return redirect($exportUrl);
+                }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

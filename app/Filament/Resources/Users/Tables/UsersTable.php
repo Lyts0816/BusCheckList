@@ -48,9 +48,6 @@ class UsersTable
                 EditAction::make(),
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->label('Export')
-                    ->exporter(UserExporter::class)
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

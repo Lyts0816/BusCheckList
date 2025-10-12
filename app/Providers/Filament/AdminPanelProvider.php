@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
 
             ])
             ->login()
-            ->databaseNotifications()
+            // ->databaseNotifications()
             ->colors([
                 'primary' => Color::Yellow,
             ])

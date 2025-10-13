@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAssignedComputer extends CreateRecord
 {
     protected static string $resource = AssignedComputerResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

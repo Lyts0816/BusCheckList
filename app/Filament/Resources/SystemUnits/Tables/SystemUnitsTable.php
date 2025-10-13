@@ -61,103 +61,98 @@ class SystemUnitsTable
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([
-                SelectFilter::make('model')
-                    ->label('Model')
-                    ->options(fn () => SystemUnit::query()
-                        ->whereNotNull('model')
-                        ->where('model', '!=', '')
-                        ->select('model')
+            SelectFilter::make('model')
+                ->label('Model')
+                ->options(fn() => SystemUnit::query()
+                    ->whereNotNull('model')
+                    ->where('model', '!=', '')
+                    ->distinct()
+                    ->orderBy('model')
+                    ->pluck('model', 'model')
+                    ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                    ->toArray()),
+
+            SelectFilter::make('OS')
+                ->label('OS')
+                ->options(fn() => SystemUnit::query()
+                    ->whereNotNull('OS')
+                    ->where('OS', '!=', '')
+                    ->distinct()
+                    ->orderBy('OS')
+                    ->pluck('OS', 'OS')
+                    ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                    ->toArray()),
+
+            SelectFilter::make('processor')
+                ->label('Processor')
+                ->options(fn() => SystemUnit::query()
+                    ->whereNotNull('processor')
+                    ->where('processor', '!=', '')
+                    ->distinct()
+                    ->orderBy('processor')
+                    ->pluck('processor', 'processor')
+                    ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                    ->toArray()),
+
+            SelectFilter::make('ram')
+                ->label('RAM')
+                ->options(fn() => SystemUnit::query()
+                    ->whereNotNull('ram')
+                    ->where('ram', '!=', '')
+                    ->distinct()
+                    ->orderBy('ram')
+                    ->pluck('ram', 'ram')
+                    ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                    ->toArray()),
+
+            SelectFilter::make('storage')
+                ->label('Storage')
+                ->options(fn() => SystemUnit::query()
+                    ->whereNotNull('storage')
+                    ->where('storage', '!=', '')
+                    ->distinct()
+                    ->orderBy('storage')
+                    ->pluck('storage', 'storage')
+                    ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                    ->toArray()),
+
+            SelectFilter::make('month')
+                ->label('Month')
+                ->options([
+                    '1' => 'January',
+                    '2' => 'February',
+                    '3' => 'March',
+                    '4' => 'April',
+                    '5' => 'May',
+                    '6' => 'June',
+                    '7' => 'July',
+                    '8' => 'August',
+                    '9' => 'September',
+                    '10' => 'October',
+                    '11' => 'November',
+                    '12' => 'December',
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    $month = $data['value'] ?? null;
+                    return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
+                }),
+
+            SelectFilter::make('year')
+                ->label('Year')
+                ->options(function (): array {
+                    return SystemUnit::query()
+                        ->selectRaw('YEAR(date_aquired) as year')
+                        ->whereNotNull('date_aquired')
                         ->distinct()
-                        ->orderBy('model')
-                        ->pluck('model', 'model')
-                        ->toArray()
-                    ),
-
-                SelectFilter::make('OS')
-                    ->label('OS')
-                    ->options(fn () => SystemUnit::query()
-                        ->whereNotNull('OS')
-                        ->where('OS', '!=', '')
-                        ->select('OS')
-                        ->distinct()
-                        ->orderBy('OS')
-                        ->pluck('OS', 'OS')
-                        ->toArray()
-                    ),
-
-                SelectFilter::make('processor')
-                    ->label('Processor')
-                    ->options(fn () => SystemUnit::query()
-                        ->whereNotNull('processor')
-                        ->where('processor', '!=', '')
-                        ->select('processor')
-                        ->distinct()
-                        ->orderBy('processor')
-                        ->pluck('processor', 'processor')
-                        ->toArray()
-                    ),
-                
-                SelectFilter::make('ram')
-                    ->label('RAM')
-                    ->options(fn () => SystemUnit::query()
-                        ->whereNotNull('ram')
-                        ->where('ram', '!=', '')
-                        ->select('ram')
-                        ->distinct()
-                        ->orderBy('ram')
-                        ->pluck('ram', 'ram')
-                        ->toArray()
-                    ),
-                
-                SelectFilter::make('storage')
-                    ->label('Storage')
-                    ->options(fn () => SystemUnit::query()
-                        ->whereNotNull('storage')
-                        ->where('storage', '!=', '')
-                        ->select('storage')
-                        ->distinct()
-                        ->orderBy('storage')
-                        ->pluck('storage', 'storage')
-                        ->toArray()
-                    ),
-
-                SelectFilter::make('month')
-                    ->label('Month')
-                    ->options([
-                        '1' => 'January',
-                        '2' => 'February',
-                        '3' => 'March',
-                        '4' => 'April',
-                        '5' => 'May',
-                        '6' => 'June',
-                        '7' => 'July',
-                        '8' => 'August',
-                        '9' => 'September',
-                        '10' => 'October',
-                        '11' => 'November',
-                        '12' => 'December',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        $month = $data['value'] ?? null;
-
-                        return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
-                    }),
-
-                    SelectFilter::make('year')
-                    ->label('Year')
-                    ->options(function (): array {
-                        return SystemUnit::query()
-                            ->selectRaw('YEAR(date_aquired) as year')
-                            ->distinct()
-                            ->orderBy('year', 'desc')
-                            ->pluck('year', 'year')
-                            ->toArray();
-                    })
-                    ->query(function (Builder $query, array $data): Builder {
-                        $year = $data['value'] ?? null;
-
-                        return $query->when($year, fn (Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
-                    }),
+                        ->orderBy('year', 'desc')
+                        ->pluck('year', 'year')
+                        ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
+                        ->toArray();
+                })
+                ->query(function (Builder $query, array $data): Builder {
+                    $year = $data['value'] ?? null;
+                    return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
+                }),
             ])
             ->recordActions([
                 ViewAction::make(),

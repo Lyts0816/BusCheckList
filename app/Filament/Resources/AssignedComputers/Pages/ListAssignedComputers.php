@@ -22,6 +22,9 @@ class ListAssignedComputers extends ListRecords
     public function getTabs(): array
     {
         return [
+            Tab::make('All')
+                ->label('All')
+                ->badge(fn () => AssignedComputer::count()),
 
             'MIS' => Tab::make()
                 ->modifyQueryUsing(function ($query) {$query->where('department', 'MIS');})

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePeripherals extends CreateRecord
 {
     protected static string $resource = PeripheralsResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

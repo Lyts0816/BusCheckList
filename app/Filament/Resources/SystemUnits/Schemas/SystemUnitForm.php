@@ -19,15 +19,16 @@ class SystemUnitForm
                 TextInput::make('model'),
                 DatePicker::make('date_aquired'),
                 Select::make('OS')
-                    ->label('OS')
+                    ->label('Operating System')
                     ->options([
                         'Windows 11 Pro' => 'Windows 11 Pro',
                         'Windows 10 Pro' => 'Windows 10 Pro',
-                        'Windows 8.1 Pro' => 'Windows 8.1',
-                        'Windows 7 Pro' => 'Windows 7',
+                        'Windows 8.1 Pro' => 'Windows 8.1 Pro',
+                        'Windows 7 Pro' => 'Windows 7 Pro',
                         'Windows Server 2019' => 'Windows Server 2019',
                         'Windows Server 2022' => 'Windows Server 2022',
                         'Other' => 'Other',
+                        'Cant find OS' => 'Cant find OS',
                     ]),
                 TextInput::make('windows_serial_number'),
                 TextInput::make('microsoft_serial_number'),
@@ -36,6 +37,7 @@ class SystemUnitForm
                 TextInput::make('storage')
                     ->label('Storage'),
                 Select::make('processor')
+                    ->label('Processor')
                     ->options([
                     'Intel Core i3' => 'Intel Core i3',
                     'Intel Core i5' => 'Intel Core i5',
@@ -51,6 +53,7 @@ class SystemUnitForm
                     'AMD Athlon' => 'AMD Athlon',
                     'AMD A-Series' => 'AMD A-Series',
                     'Other' => 'Other',
+                    'Cant find Processor' => 'Cant find Processor',
                 ]),
                 TextInput::make('ip_address')
                     ->label('IP Address'),

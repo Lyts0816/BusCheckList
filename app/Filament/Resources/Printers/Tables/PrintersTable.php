@@ -89,6 +89,7 @@ class PrintersTable
                             ->distinct()
                             ->orderBy('year', 'desc')
                             ->pluck('year', 'year')
+                            ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                             ->toArray();
                     })
                     ->query(function (Builder $query, array $data): Builder {

@@ -76,7 +76,7 @@ class SystemUnitExport extends Controller
             'IP Address',
             'Description',
             'Created At',
-            'Updated At'
+            'Updated At',
         ];
 
         // Start CSV content with headers

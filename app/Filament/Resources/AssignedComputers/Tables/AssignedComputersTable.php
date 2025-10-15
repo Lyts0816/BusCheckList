@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AssignedComputers\Tables;
 
 use App\Models\AssignedComputer;
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -17,6 +18,9 @@ class AssignedComputersTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
                 TextColumn::make('assigned_to')
                     ->searchable(),
                 TextColumn::make('department')

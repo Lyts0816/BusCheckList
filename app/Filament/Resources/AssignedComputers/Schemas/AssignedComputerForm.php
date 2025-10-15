@@ -32,7 +32,7 @@ class AssignedComputerForm
 
                 Select::make('system_unit_id')
                     ->label('System Unit')
-                    ->relationship('systemUnit', 'serial_number')
+                    ->relationship('systemUnit', 'serial_number', fn ($query) => $query->orderBy('id', 'desc'))
                     ->preload()
                     ->searchable()
                     ->searchPrompt('Search system unit by serial number...')
@@ -40,7 +40,7 @@ class AssignedComputerForm
 
                 Select::make('keyboard_id')
                     ->label('Keyboard')
-                    ->relationship('keyboard', 'serial_number', fn ($query) => $query->where('item_type', 'Keyboard'))
+                    ->relationship('keyboard', 'serial_number', fn ($query) => $query->where('item_type', 'Keyboard')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search keyboard by serial number...')
                     ->preload()
@@ -48,7 +48,7 @@ class AssignedComputerForm
 
                 Select::make('mouse_id')
                     ->label('Mouse')
-                    ->relationship('mouse', 'serial_number', fn ($query) => $query->where('item_type', 'Mouse'))
+                    ->relationship('mouse', 'serial_number', fn ($query) => $query->where('item_type', 'Mouse')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search mouse by serial number...')
                     ->preload()
@@ -56,7 +56,7 @@ class AssignedComputerForm
 
                 Select::make('monitor_id')
                     ->label('Monitor')
-                    ->relationship('monitor', 'serial_number', fn ($query) => $query->where('item_type', 'Monitor'))
+                    ->relationship('monitor', 'serial_number', fn ($query) => $query->where('item_type', 'Monitor')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search monitor by serial number...')
                     ->preload()
@@ -64,7 +64,7 @@ class AssignedComputerForm
 
                 Select::make('ups_id')
                     ->label('UPS')
-                    ->relationship('ups', 'serial_number', fn ($query) => $query->where('item_type', 'UPS'))
+                    ->relationship('ups', 'serial_number', fn ($query) => $query->where('item_type', 'UPS')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search UPS by serial number...')
                     ->preload()

@@ -26,7 +26,9 @@ class PeripheralsForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('model'),
-                DatePicker::make('date_acquired'),
+                DatePicker::make('date_acquired')
+                    ->default('N/A')
+                    ->helperText('Leave blank if date aquired date is not available'),
                 TextInput::make('description'),
             ]);
     }

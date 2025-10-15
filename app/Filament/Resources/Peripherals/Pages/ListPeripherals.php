@@ -26,6 +26,10 @@ class ListPeripherals extends ListRecords
     {
         return [
 
+            'ALL' => Tab::make()
+                ->label('All PERIPHERALS')
+                ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
+                ->badge(fn () => Peripherals::count()),
             'KEYBOARD' => Tab::make()
                 ->modifyQueryUsing(function ($query) {$query->where('item_type', 'KEYBOARD');})
                 ->badge(fn () => Peripherals::where('item_type', 'Keyboard')->count()),

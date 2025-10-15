@@ -27,15 +27,15 @@ class PrintersForm
                     ]),
                 TextInput::make('printer_host')
                     ->label('Printer Host')
-                    ->unique(ignoreRecord: true),  
-                TextInput::make('printer_model')
-                    ->nullable(),
+                    ->unique(ignoreRecord: true),
                 TextInput::make('printer_asset_code')
                     ->nullable(),
                 TextInput::make('printer_serial_number')
                     ->label('Printer Serial Number')
                     ->nullable()
                     ->unique(ignoreRecord: true),
+                TextInput::make('printer_model')
+                    ->nullable(),
                 DatePicker::make('date_aquired')
                     ->label('Date Acquired')
                     ->nullable(),

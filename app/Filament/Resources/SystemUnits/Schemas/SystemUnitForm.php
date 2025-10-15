@@ -17,13 +17,14 @@ class SystemUnitForm
                 TextInput::make('serial_number')
                 ->unique(ignoreRecord: true),
                 TextInput::make('model'),
-                DatePicker::make('date_aquired'),
+                DatePicker::make('date_aquired')
+                ->helperText('Leave blank if date aquired date is not available'),
                 Select::make('OS')
                     ->label('Operating System')
                     ->options([
                         'Windows 11 Pro' => 'Windows 11 Pro',
                         'Windows 10 Pro' => 'Windows 10 Pro',
-                        'Windows 8.1 Pro' => 'Windows 8.1 Pro',
+                        'Windows 8 Pro' => 'Windows 8 Pro',
                         'Windows 7 Pro' => 'Windows 7 Pro',
                         'Windows Server 2019' => 'Windows Server 2019',
                         'Windows Server 2022' => 'Windows Server 2022',

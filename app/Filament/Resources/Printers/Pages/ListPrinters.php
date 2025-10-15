@@ -23,6 +23,11 @@ class ListPrinters extends ListRecords
     {
         return [
 
+            'ALL' => Tab::make()
+                ->label('All PRINTERS')
+                ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
+                ->badge(fn () => Printer::count()),
+
             'MIS' => Tab::make()
                 ->modifyQueryUsing(function ($query) {$query->where('department', 'MIS');})
                 ->badge(fn () => Printer::where('department', 'MIS')->count()),

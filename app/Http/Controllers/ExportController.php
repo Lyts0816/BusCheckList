@@ -92,46 +92,103 @@ class ExportController extends Controller
 
     private function generateAssignedComputersCSVFormat($assignedComputers)
     {
+
+        $title = 'COMPUTER AND PERIPHERALS INVENTORY - ' . now()->format('F d, Y');
         // CSV Headers (same as above)
         $headers = [
-            'ID', 'Assigned To', 'Department',
-            'System Unit ID', 'System Unit Asset Code', 'System Unit Model', 'System Unit Serial Number',
-            'System Unit Date Acquired', 'Operating System', 'Windows Serial Number', 'Microsoft Serial Number',
-            'RAM', 'Storage', 'Processor', 'IP Address', 'System Unit Description',
-            'Keyboard ID', 'Keyboard Asset Code', 'Keyboard Serial Number', 'Keyboard Model', 'Keyboard Date Acquired', 'Keyboard Description',
-            'Mouse ID', 'Mouse Asset Code', 'Mouse Serial Number', 'Mouse Model', 'Mouse Date Acquired', 'Mouse Description',
-            'Monitor ID', 'Monitor Asset Code', 'Monitor Serial Number', 'Monitor Model', 'Monitor Date Acquired', 'Monitor Description',
-            'UPS ID', 'UPS Asset Code', 'UPS Serial Number', 'UPS Model', 'UPS Date Acquired', 'UPS Description',
-            'Created At', 'Updated At'
+            'ID',
+            'Assigned To',
+            'Department',
+            'System Unit ID',
+            'System Unit Asset Code',
+            'System Unit Model',
+            'System Unit Serial Number',
+            'System Unit Date Acquired (dd,mm,yyyy)',
+            'Operating System',
+            'Windows Serial Number',
+            'Microsoft Serial Number',
+            'RAM',
+            'Storage',
+            'Processor',
+            'IP Address',
+            'System Unit Description',
+            'Keyboard ID',
+            'Keyboard Asset Code',
+            'Keyboard Serial Number',
+            'Keyboard Model',
+            'Keyboard Date Acquired (dd,mm,yyyy)',
+            'Keyboard Description',
+            'Mouse ID',
+            'Mouse Asset Code',
+            'Mouse Serial Number',
+            'Mouse Model',
+            'Mouse Date Acquired (dd,mm,yyyy)',
+            'Mouse Description',
+            'Monitor ID',
+            'Monitor Asset Code',
+            'Monitor Serial Number',
+            'Monitor Model',
+            'Monitor Date Acquired (dd,mm,yyyy)',
+            'Monitor Description',
+            'UPS ID',
+            'UPS Asset Code',
+            'UPS Serial Number',
+            'UPS Model',
+            'UPS Date Acquired (dd,mm,yyyy)',
+            'UPS Description',
+            'Created At',
+            'Updated At'
         ];
 
         // Start CSV content with headers
-        $csv = '"' . implode('","', $headers) . '"' . "\n";
+        $csv = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";;
 
-    // Add data rows (use provided collection, not a fresh query)
-    foreach ($assignedComputers as $computer) {
+        // Add data rows (use provided collection, not a fresh query)
+        foreach ($assignedComputers as $computer) {
             $row = [
-                $computer->id, $computer->assigned_to, $computer->department,
-                $computer->system_unit_id, $computer->systemUnit?->asset_code ?? 'N/A',
-                $computer->systemUnit?->model ?? 'N/A', $computer->systemUnit?->serial_number ?? 'N/A',
-                $computer->systemUnit?->date_aquired ?? 'N/A', $computer->systemUnit?->OS ?? 'N/A',
-                $computer->systemUnit?->windows_serial_number ?? 'N/A', $computer->systemUnit?->microsoft_serial_number ?? 'N/A',
-                $computer->systemUnit?->ram ?? 'N/A', $computer->systemUnit?->storage ?? 'N/A',
-                $computer->systemUnit?->processor ?? 'N/A', $computer->systemUnit?->ip_address ?? 'N/A',
+                $computer->id,
+                $computer->assigned_to,
+                $computer->department,
+                $computer->system_unit_id,
+                $computer->systemUnit?->asset_code ?? 'N/A',
+                $computer->systemUnit?->model ?? 'N/A',
+                $computer->systemUnit?->serial_number ?? 'N/A',
+                $computer->systemUnit?->date_aquired ?? 'N/A',
+                $computer->systemUnit?->OS ?? 'N/A',
+                $computer->systemUnit?->windows_serial_number ?? 'N/A',
+                $computer->systemUnit?->microsoft_serial_number ?? 'N/A',
+                $computer->systemUnit?->ram ?? 'N/A',
+                $computer->systemUnit?->storage ?? 'N/A',
+                $computer->systemUnit?->processor ?? 'N/A',
+                $computer->systemUnit?->ip_address ?? 'N/A',
                 $computer->systemUnit?->description ?? 'N/A',
-                $computer->keyboard_id ?? 'N/A', $computer->keyboard?->asset_code ?? 'N/A',
-                $computer->keyboard?->serial_number ?? 'N/A', $computer->keyboard?->model ?? 'N/A',
-                $computer->keyboard?->date_acquired ?? 'N/A', $computer->keyboard?->description ?? 'N/A',
-                $computer->mouse_id ?? 'N/A', $computer->mouse?->asset_code ?? 'N/A',
-                $computer->mouse?->serial_number ?? 'N/A', $computer->mouse?->model ?? 'N/A',
-                $computer->mouse?->date_acquired ?? 'N/A', $computer->mouse?->description ?? 'N/A',
-                $computer->monitor_id ?? 'N/A', $computer->monitor?->asset_code ?? 'N/A',
-                $computer->monitor?->serial_number ?? 'N/A', $computer->monitor?->model ?? 'N/A',
-                $computer->monitor?->date_acquired ?? 'N/A', $computer->monitor?->description ?? 'N/A',
-                $computer->ups_id ?? 'N/A', $computer->ups?->asset_code ?? 'N/A',
-                $computer->ups?->serial_number ?? 'N/A', $computer->ups?->model ?? 'N/A',
-                $computer->ups?->date_acquired ?? 'N/A', $computer->ups?->description ?? 'N/A',
-                $computer->created_at, $computer->updated_at,
+                $computer->keyboard_id ?? 'N/A',
+                $computer->keyboard?->asset_code ?? 'N/A',
+                $computer->keyboard?->serial_number ?? 'N/A',
+                $computer->keyboard?->model ?? 'N/A',
+                $computer->keyboard?->date_acquired ?? 'N/A',
+                $computer->keyboard?->description ?? 'N/A',
+                $computer->mouse_id ?? 'N/A',
+                $computer->mouse?->asset_code ?? 'N/A',
+                $computer->mouse?->serial_number ?? 'N/A',
+                $computer->mouse?->model ?? 'N/A',
+                $computer->mouse?->date_acquired ?? 'N/A',
+                $computer->mouse?->description ?? 'N/A',
+                $computer->monitor_id ?? 'N/A',
+                $computer->monitor?->asset_code ?? 'N/A',
+                $computer->monitor?->serial_number ?? 'N/A',
+                $computer->monitor?->model ?? 'N/A',
+                $computer->monitor?->date_acquired ?? 'N/A',
+                $computer->monitor?->description ?? 'N/A',
+                $computer->ups_id ?? 'N/A',
+                $computer->ups?->asset_code ?? 'N/A',
+                $computer->ups?->serial_number ?? 'N/A',
+                $computer->ups?->model ?? 'N/A',
+                $computer->ups?->date_acquired ?? 'N/A',
+                $computer->ups?->description ?? 'N/A',
+                $computer->created_at,
+                $computer->updated_at,
             ];
 
             $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
@@ -154,13 +211,13 @@ class ExportController extends Controller
                 $searchTerm = $request->search;
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('check_date', 'like', "%{$searchTerm}%")
-                      ->orWhere('remarks', 'like', "%{$searchTerm}%")
-                      ->orWhereHas('bus', function ($bq) use ($searchTerm) {
-                          $bq->where('bus_number', 'like', "%{$searchTerm}%")
-                            ->orWhere('model', 'like', "%{$searchTerm}%")
-                            ->orWhere('status', 'like', "%{$searchTerm}%")
-                            ->orWhere('base_location', 'like', "%{$searchTerm}%");
-                      });
+                        ->orWhere('remarks', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('bus', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_number', 'like', "%{$searchTerm}%")
+                                ->orWhere('model', 'like', "%{$searchTerm}%")
+                                ->orWhere('status', 'like', "%{$searchTerm}%")
+                                ->orWhere('base_location', 'like', "%{$searchTerm}%");
+                        });
                 });
             }
             if ($request->has('checked') && $request->checked !== '') {

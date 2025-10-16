@@ -20,20 +20,27 @@ class PrintersTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->sortable(),
                 TextColumn::make('department')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('printer_host')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('printer_model')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('printer_asset_code')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('printer_serial_number')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('date_aquired')
                     ->date()
-                    ->label('Date Acquired'),
+                    ->label('Date Acquired')
+                    ->sortable(),
                 TextColumn::make('description'),
                 TextColumn::make('created_at')
                     ->dateTime()

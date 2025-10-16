@@ -31,8 +31,9 @@ class PrintersForm
                 TextInput::make('printer_asset_code')
                     ->nullable(),
                 TextInput::make('printer_serial_number')
+                    ->required()
+                    ->helperText('If printer does not have a serial number, please input (NOSN + asset code, if no asset code, please input (NOSN + department name). Example: NOSN-MIS)')
                     ->label('Printer Serial Number')
-                    ->nullable()
                     ->unique(ignoreRecord: true),
                 TextInput::make('printer_model')
                     ->nullable(),

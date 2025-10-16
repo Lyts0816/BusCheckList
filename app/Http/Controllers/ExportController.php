@@ -248,6 +248,7 @@ class ExportController extends Controller
 
     private function generateBusDailyChecklistCSV($busDailyChecklists)
     {
+        $title = 'BUS CHECKLIST REPORT - ' . now()->format('F d, Y');
         // CSV Headers
         $headers = [
             'ID',
@@ -263,8 +264,8 @@ class ExportController extends Controller
             'Updated At'
         ];
 
-        // Start CSV content with headers
-        $csv = '"' . implode('","', $headers) . '"' . "\n";
+        $csv  = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         // Add data rows
         foreach ($busDailyChecklists as $checklist) {

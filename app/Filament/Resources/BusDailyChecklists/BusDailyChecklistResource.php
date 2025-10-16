@@ -25,7 +25,7 @@ class BusDailyChecklistResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Bus Daily Checklist';
 
-        protected static UnitEnum|string|null $navigationGroup = 'Bus Checklists';
+    protected static UnitEnum|string|null $navigationGroup = 'BUS CHECKLISTS';
 
     public static function form(Schema $schema): Schema
     {

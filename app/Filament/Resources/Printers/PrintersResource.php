@@ -25,7 +25,7 @@ class PrintersResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Printers';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
+    protected static UnitEnum|string|null $navigationGroup = 'COMPUTER & PERIPHERALS';
 
     protected static ?int $navigationSort = 4;
 

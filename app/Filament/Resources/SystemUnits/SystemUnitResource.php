@@ -24,7 +24,7 @@ class SystemUnitResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'System Unit';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
+    protected static UnitEnum|string|null $navigationGroup = 'COMPUTER & PERIPHERALS';
 
     public static function form(Schema $schema): Schema
     {

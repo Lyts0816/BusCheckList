@@ -24,7 +24,7 @@ class PeripheralsResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Peripherals';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Computer Inventory';
+    protected static UnitEnum|string|null $navigationGroup = 'COMPUTER & PERIPHERALS';
 
     public static function form(Schema $schema): Schema
     {

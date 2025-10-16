@@ -24,7 +24,7 @@ class BusResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Buses';
 
-        protected static UnitEnum|string|null $navigationGroup = 'Bus Checklists';
+        protected static UnitEnum|string|null $navigationGroup = 'BUS CHECKLISTS';
 
     public static function form(Schema $schema): Schema
     {

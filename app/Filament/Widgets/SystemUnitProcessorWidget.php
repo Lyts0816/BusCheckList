@@ -8,6 +8,7 @@ use App\Models\SystemUnit;
 class SystemUnitProcessorWidget extends ChartWidget
 {
     protected bool $isCollapsible = true;
+
     protected static bool $isLazy = false;
     
     protected ?string $heading = 'System Units by Processor';

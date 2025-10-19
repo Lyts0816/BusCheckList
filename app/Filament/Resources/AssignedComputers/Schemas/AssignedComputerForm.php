@@ -32,23 +32,33 @@ class AssignedComputerForm
 
                 Select::make('system_unit_id')
                     ->label('System Unit')
-                    ->relationship('systemUnit', 'serial_number', fn ($query) => $query->orderBy('id', 'desc'))
+                    ->relationship('systemUnit', 'serial_number', function ($query) {
+                        return $query->orderBy('serial_number', 'desc');
+                    })
                     ->preload()
                     ->searchable()
                     ->searchPrompt('Search system unit by serial number...')
-                    ->required(),
+                    ->required()
+                    ->unique(
+                        table: 'assigned_computers',
+                        column: 'system_unit_id',
+                        ignoreRecord: true
+                    )
+                    ->validationMessages([
+                        'unique' => 'This system unit is already assigned to another user.',
+                    ]),
 
                 Select::make('keyboard_id')
                     ->label('Keyboard')
-                    ->relationship('keyboard', 'serial_number', fn ($query) => $query->where('item_type', 'Keyboard')->orderBy('id', 'desc'))
+                    ->relationship('keyboard', 'serial_number', fn($query) => $query->where('item_type', 'Keyboard')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search keyboard by serial number...')
                     ->preload()
-                    ->nullable(),       
+                    ->nullable(),
 
                 Select::make('mouse_id')
                     ->label('Mouse')
-                    ->relationship('mouse', 'serial_number', fn ($query) => $query->where('item_type', 'Mouse')->orderBy('id', 'desc'))
+                    ->relationship('mouse', 'serial_number', fn($query) => $query->where('item_type', 'Mouse')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search mouse by serial number...')
                     ->preload()
@@ -56,7 +66,7 @@ class AssignedComputerForm
 
                 Select::make('monitor_id')
                     ->label('Monitor')
-                    ->relationship('monitor', 'serial_number', fn ($query) => $query->where('item_type', 'Monitor')->orderBy('id', 'desc'))
+                    ->relationship('monitor', 'serial_number', fn($query) => $query->where('item_type', 'Monitor')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search monitor by serial number...')
                     ->preload()
@@ -64,7 +74,7 @@ class AssignedComputerForm
 
                 Select::make('ups_id')
                     ->label('UPS')
-                    ->relationship('ups', 'serial_number', fn ($query) => $query->where('item_type', 'UPS')->orderBy('id', 'desc'))
+                    ->relationship('ups', 'serial_number', fn($query) => $query->where('item_type', 'UPS')->orderBy('id', 'desc'))
                     ->searchable()
                     ->searchPrompt('Search UPS by serial number...')
                     ->preload()

@@ -23,8 +23,9 @@ class SystemUnit extends Model
         'description',
     ];
 
-    public function assignedComputers()
+    // Add this relationship
+    public function assignedComputer()
     {
-        return $this->hasMany(AssignedComputer::class, 'system_unit_id');
+        return $this->hasOne(AssignedComputer::class, 'system_unit_id');
     }
 }

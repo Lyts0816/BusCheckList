@@ -141,7 +141,7 @@ class ExportController extends Controller
         ];
 
         // Start CSV content with headers
-        $csv = '"' . $title . '"' . "\n\n";
+        $csv  = '"' . $title . '"' . "\n\n";
         $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         // Add data rows (use provided collection, not a fresh query)
@@ -265,7 +265,7 @@ class ExportController extends Controller
         ];
 
         $csv  = '"' . $title . '"' . "\n\n";
-        $csv .= '"' . implode('","', $headers) . '"' . "\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";;
 
         // Add data rows
         foreach ($busDailyChecklists as $checklist) {

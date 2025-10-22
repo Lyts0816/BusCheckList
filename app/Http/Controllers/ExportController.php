@@ -101,8 +101,8 @@ class ExportController extends Controller
             'Department',
             'System Unit ID',
             'System Unit Asset Code',
-            'System Unit Model',
             'System Unit Serial Number',
+            'System Unit Model',
             'System Unit Date Acquired (dd,mm,yyyy)',
             'Operating System',
             'Windows Serial Number',
@@ -142,7 +142,7 @@ class ExportController extends Controller
 
         // Start CSV content with headers
         $csv = '"' . $title . '"' . "\n\n";
-        $csv .= '"' . implode('","', $headers) . '"' . "\n";;
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         // Add data rows (use provided collection, not a fresh query)
         foreach ($assignedComputers as $computer) {
@@ -152,8 +152,8 @@ class ExportController extends Controller
                 $computer->department,
                 $computer->system_unit_id,
                 $computer->systemUnit?->asset_code ?? 'N/A',
-                $computer->systemUnit?->model ?? 'N/A',
                 $computer->systemUnit?->serial_number ?? 'N/A',
+                $computer->systemUnit?->model ?? 'N/A',
                 $computer->systemUnit?->date_aquired ?? 'N/A',
                 $computer->systemUnit?->OS ?? 'N/A',
                 $computer->systemUnit?->windows_serial_number ?? 'N/A',

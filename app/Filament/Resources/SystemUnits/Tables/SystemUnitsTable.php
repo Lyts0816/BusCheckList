@@ -24,15 +24,18 @@ class SystemUnitsTable
                 TextColumn::make('assignedComputer.assigned_to')
                     ->label('Assigned To')
                     ->searchable()
-                    ->sortable()
+                    // ->sortable()
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
                     }),
                 TextColumn::make('asset_code')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('serial_number')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('model')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('date_aquired')
                     ->date()
@@ -69,6 +72,38 @@ class SystemUnitsTable
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([
+                
+                SelectFilter::make('assigned_to')
+                    ->label('Assigned To')
+                    ->options(function (): array {
+                        // Get all unique assigned users
+                        $assigned = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('assigned_to')
+                            ->where('assigned_to', '!=', '')
+                            ->distinct()
+                            ->orderBy('assigned_to')
+                            ->pluck('assigned_to', 'assigned_to')
+                            ->toArray();
+
+                        // Add "Unassigned" option
+                        return ['unassigned' => 'Unassigned'] + $assigned;
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+
+                        if ($value === 'unassigned') {
+                            return $query->whereDoesntHave('assignedComputer');
+                        }
+
+                        if ($value) {
+                            return $query->whereHas('assignedComputer', function (Builder $q) use ($value) {
+                                $q->where('assigned_to', $value);
+                            });
+                        }
+
+                        return $query;
+                    }),
+
                 SelectFilter::make('model')
                     ->label('Model')
                     ->options(fn() => SystemUnit::query()

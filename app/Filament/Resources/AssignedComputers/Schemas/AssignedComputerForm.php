@@ -33,7 +33,7 @@ class AssignedComputerForm
                 Select::make('system_unit_id')
                     ->label('System Unit')
                     ->relationship('systemUnit', 'serial_number', function ($query) {
-                        return $query->orderBy('serial_number', 'desc');
+                        return $query->orderBy('id', 'desc');
                     })
                     ->preload()
                     ->searchable()

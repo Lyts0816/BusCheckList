@@ -23,6 +23,7 @@ class PrinterExport extends Controller
 
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('printer_host', 'like', "%{$searchTerm}%")
+                        ->orwhere('department', 'like', "%{$searchTerm}%")
                         ->orWhere('printer_model', 'like', "%{$searchTerm}%")
                         ->orWhere('printer_asset_code', 'like', "%{$searchTerm}%")
                         ->orWhere('printer_serial_number', 'like', "%{$searchTerm}%")
@@ -60,10 +61,12 @@ class PrinterExport extends Controller
     // FUNCTION FOR CSV
     private function generatePrinterCSVFormat($printers)
     {
+        $title = 'PRINTER INVENTORY - ' . now()->format('F d, Y');
         // Define CSV headers for printer export
         $headers = [
             'ID',
             'Printer Host',
+            'Department',
             'Printer Model',
             'Printer Asset Code',
             'Printer Serial Number',
@@ -74,13 +77,15 @@ class PrinterExport extends Controller
         ];
 
         // Start CSV content with headers
-        $csv = '"' . implode('","', $headers) . '"' . "\n";
+        $csv  = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         // Add data rows
         foreach ($printers as $printer) {
             $row = [
                 $printer->id,
                 $printer->printer_host ?? 'N/A',
+                $printer->department ?? 'N/A',
                 $printer->printer_model ?? 'N/A',
                 $printer->printer_asset_code ?? 'N/A',
                 $printer->printer_serial_number ?? 'N/A',

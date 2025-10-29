@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AssignedComputer extends Model
 {
     protected $table = 'assigned_computers';
-    
+
     protected $fillable = [
         'system_unit_id',
         'keyboard_id',

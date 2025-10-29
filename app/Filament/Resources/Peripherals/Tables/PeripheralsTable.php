@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
+use Illuminate\Support\Facades\Log;
+
 
 class PeripheralsTable
 {
@@ -24,6 +26,32 @@ class PeripheralsTable
                     ->label('ID'),
                 TextColumn::make('item_type')
                     ->searchable(),
+                TextColumn::make('assignedComputers.assigned_to')
+                    ->label('Assigned To')
+                    ->searchable()
+                    ->getStateUsing(function (Peripherals $record) {
+                        $assignedComputers = $record->assignedComputers;
+
+                        // Only return if there are assigned computers
+                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
+                            return $assignedComputers->first()->assigned_to;
+                        }
+
+                        return 'Unassigned';
+                    }),
+                TextColumn::make('department')
+                    ->label('Department')
+                    ->searchable()
+                    ->getStateUsing(function (Peripherals $record) {
+                        $assignedComputers = $record->assignedComputers;
+
+                        // Only return if there are assigned computers
+                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
+                            return $assignedComputers->first()->department;
+                        }
+
+                        return 'N/A';
+                    }),
                 TextColumn::make('asset_code')
                     ->searchable(),
                 TextColumn::make('serial_number')
@@ -46,56 +74,132 @@ class PeripheralsTable
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([
+                SelectFilter::make('assigned_to')
+                    ->label('Assigned To')
+                    ->options(function (): array {
+                        // Get all unique assigned users from peripherals
+                        $assigned = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('assigned_to')
+                            ->where('assigned_to', '!=', '')
+                            ->where(function ($query) {
+                                $query->whereNotNull('keyboard_id')
+                                    ->orWhereNotNull('mouse_id')
+                                    ->orWhereNotNull('monitor_id')
+                                    ->orWhereNotNull('ups_id');
+                            })
+                            ->distinct()
+                            ->orderBy('assigned_to')
+                            ->pluck('assigned_to', 'assigned_to')
+                            ->toArray();
+
+                        // Add "Unassigned" option
+                        return ['unassigned' => 'Unassigned'] + $assigned;
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+
+                        if ($value === 'unassigned') {
+                            return $query->whereDoesntHave('assignedKeyboards')
+                                ->whereDoesntHave('assignedMice')
+                                ->whereDoesntHave('assignedMonitors')
+                                ->whereDoesntHave('assignedUps');
+                        }
+
+                        if ($value) {
+                            return $query->where(function (Builder $q) use ($value) {
+                                $q->whereHas('assignedKeyboards', fn($query) => $query->where('assigned_to', $value))
+                                    ->orWhereHas('assignedMice', fn($query) => $query->where('assigned_to', $value))
+                                    ->orWhereHas('assignedMonitors', fn($query) => $query->where('assigned_to', $value))
+                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value));
+                            });
+                        }
+
+                        return $query;
+                    }),
+                SelectFilter::make('department')
+                    ->label('Department')
+                    ->options(function (): array {
+                        // Get all unique departments from assigned computers with peripherals
+                        $departments = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->where(function ($query) {
+                                $query->whereNotNull('keyboard_id')
+                                    ->orWhereNotNull('mouse_id')
+                                    ->orWhereNotNull('monitor_id')
+                                    ->orWhereNotNull('ups_id');
+                            })
+                            ->distinct()
+                            ->orderBy('department')
+                            ->pluck('department', 'department')
+                            ->toArray();
+
+                        return $departments;
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+
+                        if ($value) {
+                            return $query->where(function (Builder $q) use ($value) {
+                                $q->whereHas('assignedKeyboards', fn($query) => $query->where('department', $value))
+                                    ->orWhereHas('assignedMice', fn($query) => $query->where('department', $value))
+                                    ->orWhereHas('assignedMonitors', fn($query) => $query->where('department', $value))
+                                    ->orWhereHas('assignedUps', fn($query) => $query->where('department', $value));
+                            });
+                        }
+
+                        return $query;
+                    }),
                 SelectFilter::make('model')
-                ->label('Model')
-                ->options(function () {
-                    return Peripherals::query()
-                        ->whereNotNull('model')
-                        ->where('model', '!=', '')
-                        ->select('model')
-                        ->distinct()
-                        ->orderBy('model')
-                        ->pluck('model', 'model')
-                        ->filter(fn($label, $value) => $label !== null && $value !== null) // avoid nulls
-                        ->toArray();
-                }),
+                    ->label('Model')
+                    ->options(function () {
+                        return Peripherals::query()
+                            ->whereNotNull('model')
+                            ->where('model', '!=', '')
+                            ->select('model')
+                            ->distinct()
+                            ->orderBy('model')
+                            ->pluck('model', 'model')
+                            ->filter(fn($label, $value) => $label !== null && $value !== null) // avoid nulls
+                            ->toArray();
+                    }),
 
                 SelectFilter::make('month')
-                ->label('Month')
-                ->options([
-                    '1' => 'January',
-                    '2' => 'February',
-                    '3' => 'March',
-                    '4' => 'April',
-                    '5' => 'May',
-                    '6' => 'June',
-                    '7' => 'July',
-                    '8' => 'August',
-                    '9' => 'September',
-                    '10' => 'October',
-                    '11' => 'November',
-                    '12' => 'December',
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    $month = $data['value'] ?? null;
-                    return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('date_acquired', (int) $m));
-                }),
+                    ->label('Month')
+                    ->options([
+                        '1' => 'January',
+                        '2' => 'February',
+                        '3' => 'March',
+                        '4' => 'April',
+                        '5' => 'May',
+                        '6' => 'June',
+                        '7' => 'July',
+                        '8' => 'August',
+                        '9' => 'September',
+                        '10' => 'October',
+                        '11' => 'November',
+                        '12' => 'December',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $month = $data['value'] ?? null;
+                        return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('date_acquired', (int) $m));
+                    }),
 
                 SelectFilter::make('year')
-                ->label('Year')
-                ->options(function (): array {
-                    return Peripherals::query()
-                        ->selectRaw('YEAR(date_acquired) as year')
-                        ->distinct()
-                        ->orderBy('year', 'desc')
-                        ->pluck('year', 'year')
-                        ->filter(fn($value, $key) => !is_null($key) && !is_null($value)) // ensure both key/value are strings
-                        ->toArray();
-                })
-                ->query(function (Builder $query, array $data): Builder {
-                    $year = $data['value'] ?? null;
-                    return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_acquired', (int) $y));
-                }),
+                    ->label('Year')
+                    ->options(function (): array {
+                        return Peripherals::query()
+                            ->selectRaw('YEAR(date_acquired) as year')
+                            ->distinct()
+                            ->orderBy('year', 'desc')
+                            ->pluck('year', 'year')
+                            ->filter(fn($value, $key) => !is_null($key) && !is_null($value)) // ensure both key/value are strings
+                            ->toArray();
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $year = $data['value'] ?? null;
+                        return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_acquired', (int) $y));
+                    }),
             ])
             ->recordActions([
                 ViewAction::make(),

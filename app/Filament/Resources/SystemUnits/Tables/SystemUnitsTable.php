@@ -47,19 +47,27 @@ class SystemUnitsTable
                 TextColumn::make('date_aquired')
                     ->date()
                     ->sortable(),
-            TextColumn::make('years_in_service')
-                ->label('Years Since Acquired')
-                ->getStateUsing(
-                    fn(SystemUnit $record) =>
-                    $record->date_aquired
-                        ? number_format(\Carbon\Carbon::parse($record->date_aquired)->diffInMonths(now()) / 12, 1)
-                        : 'N/A'
-                )
-                ->sortable(query: function (Builder $query, string $direction): Builder {
-                    return $query->orderByRaw(
-                        "(TIMESTAMPDIFF(MONTH, date_aquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
-                    );
-                }),
+                TextColumn::make('years_in_service')
+                    ->label('Years in Service')
+                    ->getStateUsing(function (SystemUnit $record) {
+                        if (! $record->date_aquired) {
+                            return 'N/A';
+                        }
+
+                        $diff = \Carbon\Carbon::parse($record->date_aquired)->diff(now());
+
+                        $years = $diff->y;
+                        $months = $diff->m;
+
+                        $yearLabel = $years === 1 ? 'year' : 'years';
+                        $monthLabel = $months === 1 ? 'month' : 'months';
+                        return "{$years} {$yearLabel}, {$months} {$monthLabel}";
+                    })
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw(
+                            "(TIMESTAMPDIFF(MONTH, date_aquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
+                        );
+                    }),
                 TextColumn::make('OS')
                     ->label('OS')
                     ->sortable(),
@@ -92,7 +100,7 @@ class SystemUnitsTable
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([
-                
+
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
                     ->options(function (): array {

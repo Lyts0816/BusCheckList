@@ -105,6 +105,7 @@ class PrintersTable
                         return $query->when($year, fn (Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
             ])
+            ->filtersFormMaxHeight('400px')
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

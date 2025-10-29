@@ -47,6 +47,19 @@ class SystemUnitsTable
                 TextColumn::make('date_aquired')
                     ->date()
                     ->sortable(),
+            TextColumn::make('years_in_service')
+                ->label('Years Since Acquired')
+                ->getStateUsing(
+                    fn(SystemUnit $record) =>
+                    $record->date_aquired
+                        ? number_format(\Carbon\Carbon::parse($record->date_aquired)->diffInMonths(now()) / 12, 1)
+                        : 'N/A'
+                )
+                ->sortable(query: function (Builder $query, string $direction): Builder {
+                    return $query->orderByRaw(
+                        "(TIMESTAMPDIFF(MONTH, date_aquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
+                    );
+                }),
                 TextColumn::make('OS')
                     ->label('OS')
                     ->sortable(),

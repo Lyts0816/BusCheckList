@@ -28,6 +28,13 @@ class SystemUnitsTable
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
                     }),
+                TextColumn::make('assignedComputer.department')
+                    ->label('Department')
+                    ->searchable()
+                    // ->sortable()
+                    ->getStateUsing(function (SystemUnit $record) {
+                        return $record->assignedComputer?->department ?? 'no-department';
+                    }),
                 TextColumn::make('asset_code')
                     ->sortable()
                     ->searchable(),
@@ -98,6 +105,37 @@ class SystemUnitsTable
                         if ($value) {
                             return $query->whereHas('assignedComputer', function (Builder $q) use ($value) {
                                 $q->where('assigned_to', $value);
+                            });
+                        }
+
+                        return $query;
+                    }),
+
+                SelectFilter::make('department')
+                    ->label('Department')
+                    ->options(function (): array {
+                        // Get all unique assigned users
+                        $assigned = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->distinct()
+                            ->orderBy('department')
+                            ->pluck('department', 'department')
+                            ->toArray();
+
+                        // Add "Unassigned" option
+                        return ['unassigned' => 'Unassigned'] + $assigned;
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+
+                        if ($value === 'unassigned') {
+                            return $query->whereDoesntHave('assignedComputer');
+                        }
+
+                        if ($value) {
+                            return $query->whereHas('assignedComputer', function (Builder $q) use ($value) {
+                                $q->where('department', $value);
                             });
                         }
 

@@ -28,7 +28,7 @@ class PeripheralsTable
                     ->searchable(),
                 TextColumn::make('assignedComputers.assigned_to')
                     ->label('Assigned To')
-                    ->searchable()
+                    // ->searchable()
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
 
@@ -41,7 +41,7 @@ class PeripheralsTable
                     }),
                 TextColumn::make('department')
                     ->label('Department')
-                    ->searchable()
+                    // ->searchable()
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
 
@@ -61,6 +61,27 @@ class PeripheralsTable
                 TextColumn::make('date_acquired')
                     ->date()
                     ->sortable(),
+                TextColumn::make('years_in_service')
+                    ->label('Years in Service')
+                    ->getStateUsing(function (Peripherals $record) {
+                        if (! $record->date_acquired) {
+                            return 'N/A';
+                        }
+
+                        $diff = \Carbon\Carbon::parse($record->date_acquired)->diff(now());
+
+                        $years = $diff->y;
+                        $months = $diff->m;
+
+                        $yearLabel = $years === 1 ? 'year' : 'years';
+                        $monthLabel = $months === 1 ? 'month' : 'months';
+                        return "{$years} {$yearLabel}, {$months} {$monthLabel}";
+                    })
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw(
+                            "(TIMESTAMPDIFF(MONTH, date_acquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
+                        );
+                    }),
                 TextColumn::make('description')
                     ->searchable(),
                 TextColumn::make('created_at')

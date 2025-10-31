@@ -21,6 +21,9 @@ class AssignedComputerForm
                 Select::make('department')
                     ->required()
                     ->options([
+                        'TERMINAL' => 'TERMINAL',
+                        'STOCK ROOM' => 'STOCK ROOM',
+                        'AUDIT' => 'AUDIT',
                         'MIS' => 'MIS',
                         'HR' => 'HR',
                         'Operations' => 'Operations',

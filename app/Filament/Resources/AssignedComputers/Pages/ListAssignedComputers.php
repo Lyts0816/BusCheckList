@@ -25,11 +25,18 @@ class ListAssignedComputers extends ListRecords
             Tab::make('All')
                 ->label('All')
                 ->badge(fn () => AssignedComputer::count()),
-
+            'TERMINAL' => Tab::make()
+                ->modifyQueryUsing(function ($query) {$query->where('department', 'TERMINAL');})
+                ->badge(fn () => AssignedComputer::where('department', 'TERMINAL')->count()),
+            'STOCK ROOM' => Tab::make()
+                ->modifyQueryUsing(function ($query) {$query->where('department', 'STOCK ROOM');})
+                ->badge(fn () => AssignedComputer::where('department', 'STOCK ROOM')->count()),
             'MIS' => Tab::make()
                 ->modifyQueryUsing(function ($query) {$query->where('department', 'MIS');})
                 ->badge(fn () => AssignedComputer::where('department', 'MIS')->count()),
-
+            'AUDIT' => Tab::make()
+                ->modifyQueryUsing(function ($query) {$query->where('department', 'AUDIT');})
+                ->badge(fn () => AssignedComputer::where('department', 'AUDIT')->count()),
             'HR' => Tab::make()
                 ->modifyQueryUsing(function ($query) {$query->where('department', 'HR');})
                 ->badge(fn () => AssignedComputer::where('department', 'HR')->count()),

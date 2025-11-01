@@ -58,9 +58,9 @@ class BorrowLogbookResource extends Resource
     {
         return [
             'index' => ListBorrowLogbooks::route('/'),
-            'create' => CreateBorrowLogbook::route('/create'),
-            'view' => ViewBorrowLogbook::route('/{record}'),
-            'edit' => EditBorrowLogbook::route('/{record}/edit'),
+            // 'create' => CreateBorrowLogbook::route('/create'),
+            // 'view' => ViewBorrowLogbook::route('/{record}'),
+            // 'edit' => EditBorrowLogbook::route('/{record}/edit'),
         ];
     }
 }

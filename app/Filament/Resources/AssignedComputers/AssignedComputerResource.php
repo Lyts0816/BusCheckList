@@ -53,9 +53,9 @@ class AssignedComputerResource extends Resource
     {
         return [
             'index' => ListAssignedComputers::route('/'),
-            'create' => CreateAssignedComputer::route('/create'),
-            'view' => ViewAssignedComputer::route('/{record}'),
-            'edit' => EditAssignedComputer::route('/{record}/edit'),
+            // 'create' => CreateAssignedComputer::route('/create'),
+            // 'view' => ViewAssignedComputer::route('/{record}'),
+            // 'edit' => EditAssignedComputer::route('/{record}/edit'),
         ];
     }
 }

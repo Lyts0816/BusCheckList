@@ -60,9 +60,9 @@ class BusDailyChecklistResource extends Resource
     {
         return [
             'index' => ListBusDailyChecklists::route('/'),
-            'create' => CreateBusDailyChecklist::route('/create'),
-            'view' => ViewBusDailyChecklist::route('/{record}'),
-            'edit' => EditBusDailyChecklist::route('/{record}/edit'),
+            // 'create' => CreateBusDailyChecklist::route('/create'),
+            // 'view' => ViewBusDailyChecklist::route('/{record}'),
+            // 'edit' => EditBusDailyChecklist::route('/{record}/edit'),
         ];
     }
 }

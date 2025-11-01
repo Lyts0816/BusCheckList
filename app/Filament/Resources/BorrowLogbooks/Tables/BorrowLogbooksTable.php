@@ -9,6 +9,8 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+use Filament\Tables\Enums\RecordActionsPosition;
+
 class BorrowLogbooksTable
 {
     public static function configure(Table $table): Table
@@ -53,7 +55,7 @@ class BorrowLogbooksTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

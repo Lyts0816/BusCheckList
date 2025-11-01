@@ -11,6 +11,9 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
+
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class AssignedComputersTable
 {
@@ -61,7 +64,7 @@ class AssignedComputersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
             \Filament\Actions\Action::make('export_csv')
                 ->label('Export all record')

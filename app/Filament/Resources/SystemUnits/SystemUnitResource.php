@@ -52,9 +52,9 @@ class SystemUnitResource extends Resource
     {
         return [
             'index' => ListSystemUnits::route('/'),
-            'create' => CreateSystemUnit::route('/create'),
-            'view' => ViewSystemUnit::route('/{record}'),
-            'edit' => EditSystemUnit::route('/{record}/edit'),
+            // 'create' => CreateSystemUnit::route('/create'),
+            // 'view' => ViewSystemUnit::route('/{record}'),
+            // 'edit' => EditSystemUnit::route('/{record}/edit'),
         ];
     }
 }

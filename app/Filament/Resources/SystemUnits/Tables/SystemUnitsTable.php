@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 
+use Filament\Tables\Enums\RecordActionsPosition;
 class SystemUnitsTable
 {
     public static function configure(Table $table): Table
@@ -261,7 +262,7 @@ class SystemUnitsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')

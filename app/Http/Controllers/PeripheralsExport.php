@@ -4,117 +4,116 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Peripherals;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PeripheralsExport extends Controller
 {
     public function exportPeripherals(Request $request)
     {
-        // Start with base query for peripherals
-        $query = Peripherals::query();
+        // Aggregate department per peripheral per role (one row per peripheral_id)
+        $subKeyboard = DB::table('assigned_computers')
+            ->selectRaw('keyboard_id as peripheral_id, MAX(department) as dept')
+            ->whereNotNull('keyboard_id')
+            ->groupBy('keyboard_id');
 
-        // Bulk export: if ids are provided, only export those
+        $subMouse = DB::table('assigned_computers')
+            ->selectRaw('mouse_id as peripheral_id, MAX(department) as dept')
+            ->whereNotNull('mouse_id')
+            ->groupBy('mouse_id');
+
+        $subMonitor = DB::table('assigned_computers')
+            ->selectRaw('monitor_id as peripheral_id, MAX(department) as dept')
+            ->whereNotNull('monitor_id')
+            ->groupBy('monitor_id');
+
+        $subUps = DB::table('assigned_computers')
+            ->selectRaw('ups_id as peripheral_id, MAX(department) as dept')
+            ->whereNotNull('ups_id')
+            ->groupBy('ups_id');
+
+        // Base query
+        $query = Peripherals::query()
+            ->leftJoinSub($subKeyboard, 'ac_k', fn ($j) => $j->on('peripherals.id', '=', 'ac_k.peripheral_id'))
+            ->leftJoinSub($subMouse, 'ac_m', fn ($j) => $j->on('peripherals.id', '=', 'ac_m.peripheral_id'))
+            ->leftJoinSub($subMonitor, 'ac_mon', fn ($j) => $j->on('peripherals.id', '=', 'ac_mon.peripheral_id'))
+            ->leftJoinSub($subUps, 'ac_u', fn ($j) => $j->on('peripherals.id', '=', 'ac_u.peripheral_id'))
+            ->select('peripherals.*')
+            ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept) as department_sort');
+
+        // BULK (selected IDs) vs FULL (all)
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('peripherals.id', $ids);
         } else {
-            // Apply search filters if provided
             if ($request->filled('search')) {
-                $searchTerm = $request->search;
-
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('item_type', 'like', "%{$searchTerm}%")
-                        ->orWhere('asset_code', 'like', "%{$searchTerm}%")
-                        ->orWhere('serial_number', 'like', "%{$searchTerm}%")
-                        ->orWhere('model', 'like', "%{$searchTerm}%")
-                        ->orWhere('date_acquired', 'like', "%{$searchTerm}%")
-                        ->orWhere('description', 'like', "%{$searchTerm}%");
+                $s = $request->string('search');
+                $query->where(function ($q) use ($s) {
+                    $q->where('item_type', 'like', "%{$s}%")
+                      ->orWhere('asset_code', 'like', "%{$s}%")
+                      ->orWhere('serial_number', 'like', "%{$s}%")
+                      ->orWhere('model', 'like', "%{$s}%")
+                      ->orWhere('date_acquired', 'like', "%{$s}%")
+                      ->orWhere('description', 'like', "%{$s}%");
                 });
             }
-
-            // Apply sorting if provided
             if ($request->filled('sort')) {
-                $sortField = $request->sort;
+                $sortField = $request->get('sort');
                 $sortDirection = $request->get('direction', 'asc');
-
-                // Whitelist sortable fields to avoid invalid columns
-                $sortable = [
-                    'id',
-                    'item_type',
-                    'asset_code',
-                    'serial_number',
-                    'model',
-                    'date_acquired',
-                    'description',
-                    'created_at',
-                    'updated_at',
-                ];
-                if (in_array($sortField, $sortable, true)) {
+                $whitelist = ['id','item_type','asset_code','serial_number','model','date_acquired','description','created_at','updated_at'];
+                if (in_array($sortField, $whitelist, true)) {
                     $query->orderBy($sortField, $sortDirection);
                 }
             }
         }
 
-        // Get the filtered results
+        // Order: non-null departments first (A-Z), then nulls, then newest id
+        $query->orderByRaw('department_sort IS NULL ASC')
+              ->orderBy('department_sort', 'asc')
+              ->orderBy('peripherals.id', 'desc');
+
         $peripherals = $query->get();
 
-        // Create CSV content
+        // Optional: touch accessor for assignedComputers if you rely on it below
+        $peripherals->each(fn ($p) => $p->assignedComputers);
+
         $csvContent = $this->generatePeripheralsCSVFormat($peripherals);
 
-        // Generate filename with timestamp and filter info
         $filename = 'peripherals_' . date('Y-m-d_H-i-s');
-        if ($request->has('search')) {
-            $filename .= '_filtered';
-        }
+        if ($request->has('search')) $filename .= '_filtered';
+        if ($request->has('ids')) $filename .= '_selected';
         $filename .= '.csv';
 
-        // Return CSV as download
         return response($csvContent)
             ->header('Content-Type', 'text/csv; charset=UTF-8')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    // FUNCTION FOR CSV
-    private function generatePeripheralsCSVFormat($peripherals)
-    {
-        // Define CSV headers for peripherals export
-        $headers = [
-            'ID',
-            'Item Type',
-            'Asset Code',
-            'Serial Number',
-            'Model',
-            'Date Acquired',
-            'Description',
-            'Created At',
-            'Updated At',
-        ];
-
-        // Start CSV content with headers
-        $csv = '"' . implode('","', $headers) . '"' . "\n";
-
-        // Add data rows
-        foreach ($peripherals as $item) {
-            $row = [
-                $item->id,
-                $item->item_type ?? 'N/A',
-                $item->asset_code ?? 'N/A',
-                $item->serial_number ?? 'N/A',
-                $item->model ?? 'N/A',
-                $item->date_acquired ?? 'N/A',
-                $item->description ?? 'N/A',
-                $item->created_at,
-                $item->updated_at,
-            ];
-
-            // Escape each value for CSV safety (quotes, commas, etc.)
-            $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
-        }
-
-        return $csv;
-    }
-
     private function escapeCsvValue($value)
     {
         return str_replace('"', '""', (string) $value); // Escape double quotes
+    }
+
+    private function generatePeripheralsCSVFormat($peripherals)
+    {
+        $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
+        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Department,Created At,Updated At\n";
+
+        foreach ($peripherals as $peripheral) {
+            $department = $peripheral->department_sort ?? '';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->id) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->item_type) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->asset_code) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->serial_number) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->model) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->date_acquired) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->description) . '",';
+            $csv .= '"' . $this->escapeCsvValue($department) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->created_at) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->updated_at) . '"';
+            $csv .= "\n";
+        }
+
+        return $csv;
     }
 }

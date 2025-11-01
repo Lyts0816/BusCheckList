@@ -55,9 +55,9 @@ class PrintersResource extends Resource
     {
         return [
             'index' => ListPrinters::route('/'),
-            'create' => CreatePrinters::route('/create'),
-            'view' => ViewPrinters::route('/{record}'),
-            'edit' => EditPrinters::route('/{record}/edit'),
+            // 'create' => CreatePrinters::route('/create'),
+            // 'view' => ViewPrinters::route('/{record}'),
+            // 'edit' => EditPrinters::route('/{record}/edit'),
         ];
     }
 }

@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 
+
 class BusDailyChecklistsTable
 {
     public static function configure(Table $table): Table

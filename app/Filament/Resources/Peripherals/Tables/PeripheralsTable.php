@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 use Illuminate\Support\Facades\Log;
 
+use Filament\Tables\Enums\RecordActionsPosition;
+
 
 class PeripheralsTable
 {
@@ -225,7 +227,7 @@ class PeripheralsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')

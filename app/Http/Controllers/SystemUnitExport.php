@@ -4,18 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SystemUnit;
+use Carbon\Carbon;
 
 class SystemUnitExport extends Controller
 {
-    public function exportAssignedSystemUnits(Request $request)
+        public function exportAssignedSystemUnits(Request $request)
     {
         // Start with base query for system units
-        $query = SystemUnit::query();
+        $query = SystemUnit::with('assignedComputer'); // Eager load relationship
 
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            // Add LEFT JOIN first, then filter by system_units.id
+            $query->leftJoin('assigned_computers', 'system_units.id', '=', 'assigned_computers.system_unit_id')
+                  ->select('system_units.*')
+                  ->whereIn('system_units.id', $ids) // Specify table name to avoid ambiguity
+                  ->orderBy('assigned_computers.department', 'asc')
+                  ->orderBy('system_units.id', 'desc');
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -36,6 +42,12 @@ class SystemUnitExport extends Controller
                 $sortDirection = $request->get('direction', 'asc');
                 $query->orderBy($sortField, $sortDirection);
             }
+
+            // Order by department (join with assigned_computers table)
+            $query->leftJoin('assigned_computers', 'system_units.id', '=', 'assigned_computers.system_unit_id')
+                  ->select('system_units.*')
+                  ->orderBy('assigned_computers.department', 'asc')
+                  ->orderBy('system_units.id', 'desc');
         }
 
         // Get the filtered results
@@ -49,11 +61,14 @@ class SystemUnitExport extends Controller
         if ($request->has('search')) {
             $filename .= '_filtered';
         }
+        if ($request->has('ids')) {
+            $filename .= '_selected';
+        }
         $filename .= '.csv';
 
         // Return CSV as download
         return response($csvContent)
-            ->header('Content-Type', 'text/csv')
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
@@ -63,10 +78,13 @@ class SystemUnitExport extends Controller
         // Define CSV headers for system unit export
         $headers = [
             'ID',
+            'Assigned To',
+            'Department',
             'Asset Code',
             'Serial Number',
             'Model',
             'Date Acquired',
+            'Years in Service',
             'Operating System',
             'Windows Serial Number',
             'Microsoft Serial Number',
@@ -84,12 +102,26 @@ class SystemUnitExport extends Controller
 
         // Add data rows
         foreach ($systemUnits as $unit) {
+            // Calculate years in service
+            $yearsInService = 'N/A';
+            if ($unit->date_aquired) {
+                $diff = Carbon::parse($unit->date_aquired)->diff(now());
+                $years = $diff->y;
+                $months = $diff->m;
+                $yearLabel = $years === 1 ? 'year' : 'years';
+                $monthLabel = $months === 1 ? 'month' : 'months';
+                $yearsInService = "{$years} {$yearLabel}, {$months} {$monthLabel}";
+            }
+
             $row = [
                 $unit->id,
+                $unit->assignedComputer?->assigned_to ?? 'Unassigned',
+                $unit->assignedComputer?->department ?? 'N/A',
                 $unit->asset_code ?? 'N/A',
                 $unit->serial_number ?? 'N/A',
                 $unit->model ?? 'N/A',
                 $unit->date_aquired ?? 'N/A',
+                $yearsInService,
                 $unit->OS ?? 'N/A',
                 $unit->windows_serial_number ?? 'N/A',
                 $unit->microsoft_serial_number ?? 'N/A',
@@ -111,6 +143,6 @@ class SystemUnitExport extends Controller
 
     private function escapeCsvValue($value)
     {
-        return str_replace('"', '""', $value); // Escape double quotes
+        return str_replace('"', '""', (string) $value); // Escape double quotes and cast to string
     }
 }

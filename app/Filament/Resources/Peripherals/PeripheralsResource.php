@@ -52,9 +52,9 @@ class PeripheralsResource extends Resource
     {
         return [
             'index' => ListPeripherals::route('/'),
-            'create' => CreatePeripherals::route('/create'),
-            'view' => ViewPeripherals::route('/{record}'),
-            'edit' => EditPeripherals::route('/{record}/edit'),
+            // 'create' => CreatePeripherals::route('/create'),
+            // 'view' => ViewPeripherals::route('/{record}'),
+            // 'edit' => EditPeripherals::route('/{record}/edit'),
         ];
     }
 }

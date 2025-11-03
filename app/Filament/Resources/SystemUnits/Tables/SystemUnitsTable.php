@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Enums\FiltersLayout;
+
 class SystemUnitsTable
 {
     public static function configure(Table $table): Table
@@ -256,8 +258,7 @@ class SystemUnitsTable
                         $year = $data['value'] ?? null;
                         return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
-            ])
-            ->filtersFormMaxHeight('400px')
+            ], layout: FiltersLayout::Modal)
 
             ->recordActions([
                 ViewAction::make(),

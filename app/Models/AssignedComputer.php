@@ -15,6 +15,7 @@ class AssignedComputer extends Model
         'monitor_id',
         'ups_id',
         'assigned_to',
+        'computer_name',
         'department',
     ];
 

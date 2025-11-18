@@ -26,6 +26,9 @@ class AssignedComputersTable
                     ->sortable(),
                 TextColumn::make('assigned_to')
                     ->searchable(),
+                TextColumn::make('computer_name')
+                    ->label('Computer Name')
+                    ->searchable(),
                 TextColumn::make('department')
                     ->sortable(),
                 TextColumn::make('systemUnit.serial_number')

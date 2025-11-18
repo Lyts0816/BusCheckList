@@ -15,6 +15,7 @@ class AssignedComputerInfolist
             ->components([
                 TextEntry::make('assigned_to'),
                 TextEntry::make('department'),
+                TextEntry::make('computer_name')->label('Computer Name'),
 
                 Section::make('System Unit')
                     ->schema([

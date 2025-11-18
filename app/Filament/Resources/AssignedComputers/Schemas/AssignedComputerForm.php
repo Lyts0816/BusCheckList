@@ -17,6 +17,9 @@ class AssignedComputerForm
                 TextInput::make('assigned_to')
                     ->label('Assigned To')
                     ->required(),
+                TextInput::make('computer_name')
+                    ->label('Computer Name')
+                    ->required(),
 
                 Select::make('department')
                     ->required()

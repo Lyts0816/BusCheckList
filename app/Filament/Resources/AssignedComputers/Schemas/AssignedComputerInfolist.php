@@ -5,6 +5,7 @@ namespace App\Filament\Resources\AssignedComputers\Schemas;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class AssignedComputerInfolist
 {
@@ -13,9 +14,12 @@ class AssignedComputerInfolist
         return $schema
             ->inlineLabel()
             ->components([
-                TextEntry::make('assigned_to'),
-                TextEntry::make('department'),
-                TextEntry::make('computer_name')->label('Computer Name'),
+                TextEntry::make('assigned_to')
+                    ->alignStart(),
+                TextEntry::make('department')
+                    ->alignCenter(),
+                TextEntry::make('computer_name')->label('Computer Name')
+                    ->alignEnd(),
 
                 Section::make('System Unit')
                     ->schema([
@@ -32,8 +36,9 @@ class AssignedComputerInfolist
                         TextEntry::make('systemUnit.ip_address')->label('IP Address'),
                         TextEntry::make('systemUnit.description')->label('Description'),
                     ])
+                    
                     ->columns(2)
-                    ->columnSpan(2)
+                    ->columnSpan(4)
                     ->compact(),
 
                 Section::make('Monitor')
@@ -44,6 +49,7 @@ class AssignedComputerInfolist
                         TextEntry::make('monitor.date_acquired')->label('Date Acquired')->date(),
                     ])
                     ->columns(2)
+                    ->columnSpan(4)
                     ->compact(),
 
                 Section::make('Keyboard')
@@ -54,6 +60,7 @@ class AssignedComputerInfolist
                         TextEntry::make('keyboard.date_acquired')->label('Date Acquired')->date(),
                     ])
                     ->columns(2)
+                    ->columnSpan(4)
                     ->compact(),
 
                 Section::make('Mouse')
@@ -64,6 +71,7 @@ class AssignedComputerInfolist
                         TextEntry::make('mouse.date_acquired')->label('Date Acquired')->date(),
                     ])
                     ->columns(2)
+                    ->columnSpan(4)
                     ->compact(),
 
                 Section::make('UPS')
@@ -74,8 +82,9 @@ class AssignedComputerInfolist
                         TextEntry::make('ups.date_acquired')->label('Date Acquired')->date(),
                     ])
                     ->columns(2)
+                    ->columnSpan(4)
                     ->compact(),
-            ]);
+            ])->columns(4);
 
     }
 }

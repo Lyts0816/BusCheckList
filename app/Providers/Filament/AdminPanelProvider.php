@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->globalSearch(false)
             ->passwordReset()
+            // ->topbar(false)
             ->userMenuItems([
 
             ])

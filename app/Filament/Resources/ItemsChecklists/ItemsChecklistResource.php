@@ -22,7 +22,7 @@ class ItemsChecklistResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'ionicon-bus-outline';
 
-    protected static ?string $recordTitleAttribute = 'Items Checklist & Monitoring';
+    protected static ?string $recordTitleAttribute = 'Bus Items Checklist & Monitoring';
 
         protected static UnitEnum|string|null $navigationGroup = 'BUS CHECKLISTS';
 

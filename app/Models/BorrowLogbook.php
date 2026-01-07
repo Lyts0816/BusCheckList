@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BorrowLogbook extends Model
 {
+    //Separate this model to manage borrow logbook entries.
     protected $table = 'borrow_logbook';
     protected $fillable = [
         'borrow_date',
@@ -18,6 +19,7 @@ class BorrowLogbook extends Model
         'handled_by',
         'date_returned',
         'remarks',
+        'status',
     ];
 
 }

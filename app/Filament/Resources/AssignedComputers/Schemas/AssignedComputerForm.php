@@ -34,6 +34,7 @@ class AssignedComputerForm
                         'Accounting' => 'Accounting',
                         'Cash' => 'Cash',
                         'Clinic' => 'Clinic',
+                        'Not Yet Assigned' => 'Not Yet Assigned',
                     ]),
 
                 Select::make('system_unit_id')
@@ -60,6 +61,7 @@ class AssignedComputerForm
                     ->searchable()
                     ->searchPrompt('Search keyboard by serial number...')
                     ->preload()
+                    ->placeholder('No Keyboard')
                     ->nullable(),
 
                 Select::make('mouse_id')

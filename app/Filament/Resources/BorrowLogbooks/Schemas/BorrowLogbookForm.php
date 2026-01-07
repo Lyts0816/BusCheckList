@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\BorrowLogbooks\Schemas;
 
+use Dom\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+
 
 class BorrowLogbookForm
 {
@@ -16,9 +18,11 @@ class BorrowLogbookForm
                 DatePicker::make('borrow_date')
                     ->label('Date Borrowed')
                     ->required(),
+
                 TextInput::make('borrower_name')
                     ->label('Employee Name')
                     ->required(),
+
                 Select::make('department')
                     ->label('Department')
                     ->options([
@@ -29,28 +33,44 @@ class BorrowLogbookForm
                         'Cash' => 'Cash',
                         'Operation' => 'Operation',
                         'Clinic' => 'Clinic',
-                    ])
-                    ->required(),
+                        'Terminal' => 'Terminal',
+                    ]),
+
                 TextInput::make('equipment')
                     ->label('Item/Equipment')
                     ->required(),
+
                 TextInput::make('item_asset_code')
                     ->helperText('Enter serial number if asset code is not available')
                     ->label('Item Asset Code')
                     ->required(),
+
                 TextInput::make('department_head_name')
                     ->label('Department Head Name')
                     ->required(),
+
                 TextInput::make('purpose_borrowing')
                     ->label('Purpose of Borrowing')
                     ->required(),
+
                 TextInput::make('handled_by')
                     ->label('Handled By')
                     ->required(),
-                DatePicker::make('date_returned')
+
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Borrowed' => 'Borrowed',
+                        'Returned' => 'Returned',
+                    ])
+                    ->required(),
+
+                DatePicker::make('date_returned')->afterOrEqual('borrow_date')
                     ->label('Date Returned'),
+
                 TextInput::make('remarks')
-                    ->label('Remarks'),
+                    ->label('Remarks')
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -57,6 +57,7 @@ class BorrowLogbookResource extends Resource
     public static function getPages(): array
     {
         return [
+            
             'index' => ListBorrowLogbooks::route('/'),
             // 'create' => CreateBorrowLogbook::route('/create'),
             // 'view' => ViewBorrowLogbook::route('/{record}'),

@@ -14,11 +14,15 @@ class SystemUnitForm
         return $schema
             ->components([
                 TextInput::make('asset_code'),
+
                 TextInput::make('serial_number')
-                ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true),
+
                 TextInput::make('model'),
+
                 DatePicker::make('date_aquired')
-                ->helperText('Leave blank if date aquired date is not available'),
+                    ->helperText('Leave blank if date aquired date is not available'),
+
                 Select::make('OS')
                     ->label('Operating System')
                     ->options([
@@ -31,33 +35,51 @@ class SystemUnitForm
                         'Other' => 'Other',
                         'Cant find OS' => 'Cant find OS',
                     ]),
+
                 TextInput::make('windows_serial_number'),
+
                 TextInput::make('microsoft_serial_number'),
+
+                // TextInput::make('ram')
+                //     ->label('RAM'),
+
                 TextInput::make('ram')
-                    ->label('RAM'),
+                    ->label('RAM')
+                    ->datalist([
+                        '2GB',
+                        '4GB',
+                        '8GB',
+                        '16GB',
+                        '32GB',
+                        '64GB',
+                        '128GB',
+                        '256GB',
+                    ]),
                 TextInput::make('storage')
                     ->label('Storage'),
+
                 Select::make('processor')
                     ->label('Processor')
                     ->options([
-                    'Intel Core i3' => 'Intel Core i3',
-                    'Intel Core i5' => 'Intel Core i5',
-                    'Intel Core i7' => 'Intel Core i7',
-                    'Intel Core i9' => 'Intel Core i9',
-                    'Intel Pentium' => 'Intel Pentium',
-                    'Intel Celeron' => 'Intel Celeron',
-                    'Intel Atom' => 'Intel Atom',
-                    'AMD Ryzen 3' => 'AMD Ryzen 3',
-                    'AMD Ryzen 5' => 'AMD Ryzen 5',
-                    'AMD Ryzen 7' => 'AMD Ryzen 7',
-                    'AMD Ryzen 9' => 'AMD Ryzen 9',
-                    'AMD Athlon' => 'AMD Athlon',
-                    'AMD A-Series' => 'AMD A-Series',
-                    'Other' => 'Other',
-                    'Cant find Processor' => 'Cant find Processor',
-                ]),
+                        'Intel Core i3' => 'Intel Core i3',
+                        'Intel Core i5' => 'Intel Core i5',
+                        'Intel Core i7' => 'Intel Core i7',
+                        'Intel Core i9' => 'Intel Core i9',
+                        'Intel Pentium' => 'Intel Pentium',
+                        'Intel Celeron' => 'Intel Celeron',
+                        'Intel Atom' => 'Intel Atom',
+                        'AMD Ryzen 3' => 'AMD Ryzen 3',
+                        'AMD Ryzen 5' => 'AMD Ryzen 5',
+                        'AMD Ryzen 7' => 'AMD Ryzen 7',
+                        'AMD Ryzen 9' => 'AMD Ryzen 9',
+                        'AMD Athlon' => 'AMD Athlon',
+                        'AMD A-Series' => 'AMD A-Series',
+                        'Other' => 'Other',
+                        'Cant find Processor' => 'Cant find Processor',
+                    ]),
                 TextInput::make('ip_address')
                     ->label('IP Address'),
+
                 TextInput::make('description'),
             ]);
     }

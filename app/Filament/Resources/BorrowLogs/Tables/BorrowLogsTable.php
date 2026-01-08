@@ -37,7 +37,7 @@ class BorrowLogsTable
                 TextColumn::make('handled_by'),
 
                 TextColumn::make('items_count')
-                    ->label('Items')
+                    ->label('Total Borrowed Itemss')
                     ->badge()
                     ->counts('items') //relationship-aware
                     ->colors(['primary']),

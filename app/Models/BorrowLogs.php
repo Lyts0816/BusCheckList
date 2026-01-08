@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BorrowLogs extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $table = 'borrow_logs';
 

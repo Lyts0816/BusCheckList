@@ -15,6 +15,7 @@ class BorrowItems extends Model
         'item_asset_code',
         'quantity',
         'return_date',
+        'status',
     ];
 
     public function borrowLog(): BelongsTo

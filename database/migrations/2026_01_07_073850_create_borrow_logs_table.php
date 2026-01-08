@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('borrowed_date')->nullable();
             $table->string('purpose_borrowing')->nullable();
             $table->string('department_head_name')->nullable();
+            $table->string('handled_by')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

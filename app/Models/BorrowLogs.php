@@ -18,6 +18,7 @@ class BorrowLogs extends Model
         'borrowed_date',
         'purpose_borrowing',
         'department_head_name',
+        'handled_by',
     ];
 
     public function items(): HasMany

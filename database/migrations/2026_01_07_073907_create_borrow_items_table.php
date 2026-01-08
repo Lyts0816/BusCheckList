@@ -26,6 +26,8 @@ return new class extends Migration
 
             $table->date('return_date')->nullable();
 
+            $table->date('status')->nullable();
+
             $table->softDeletes();
 
             $table->timestamps();

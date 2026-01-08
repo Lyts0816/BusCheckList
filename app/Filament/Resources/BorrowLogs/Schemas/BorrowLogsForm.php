@@ -15,7 +15,7 @@ class BorrowLogsForm
         return $schema
             ->components([
 
-                DatePicker::make('borrow_date')
+                DatePicker::make('borrowed_date')
                     ->label('Date Borrowed')
                     ->required(),
 
@@ -54,7 +54,7 @@ class BorrowLogsForm
                     ->label('Borrowed Items')
                     ->relationship() // uses Borrow::items()
                     ->schema([
-                        TextInput::make('equipment')
+                        TextInput::make('item_name')
                             ->label('Item / Equipment')
                             ->required(),
 
@@ -63,20 +63,22 @@ class BorrowLogsForm
                             ->helperText('Enter serial number if asset code is not available')
                             ->required(),
 
-                        Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'borrowed' => 'Borrowed',
-                                'returned' => 'Returned',
-                            ])
+                        TextInput::make('quantity')
+                            ->label('Quantity')
                             ->required(),
 
-                        DatePicker::make('date_returned')
+                        DatePicker::make('return_date')
                             ->label('Date Returned')
                             ->afterOrEqual('borrow_date'),
 
-                        TextInput::make('remarks')
-                            ->label('Remarks')
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Borrowed' => 'Borrowed',
+                                'Returned' => 'Returned',
+                                // 'Damaged' => 'Damaged',
+                                // 'Lost' => 'Lost',
+                            ])
                             ->columnSpanFull(),
                     ])
                     ->minItems(1)

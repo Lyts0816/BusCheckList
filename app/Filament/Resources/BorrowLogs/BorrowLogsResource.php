@@ -48,6 +48,17 @@ class BorrowLogsResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount([
+                'items',
+                'items as not_returned_count' => function ($query) {
+                    $query->whereNull('status')->orWhere('status', '!=', 'returned');
+                },
+            ]);
+    }
+
     public static function getPages(): array
     {
         return [

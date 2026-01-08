@@ -56,11 +56,6 @@ class BorrowLogsTable
                         'success' => fn($state) => $state === 'All Returned',
                         'danger' => fn($state) => str_contains($state, 'Not Returned'),
                     ]),
-
-
-
-
-
             ])
             ->filters([
                 TrashedFilter::make(),

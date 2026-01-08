@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
-use App\Models\BorrowLogbook;
+use App\Models\BorrowLogs;
 
 class LogbookDepartmentWidget extends ChartWidget
 {
@@ -14,7 +14,10 @@ class LogbookDepartmentWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $departmentData = BorrowLogbook::where('status', 'Borrowed')
+        $departmentData = BorrowLogs::with('items')
+            ->whereHas('items', function ($query) {
+                $query->where('status', 'Borrowed');
+            })
             ->selectRaw('department, count(*) as count')
             ->groupBy('department')
             ->pluck('count', 'department');

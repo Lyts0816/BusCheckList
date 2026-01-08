@@ -18,13 +18,19 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use UnitEnum;
+
 class BorrowLogsResource extends Resource
 {
     protected static ?string $model = BorrowLogs::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Borrow Logs';
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+
+
+    protected static UnitEnum|string|null $navigationGroup = 'LOGBOOKS';
 
     public static function form(Schema $schema): Schema
     {

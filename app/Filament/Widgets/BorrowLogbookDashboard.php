@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
-use App\Models\BorrowLogbook;
+use App\Models\BorrowItems;
 
 class BorrowLogbookDashboard extends ChartWidget
 {
@@ -14,8 +14,8 @@ class BorrowLogbookDashboard extends ChartWidget
 
     protected function getData(): array
     {
-        $borrowedCount = BorrowLogbook::whereNull('date_returned')->count();
-        $returnedCount = BorrowLogbook::whereNotNull('date_returned')->count();
+        $borrowedCount = BorrowItems::whereNull('return_date')->count();
+        $returnedCount = BorrowItems::whereNotNull('return_date')->count();
 
         return [
             'labels' => [

@@ -52,9 +52,9 @@ class ItemsChecklistResource extends Resource
     {
         return [
             'index' => ListItemsChecklists::route('/'),
-            'create' => CreateItemsChecklist::route('/create'),
-            'view' => ViewItemsChecklist::route('/{record}'),
-            'edit' => EditItemsChecklist::route('/{record}/edit'),
+            // 'create' => CreateItemsChecklist::route('/create'),
+            // 'view' => ViewItemsChecklist::route('/{record}'),
+            // 'edit' => EditItemsChecklist::route('/{record}/edit'),
         ];
     }
 }

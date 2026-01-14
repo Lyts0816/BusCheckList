@@ -21,7 +21,7 @@ class AssignedComputerInfolist
                         TextEntry::make('assigned_to'),
                         TextEntry::make('department'),
                         TextEntry::make('computer_name')
-                        
+
                     ])
                     ->columns(2)
                     ->columnSpan(4)
@@ -67,7 +67,6 @@ class AssignedComputerInfolist
                         TextEntry::make('systemUnit.description')
                             ->label('Description'),
                     ])
-
                     ->columns(2)
                     ->columnSpan(4)
                     ->compact(),

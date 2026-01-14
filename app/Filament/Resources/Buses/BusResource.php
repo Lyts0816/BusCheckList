@@ -52,9 +52,9 @@ class BusResource extends Resource
     {
         return [
             'index' => ListBuses::route('/'),
-            'create' => CreateBus::route('/create'),
-            'view' => ViewBus::route('/{record}'),
-            'edit' => EditBus::route('/{record}/edit'),
+            // 'create' => CreateBus::route('/create'),
+            // 'view' => ViewBus::route('/{record}'),
+            // 'edit' => EditBus::route('/{record}/edit'),
         ];
     }
 }

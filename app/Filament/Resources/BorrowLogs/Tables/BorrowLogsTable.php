@@ -58,7 +58,7 @@ class BorrowLogsTable
                     ]),
             ])
             ->filters([
-                TrashedFilter::make(),
+             
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -66,9 +66,8 @@ class BorrowLogsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    // DeleteBulkAction::make(),
+
                 ]),
             ]);
     }

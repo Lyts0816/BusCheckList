@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('borrow_id')
+
                 ->constrained('borrow_logs')
+
                 ->cascadeOnDelete();
 
             $table->string('item_name')->nullable();
@@ -26,7 +28,7 @@ return new class extends Migration
 
             $table->date('return_date')->nullable();
 
-            $table->date('status')->nullable();
+            $table->string('status')->nullable();
 
             $table->softDeletes();
 

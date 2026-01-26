@@ -11,29 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dispatch_trips_foreign', function (Blueprint $table) {
+        Schema::create('dispatched_trips', function (Blueprint $table) {
             $table->id();
 
             $table->string('trip_number', 100);
 
-            $table->foreignId('routes_id')
+            $table->foreignId('route_id')
                 ->constrained('routes')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
             $table->foreignId('bus_number_id')
-                ->constrained('bus_number')
+                ->constrained('bus_numbers')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
             $table->foreignId('bus_class_id')
-                ->constrained('bus_class')
+                ->constrained('bus_classes')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
 
             $table->foreignId('nature_of_trip_id')
-                ->constrained('nature_of_trip')
+                ->constrained('nature_of_trips')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
@@ -62,7 +62,7 @@ return new class extends Migration
             $table->integer('ticket_number')->default(0);
             $table->integer('passengers_on_board')->default(0);
             $table->integer('baggage_amount')->default(0);
-            $table->integer('baggage_ticket_no')->default(0);
+            $table->integer('baggage_ticket_no')->default(0); 
 
             $table->string('remarks')->nullable();
             $table->timestamps();
@@ -74,6 +74,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dispatch_trips_foreign');
+        Schema::dropIfExists('dispatched_trips');
     }
 };

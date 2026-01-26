@@ -20,6 +20,7 @@ class UserForm
                     ->options([
                         'admin' => 'Admin',
                         'user' => 'User',
+                        'operations' => 'Operations',
                     ])
                     ->required(),
                 TextInput::make('email')

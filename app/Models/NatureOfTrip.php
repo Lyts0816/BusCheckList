@@ -16,4 +16,10 @@ class NatureOfTrip extends Model
         'description',
         'remarks',
     ];
+
+    // Relationships
+    public function dispatchedTrips()
+    {
+        return $this->hasMany(DispatchedTrip::class, 'nature_of_trip_id');
+    }
 }

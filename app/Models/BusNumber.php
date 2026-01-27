@@ -18,4 +18,10 @@ class BusNumber extends Model
         'bus_type',
         'seat_capacity',
     ];
+
+    // Relationships
+    public function dispatchedTrips()
+    {
+        return $this->hasMany(DispatchedTrip::class, 'bus_number_id');
+    }
 }

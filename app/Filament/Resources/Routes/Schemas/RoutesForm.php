@@ -58,7 +58,6 @@ class RoutesForm
                     ->label('Distance (in km)')
                     ->required()
                     ->maxValue(300)
-                    ->numeric()
                     ->inputMode('decimal')
                     ->validationMessages([
                         'required' => 'Distance is required',

@@ -16,4 +16,10 @@ class Drivers extends Model
         'status',
         'remarks',
     ];
+
+    // Relationships
+    public function dispatchedTrips()
+    {
+        return $this->hasMany(DispatchedTrip::class, 'driver_id');
+    }
 }

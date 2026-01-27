@@ -16,5 +16,10 @@ class Routes extends Model
         'distance',
         'remarks',
     ];
-    
+
+    // Relationships
+    public function dispatchedTrips()
+    {
+        return $this->hasMany(DispatchedTrip::class, 'route_id');
+    }
 }

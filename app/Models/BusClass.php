@@ -17,4 +17,10 @@ class BusClass extends Model
         'description',
         'remarks',
     ];
+
+    // Relationships
+    public function dispatchedTrips()
+    {
+        return $this->hasMany(DispatchedTrip::class, 'bus_class_id');
+    }
 }

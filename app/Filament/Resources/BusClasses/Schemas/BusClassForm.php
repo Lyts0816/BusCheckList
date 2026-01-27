@@ -13,10 +13,25 @@ class BusClassForm
         return $schema
             ->components([
                 TextInput::make('class_name')
-                    ->required(),
-                Textarea::make('description')
-                    ->columnSpanFull(),
-                TextInput::make('remarks'),
+                    ->required()
+                    ->maxValue(50)
+                    ->validationMessages([
+                        'maxValue' => 'Bus Model cannot be greater than 50 characters.',
+                    ]),
+
+                TextInput::make('description')
+                    ->columnSpanFull()
+                    ->maxValue(100)
+                    ->validationMessages([
+                        'maxValue' => 'Bus Model cannot be greater than 100 characters.',
+                    ]),
+
+                TextInput::make('remarks')
+                    ->maxValue(100)
+                    ->columnSpanFull()
+                    ->validationMessages([
+                        'maxValue' => 'Remarks cannot be greater than 100 characters.',
+                    ]),
             ]);
     }
 }

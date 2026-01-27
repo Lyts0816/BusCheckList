@@ -11,10 +11,39 @@ class BusNumberForm
     {
         return $schema
             ->components([
-                TextInput::make('bus_number')->label('Bus Number')->required(),
-                TextInput::make('bus_model')->label('Bus Model'),
-                TextInput::make('bus_type')->label('Bus Type'),
-                TextInput::make('seat_capacity')->label('Seat Capacity'),
+                TextInput::make('bus_number')
+                    ->maxValue(10)
+                    ->label('Bus Number')
+                    ->required()
+                    ->validationMessages([
+                        'maxValue' => 'Bus Number cannot be greater than 10 characters.',
+                    ]),
+
+                TextInput::make('bus_model')
+                    ->label('Bus Model')
+                    ->datalist([
+                        'YUTONG',
+                        'HIGER',
+                        'ZHONGTONG',
+                    ])
+                    ->maxValue(15)
+                    ->validationMessages([
+                        'maxValue' => 'Bus Model cannot be greater than 15 characters.',
+                    ]),
+
+                TextInput::make('bus_type')
+                    ->label('Bus Type')
+                    ->maxValue(25)
+                    ->validationMessages([
+                        'maxValue' => 'Bus Type cannot be greater than 25 characters.',
+                    ]),
+
+                TextInput::make('seat_capacity')
+                    ->label('Seat Capacity')
+                    ->maxValue(2)
+                    ->validationMessages([
+                        'maxValue' => 'Seat Capacity cannot be greater than 2 characters.',
+                    ])
             ]);
     }
 }

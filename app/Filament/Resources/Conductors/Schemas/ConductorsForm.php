@@ -12,9 +12,25 @@ class ConductorsForm
         return $schema
             ->components([
                 TextInput::make('conductor_name')
-                    ->required(),
-                TextInput::make('status'),
-                TextInput::make('remarks'),
+                    ->required()
+                    ->placeholder('LAST NAME, FIRST NAME M.I.')
+                    ->maxValue(50)
+                    ->validationMessages([
+                        'required' => 'Conductor name is required',
+                        'maxValue' => 'Conductors name cannot be greater than 50 characters.',
+                    ]),
+
+                TextInput::make('status')
+                    ->maxValue(20)
+                    ->validationMessages([
+                        'maxValue' => 'Status cannot be greater than 20 characters.',
+                    ]),
+
+                TextInput::make('remarks')
+                    ->maxValue(100)
+                    ->validationMessages([
+                        'maxValue' => 'Remarks cannot be greater than 100 characters.',
+                    ]),
             ]);
     }
 }

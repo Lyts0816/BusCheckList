@@ -53,9 +53,9 @@ class BusClassResource extends Resource
     {
         return [
             'index' => ListBusClasses::route('/'),
-            'create' => CreateBusClass::route('/create'),
-            'view' => ViewBusClass::route('/{record}'),
-            'edit' => EditBusClass::route('/{record}/edit'),
+            // 'create' => CreateBusClass::route('/create'),
+            // 'view' => ViewBusClass::route('/{record}'),
+            // 'edit' => EditBusClass::route('/{record}/edit'),
         ];
     }
 }

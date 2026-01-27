@@ -17,24 +17,31 @@ class RoutesTable
             ->columns([
                 TextColumn::make('from')
                     ->searchable(),
+
                 TextColumn::make('to')
                     ->searchable(),
+
                 TextColumn::make('distance')
+                    ->label('Distance (in km)')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('remarks')
                     ->searchable(),
+
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Updated At')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                
             ])
             ->recordActions([
                 ViewAction::make(),

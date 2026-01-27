@@ -11,14 +11,24 @@ class RoutesInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('from'),
-                TextEntry::make('to'),
+                TextEntry::make('from')
+                    ->label('From'),
+
+                TextEntry::make('to')
+                    ->label('To'),
+
                 TextEntry::make('distance')
+                    ->label('Distance (in km)')
                     ->numeric(),
+
                 TextEntry::make('remarks'),
+
                 TextEntry::make('created_at')
+                    ->label('Created At')
                     ->dateTime(),
+                    
                 TextEntry::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime(),
             ]);
     }

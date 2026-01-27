@@ -16,17 +16,25 @@ class BusClassesTable
         return $table
             ->columns([
                 TextColumn::make('class_name')
+                    ->label('Bus Class Name')
                     ->searchable(),
+
                 TextColumn::make('description')
-                    ->limit(50)
+                    ->label('Description')
                     ->wrap(),
+
                 TextColumn::make('remarks')
+                    ->label('Remarks')
                     ->searchable(),
+
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

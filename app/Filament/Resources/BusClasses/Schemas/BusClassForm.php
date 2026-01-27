@@ -13,7 +13,9 @@ class BusClassForm
         return $schema
             ->components([
                 TextInput::make('class_name')
+                    ->label('Bus Class Name')
                     ->required()
+                    ->helperText('Bus Class Name should be on Capital letters.')
                     ->maxValue(50)
                     ->validationMessages([
                         'maxValue' => 'Bus Model cannot be greater than 50 characters.',

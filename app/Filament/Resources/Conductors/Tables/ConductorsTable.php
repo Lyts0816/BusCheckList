@@ -16,19 +16,28 @@ class ConductorsTable
         return $table
             ->columns([
                 TextColumn::make('conductor_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Conductor Name'),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Status'),
+
                 TextColumn::make('remarks')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Remarks'),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Created At'),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Updated At'),
             ])
             ->filters([
                 //

@@ -16,10 +16,17 @@ class BusNumbersTable
         return $table
             ->columns([
                 TextColumn::make('bus_number')
+                    ->label('Bus Number')
                     ->searchable(),
-                TextColumn::make('bus_model'),
-                TextColumn::make('bus_type'),
-                TextColumn::make('seat_capacity'),
+
+                TextColumn::make('bus_model')
+                    ->label('Bus Model'),
+
+                TextColumn::make('bus_type')
+                    ->label('Bus Type'),
+
+                TextColumn::make('seat_capacity')
+                    ->label('Seat Capacity'),
             ])
             ->filters([
                 //

@@ -20,7 +20,7 @@ class NatureOfTripForm
                         'maxValue' => 'Nature of Trip Name must not exceed 30 characters',
                     ]),
 
-                Textarea::make('description')
+                TextInput::make('description')
                     ->columnSpanFull()
                     ->maxValue(500),
                     

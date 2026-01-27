@@ -13,7 +13,7 @@ class ConductorsForm
             ->components([
                 TextInput::make('conductor_name')
                     ->required()
-                    ->placeholder('LAST NAME, FIRST NAME M.I.')
+                    ->helperText('LAST NAME, FIRST NAME M.I.')
                     ->maxValue(50)
                     ->validationMessages([
                         'required' => 'Conductor name is required',

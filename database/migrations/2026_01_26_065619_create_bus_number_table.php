@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->string('bus_number',20);
-            $table->string('bus_model',50);
-            $table->string('bus_type',30);
+            $table->string('bus_model',50)->nullable();
+            $table->string('bus_type',30)->nullable();
             $table->integer('seat_capacity')->nullable();
             $table->timestamps();
         });

@@ -13,6 +13,7 @@ class DriversForm
             ->components([
                 TextInput::make('driver_name')
                     ->required()
+                    ->helperText('LAST NAME, FIRST NAME M.I.')
                     ->maxValue(50)
                     ->validationMessages([
                         'required' => 'Driver name is required',

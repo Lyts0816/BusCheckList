@@ -7,5 +7,6 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateBusClass extends CreateRecord
 {
+
     protected static string $resource = BusClassResource::class;
 }

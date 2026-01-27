@@ -8,4 +8,6 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateConductors extends CreateRecord
 {
     protected static string $resource = ConductorsResource::class;
+
+    protected static ?string $title = 'Create New Conductor';
 }

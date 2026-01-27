@@ -28,6 +28,7 @@ class RoutesForm
             'Tantangan, South Cotabato' => 'Tantangan, South Cotabato',
             'Sto. Niño, South Cotabato' => 'Sto. Niño, South Cotabato',
             'T’boli, South Cotabato' => 'T’boli, South Cotabato',
+            'Isulan, Sultan Kudarat' => 'Isulan, Sultan Kudarat',
 
             // Sarangani
             'Alabel, Sarangani' => 'Alabel, Sarangani',

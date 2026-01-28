@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\DateTimeColumn;
 use Filament\Actions\ActionGroup;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class DispatchedTripsTable
 {
@@ -21,6 +22,12 @@ class DispatchedTripsTable
                     ->label('Trip Number')
                     ->sortable()
                     ->searchable(),
+
+                TextColumn::make('date_time_of_arrival')
+                    ->dateTime('M d, Y h:i A')
+                    ->label('Arrival')
+                    ->sortable(),
+
 
                 TextColumn::make('route.from')
                     ->label('Route')
@@ -50,14 +57,9 @@ class DispatchedTripsTable
                     ->label('Departure')
                     ->sortable(),
 
-                TextColumn::make('date_time_of_arrival')
-                    ->dateTime('M d, Y h:i A')
-                    ->label('Arrival')
-                    ->sortable(),
-
-                TextColumn::make('passengers_on_board')
-                    ->label('Passengers')
-                    ->sortable(),
+                // TextColumn::make('passengers_on_board')
+                //     ->label('Passengers')
+                //     ->sortable(),
 
                 TextColumn::make('km_run')
                     ->label('KM Run')
@@ -67,11 +69,8 @@ class DispatchedTripsTable
                 //
             ])
             ->recordActions([
-                ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                ]), 
-
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

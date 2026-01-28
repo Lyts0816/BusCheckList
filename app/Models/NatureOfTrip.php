@@ -20,6 +20,6 @@ class NatureOfTrip extends Model
     // Relationships
     public function dispatchedTrips()
     {
-        return $this->hasMany(DispatchedTrip::class, 'nature_of_trip_id');
+        return $this->hasMany(DispatchedTrips::class, 'nature_of_trip_id');
     }
 }

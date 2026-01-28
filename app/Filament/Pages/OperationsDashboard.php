@@ -30,6 +30,8 @@ class OperationsDashboard extends BaseDashboard
             \App\Filament\Widgets\OperationsChecklistStats::class,
             \App\Filament\Widgets\OperationsTripsStats::class,
             \App\Filament\Widgets\BusStatusWidget::class,
+            \App\Filament\Widgets\RoutePopularityWidget::class,
+            \App\Filament\Widgets\TripTypeWidget::class,
         ];
     }
 }

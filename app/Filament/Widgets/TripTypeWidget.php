@@ -3,29 +3,29 @@
 namespace App\Filament\Widgets;
 
 use App\Models\DispatchedTrips;
-use App\Models\BusClass;
+use App\Models\NatureOfTrip;
 use Filament\Widgets\ChartWidget;
 
-class BusStatusWidget extends ChartWidget
+class TripTypeWidget extends ChartWidget
 {
     protected bool $isCollapsible = true;
     protected static bool $isLazy = false;
 
-    protected ?string $heading = 'Trips by Bus Class';
+    protected ?string $heading = 'Trips by Type';
 
     protected function getData(): array
     {
-        $busClassData = DispatchedTrips::with('busClass')
-            ->selectRaw('bus_class_id, count(*) as count')
-            ->groupBy('bus_class_id')
+        $tripTypeData = DispatchedTrips::with('natureOfTrip')
+            ->selectRaw('nature_of_trip_id, count(*) as count')
+            ->groupBy('nature_of_trip_id')
             ->get()
             ->mapWithKeys(function ($item) {
-                $className = $item->busClass ? $item->busClass->class_name : 'Unknown';
-                return [$className => $item->count];
+                $typeName = $item->natureOfTrip ? $item->natureOfTrip->nature_of_trip_name : 'Unknown';
+                return [$typeName => $item->count];
             })
             ->sortDesc();
 
-        if ($busClassData->isEmpty()) {
+        if ($tripTypeData->isEmpty()) {
             return [
                 'labels' => ['No Data'],
                 'datasets' => [
@@ -38,12 +38,12 @@ class BusStatusWidget extends ChartWidget
         }
 
         $colors = [
-            '#22c55e', '#f59e0b', '#ef4444', '#0ea5e9', '#a855f7',
-            '#14b8a6', '#6366f1', '#f97316', '#84cc16', '#64748b',
+            '#06b6d4', '#f59e0b', '#22c55e', '#ef4444', '#0ea5e9',
+            '#a855f7', '#14b8a6', '#6366f1', '#ec4899', '#84cc16',
         ];
 
-        $labels = $busClassData->keys()->toArray();
-        $data = $busClassData->values()->toArray();
+        $labels = $tripTypeData->keys()->toArray();
+        $data = $tripTypeData->values()->toArray();
         $backgroundColor = array_slice($colors, 0, count($data));
 
         return [
@@ -62,4 +62,3 @@ class BusStatusWidget extends ChartWidget
         return 'pie';
     }
 }
-

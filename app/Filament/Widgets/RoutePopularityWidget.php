@@ -3,29 +3,30 @@
 namespace App\Filament\Widgets;
 
 use App\Models\DispatchedTrips;
-use App\Models\BusClass;
+use App\Models\Routes;
 use Filament\Widgets\ChartWidget;
 
-class BusStatusWidget extends ChartWidget
+class RoutePopularityWidget extends ChartWidget
 {
     protected bool $isCollapsible = true;
     protected static bool $isLazy = false;
 
-    protected ?string $heading = 'Trips by Bus Class';
+    protected ?string $heading = 'Top Routes by Trips';
 
     protected function getData(): array
     {
-        $busClassData = DispatchedTrips::with('busClass')
-            ->selectRaw('bus_class_id, count(*) as count')
-            ->groupBy('bus_class_id')
+        $routeData = DispatchedTrips::with('route')
+            ->selectRaw('route_id, count(*) as count')
+            ->groupBy('route_id')
+            ->orderByDesc('count')
+            ->limit(10)
             ->get()
             ->mapWithKeys(function ($item) {
-                $className = $item->busClass ? $item->busClass->class_name : 'Unknown';
-                return [$className => $item->count];
-            })
-            ->sortDesc();
+                $routeName = $item->route ? $item->route->from . ' → ' . $item->route->to : 'Unknown';
+                return [$routeName => $item->count];
+            });
 
-        if ($busClassData->isEmpty()) {
+        if ($routeData->isEmpty()) {
             return [
                 'labels' => ['No Data'],
                 'datasets' => [
@@ -38,12 +39,12 @@ class BusStatusWidget extends ChartWidget
         }
 
         $colors = [
-            '#22c55e', '#f59e0b', '#ef4444', '#0ea5e9', '#a855f7',
-            '#14b8a6', '#6366f1', '#f97316', '#84cc16', '#64748b',
+            '#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#a855f7',
+            '#14b8a6', '#6366f1', '#f97316', '#84cc16', '#ec4899',
         ];
 
-        $labels = $busClassData->keys()->toArray();
-        $data = $busClassData->values()->toArray();
+        $labels = $routeData->keys()->toArray();
+        $data = $routeData->values()->toArray();
         $backgroundColor = array_slice($colors, 0, count($data));
 
         return [
@@ -59,7 +60,6 @@ class BusStatusWidget extends ChartWidget
 
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
     }
 }
-

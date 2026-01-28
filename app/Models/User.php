@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    const ROLE_ADMIN = 'admin';
+    const ROLE_USER = 'user';
+    const ROLE_OPERATIONS = 'operations';
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -33,6 +36,31 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function isAdmin()
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isOperations()
+    {
+        return $this->role === self::ROLE_OPERATIONS;
+    }
+
+    public function canViewOperationsDashboard(): bool
+    {
+        return $this->isAdmin() || $this->isOperations();
+    }
+
+    public function canViewLogbookDashboard(): bool
+    {
+        return $this->isAdmin() || $this->isOperations();
+    }
+
+    public function canViewComputersDashboard(): bool
+    {
+        return $this->isAdmin();
+    }
 
     /**
      * Get the attributes that should be cast.

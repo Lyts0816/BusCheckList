@@ -5,6 +5,8 @@ namespace App\Filament\Pages;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 use BackedEnum;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ComputersDashboard extends BaseDashboard
 {
@@ -14,6 +16,11 @@ class ComputersDashboard extends BaseDashboard
     protected static ?string $title = 'Computer Dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
+
+    public static function canAccess(): bool
+    {
+        return  Auth::user()->role === User::ROLE_ADMIN;
+    }
 
     public function getWidgets(): array
     {

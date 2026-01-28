@@ -20,6 +20,6 @@ class Routes extends Model
     // Relationships
     public function dispatchedTrips()
     {
-        return $this->hasMany(DispatchedTrip::class, 'route_id');
+        return $this->hasMany(DispatchedTrips::class, 'route_id');
     }
 }

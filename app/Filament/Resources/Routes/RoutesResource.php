@@ -21,7 +21,7 @@ class RoutesResource extends Resource
 {
     protected static ?string $model = Routes::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-right';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?string $recordTitleAttribute = 'Bus Numbers';
 

@@ -21,11 +21,11 @@ class DriversResource extends Resource
 {
     protected static ?string $model = Drivers::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-right';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $recordTitleAttribute = 'Bus Daily Checklist';
 
-        protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
+        protected static UnitEnum|string|null $navigationGroup = 'DRIVERS & CONDUCTORS';
 
     public static function form(Schema $schema): Schema
     {

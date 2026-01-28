@@ -21,11 +21,13 @@ class DispatchedTripsResource extends Resource
 {
     protected static ?string $model = DispatchedTrips::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-right';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $recordTitleAttribute = 'Trips';
 
-    protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
+    // protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

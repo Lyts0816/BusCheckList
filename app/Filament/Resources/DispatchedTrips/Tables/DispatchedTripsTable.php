@@ -9,6 +9,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\DateTimeColumn;
+use Filament\Actions\ActionGroup;
 
 class DispatchedTripsTable
 {
@@ -66,8 +67,11 @@ class DispatchedTripsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                ]), 
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

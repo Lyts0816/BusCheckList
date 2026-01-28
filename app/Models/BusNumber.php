@@ -22,6 +22,6 @@ class BusNumber extends Model
     // Relationships
     public function dispatchedTrips()
     {
-        return $this->hasMany(DispatchedTrip::class, 'bus_number_id');
+        return $this->hasMany(DispatchedTrips::class, 'bus_number_id');
     }
 }

@@ -20,6 +20,6 @@ class Conductors extends Model
     // Relationships
     public function dispatchedTrips()
     {
-        return $this->hasMany(DispatchedTrip::class, 'conductor_id');
+        return $this->hasMany(DispatchedTrips::class, 'conductor_id');
     }
 }

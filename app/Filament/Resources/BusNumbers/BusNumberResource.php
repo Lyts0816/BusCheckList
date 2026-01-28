@@ -21,11 +21,11 @@ class BusNumberResource extends Resource
 {
     protected static ?string $model = BusNumber::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-right';
+    protected static string|BackedEnum|null $navigationIcon = 'ionicon-bus-outline';
 
     protected static ?string $recordTitleAttribute = 'Bus Numbers';
 
-    protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
+    protected static UnitEnum|string|null $navigationGroup = 'BUS MANAGEMENT';
 
     public static function form(Schema $schema): Schema
     {

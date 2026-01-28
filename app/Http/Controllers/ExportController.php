@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssignedComputer;
+use App\Models\DispatchedTrips;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -300,5 +301,130 @@ class ExportController extends Controller
         // Convert to string and escape quotes
         $value = (string) $value;
         return str_replace('"', '""', $value);
+    }
+
+    public function exportDispatchedTrips(Request $request)
+    {
+        // Start with base query
+        $query = DispatchedTrips::with([
+            'route',
+            'busNumber',
+            'busClass',
+            'natureOfTrip',
+            'driver',
+            'conductor'
+        ]);
+
+        // Bulk export: if ids are provided, only export those
+        if ($request->has('ids') && !empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        } else {
+            // Apply search filters if provided
+            if ($request->has('search') && !empty($request->search)) {
+                $searchTerm = $request->search;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('trip_number', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_number', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('busClass', function ($bcq) use ($searchTerm) {
+                            $bcq->where('class_name', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('driver', function ($dq) use ($searchTerm) {
+                            $dq->where('driver_name', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('conductor', function ($cq) use ($searchTerm) {
+                            $cq->where('conductor_name', 'like', "%{$searchTerm}%");
+                        });
+                });
+            }
+
+            // Apply sorting if provided
+            if ($request->has('sort') && !empty($request->sort)) {
+                $sortField = $request->sort;
+                $sortDirection = $request->get('direction', 'desc');
+                $query->orderBy($sortField, $sortDirection);
+            } else {
+                $query->orderBy('id', 'desc');
+            }
+        }
+
+        // Get the filtered results
+        $dispatchedTrips = $query->get();
+
+        // Create CSV content 
+        $csvContent = $this->generateDispatchedTripsCSV($dispatchedTrips);
+
+        // Generate filename with timestamp and filter info
+        $filename = 'dispatched_trips_' . date('Y-m-d_H-i-s');
+        if ($request->has('search') || $request->has('ids')) {
+            $filename .= '_filtered';
+        }
+        $filename .= '.csv';
+
+        // Return CSV as download
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    private function generateDispatchedTripsCSV($dispatchedTrips)
+    {
+        $title = 'DISPATCHED TRIPS REPORT - ' . now()->format('F d, Y');
+        
+        // CSV Headers based on DispatchedTripsForm fields
+        $headers = [
+            'Trip Number',
+            'Route (From)',
+            'Route (To)',
+            'KM Run',
+            'Bus Number',
+            'Bus Class',
+            'Nature of Trip',
+            'Driver',
+            'Conductor',
+            'Date/Time in Terminal',
+            'Date/Time of Parking',
+            'Date/Time of Arrival',
+            'Date/Time of Departure',
+            'Idle Time Start',
+            'Idle Time End',
+            'Total Travel Time (Minutes)',
+            'Total Add Time (Minutes)',
+            'Remarks'
+        ];
+
+        // Start CSV content with title and headers
+        $csv  = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
+
+        // Add data rows
+        foreach ($dispatchedTrips as $trip) {
+            $row = [
+                $trip->trip_number ?? 'N/A',
+                $trip->route?->from ?? 'N/A',
+                $trip->route?->to ?? 'N/A',
+                $trip->km_run ?? 'N/A',
+                $trip->busNumber?->bus_number ?? 'N/A',
+                $trip->busClass?->class_name ?? 'N/A',
+                $trip->natureOfTrip?->nature_of_trip_name ?? 'N/A',
+                $trip->driver?->driver_name ?? 'N/A',
+                $trip->conductor?->conductor_name ?? 'N/A',
+                $trip->date_time_in_terminal ? $trip->date_time_in_terminal->format('Y-m-d H:i:s') : 'N/A',
+                $trip->date_time_of_parking ? $trip->date_time_of_parking->format('Y-m-d H:i:s') : 'N/A',
+                $trip->date_time_of_arrival ? $trip->date_time_of_arrival->format('Y-m-d H:i:s') : 'N/A',
+                $trip->date_time_of_departure ? $trip->date_time_of_departure->format('Y-m-d H:i:s') : 'N/A',
+                $trip->idle_time_start ?? 'N/A',
+                $trip->idle_time_end ?? 'N/A',
+                $trip->total_travel_time_minutes ?? 'N/A',
+                $trip->total_add_time_minutes ?? 'N/A',
+                $trip->remarks ?? 'N/A',
+            ];
+
+            $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
+        }
+
+        return $csv;
     }
 }

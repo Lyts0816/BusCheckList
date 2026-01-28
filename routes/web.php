@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
         ->name('export.assigned-computers');
     Route::get('/export/bus-daily-checklist', [ExportController::class, 'exportBusDailyChecklist'])
         ->name('export.bus-daily-checklist');
+    Route::get('/export/dispatched-trips', [ExportController::class, 'exportDispatchedTrips'])
+        ->name('export.dispatched-trips');
     Route::get('/export/printers', [PrinterExport::class, 'exportAssignedPrinters'])
         ->name('export.printers');
     Route::get('/export/system-units', [SystemUnitExport::class, 'exportAssignedSystemUnits'])

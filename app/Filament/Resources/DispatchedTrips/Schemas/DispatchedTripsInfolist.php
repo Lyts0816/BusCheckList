@@ -92,7 +92,7 @@ class DispatchedTripsInfolist
                 Section::make('Trip Statistics')
                     ->schema([
                         TextEntry::make('total_travel_time_minutes')
-                            ->label('Total Travel Time (Minutes)'),
+                            ->label('Total Travel Time (Hours)'),
 
                         TextEntry::make('total_add_time_minutes')
                             ->label('Total Add Time (Minutes)'),

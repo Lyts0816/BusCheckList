@@ -18,7 +18,8 @@ use App\Models\Conductors;
 use App\Models\DispatchedTrips;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TimePicker;
-use Filament\Forms\Components\DateTimePicker;   
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Get;
 use Closure;
 
 class DispatchedTripsForm
@@ -59,8 +60,12 @@ class DispatchedTripsForm
 
                         TextInput::make('km_run')
                             ->label('KM Run')
-                            ->inputMode('decimal')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(9999)
                             ->default(0)
+                            ->suffix('km')
                             ->columnSpan(1),
 
                         Select::make('bus_number_id')
@@ -104,44 +109,80 @@ class DispatchedTripsForm
                         DateTimePicker::make('date_time_in_terminal')
                             ->label('Date/Time in Terminal')
                             ->required()
+                            ->native(false)
+                            ->seconds(false)
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_parking')
                             ->label('Date/Time of Parking')
                             ->required()
+                            ->native(false)
+                            ->seconds(false)
+                            ->afterOrEqual('date_time_in_terminal')
+                            ->validationMessages([
+                                'after_or_equal' => 'Parking time must be after or equal to terminal time.',
+                            ])
+                            ->columnSpan(1),
+
+                        DateTimePicker::make('date_time_of_departure')
+                            ->label('Date/Time of Departure')
+                            ->required()
+                            ->native(false)
+                            ->seconds(false)
+                            ->afterOrEqual('date_time_of_parking')
+                            ->validationMessages([
+                                'after_or_equal' => 'Departure time must be after or equal to parking time.',
+                            ])
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_arrival')
                             ->label('Date/Time of Arrival')
                             ->required()
-                            ->columnSpan(1),
-                            
-                        DateTimePicker::make('date_time_of_departure')
-                            ->label('Date/Time of Departure')
-                            ->required()
+                            ->native(false)
+                            ->seconds(false)
+                            ->afterOrEqual('date_time_of_departure')
+                            ->validationMessages([
+                                'after_or_equal' => 'Arrival time must be after or equal to departure time.',
+                            ])
                             ->columnSpan(1),
 
                         TimePicker::make('idle_time_start')
                             ->label('Idle Time Start')
+                            ->native(false)
+                            ->seconds(false)
                             ->columnSpan(1),
 
                         TimePicker::make('idle_time_end')
                             ->label('Idle Time End')
+                            ->native(false)
+                            ->seconds(false)
+                            ->afterOrEqual('idle_time_start')
+                            ->validationMessages([
+                                'after_or_equal' => 'Idle time end must be after or equal to idle time start.',
+                            ])
                             ->columnSpan(1),
                     ])->columns(2)->columnSpanFull(),
 
                 Section::make('Trip Statistics')
                     ->schema([
                         TextInput::make('total_travel_time_minutes')
-                            ->label('Total Travel Time (Minutes)')
-                            ->integer()
+                            ->label('Total Travel Time (Hours)')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(99999)
                             ->default(0)
+                            ->suffix('Hrs')
                             ->columnSpan(1),
 
                         TextInput::make('total_add_time_minutes')
                             ->label('Total Add Time (Minutes)')
-                            ->integer()
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(99999)
                             ->default(0)
+                            ->suffix('mins')
                             ->columnSpan(1),
 
                         // TextInput::make('ticket_number')
@@ -172,6 +213,8 @@ class DispatchedTripsForm
                 Textarea::make('remarks')
                     ->label('Remarks')
                     ->nullable()
+                    ->maxLength(500)
+                    ->rows(3)
                     ->columnSpanFull(),
             ]);
     }

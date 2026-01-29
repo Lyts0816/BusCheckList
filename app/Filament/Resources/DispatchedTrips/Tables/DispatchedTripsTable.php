@@ -58,10 +58,6 @@ class DispatchedTripsTable
                     ->label('Departure')
                     ->sortable(),
 
-                // TextColumn::make('passengers_on_board')
-                //     ->label('Passengers')
-                //     ->sortable(),
-
                 TextColumn::make('km_run')
                     ->label('KM Run')
                     ->sortable(),
@@ -79,6 +75,7 @@ class DispatchedTripsTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function () {
+                        
                         // Get the current page URL with all query parameters
                         $currentUrl = request()->fullUrl();
                         $parsedUrl = parse_url($currentUrl);
@@ -101,11 +98,11 @@ class DispatchedTripsTable
                         // Extract other relevant filters
                         foreach ($queryParams as $key => $value) {
                             if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
-                                // Parse Filament filter format if you have filters
+                               
                             }
                         }
 
-                        // Build final URL
+                        
                         if (!empty($exportParams)) {
                             $exportUrl .= '?' . http_build_query($exportParams);
                         }
@@ -116,7 +113,7 @@ class DispatchedTripsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    // DeleteBulkAction::make(),
+                    
                     BulkAction::make('export_selected')
                         ->label('Export Selected')
                         ->icon('heroicon-o-document-arrow-down')

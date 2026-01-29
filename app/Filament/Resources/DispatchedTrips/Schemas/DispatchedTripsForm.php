@@ -54,7 +54,7 @@ class DispatchedTripsForm
                             ->options(Routes::all()->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
                             ->searchable()
                             ->reactive()
-                                ->afterStateUpdated(function ($state, callable $set) {
+                            ->afterStateUpdated(function ($state, callable $set) {
                                 $distance = Routes::find($state)?->distance;
                                 $set('km_run', $distance);
                             })
@@ -185,15 +185,28 @@ class DispatchedTripsForm
                             ])
                             ->columnSpan(1),
 
-                        TextInput::make('total_add_time_minutes')
-                            ->label('Total Add Time (Minutes)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(99999)
-                            ->default(0)
-                            ->suffix('mins')
-                            ->columnSpan(1),
+                        Section::make('Total Additional Time')
+                            ->schema([
+                                TextInput::make('add_time_hours')
+                                    ->label('Hours')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(999)
+                                    ->default(0)
+                                    ->suffix('hrs')
+                                    ->required()
+                                    ->columnSpan(1),
+
+                                TextInput::make('add_time_minutes')
+                                    ->label('Minutes')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(59)
+                                    ->default(0)
+                                    ->suffix('mins')
+                                    ->required()
+                                    ->columnSpan(1),
+                            ])->columnSpan(1),
 
                         // TextInput::make('ticket_number')
                         //     ->label('Ticket Number')

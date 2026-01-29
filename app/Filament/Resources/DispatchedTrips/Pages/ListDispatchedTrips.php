@@ -13,7 +13,17 @@ class ListDispatchedTrips extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->using(function (array $data): \Illuminate\Database\Eloquent\Model {
+                    // Convert hours + minutes to total minutes
+                    $data['total_travel_time_minutes'] = 
+                        (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
+                    
+                    // Remove temporary fields
+                    unset($data['hours'], $data['minutes']);
+                    
+                    return static::getModel()::create($data);
+                }),
         ];
     }
 }

@@ -61,15 +61,38 @@ class DispatchedTripsTable
                 TextColumn::make('km_run')
                     ->label('KM Run')
                     ->sortable(),
+                TextColumn::make('total_travel_time_minutes')
+                    ->label('Total Travel Time (Minutes)')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->mutateRecordDataUsing(function (array $data): array {
+                            // Convert total minutes back to hours + minutes for editing
+                            $totalMinutes = $data['total_travel_time_minutes'] ?? 0;
+                            $data['hours'] = intdiv($totalMinutes, 60);
+                            $data['minutes'] = $totalMinutes % 60;
+                            
+                            return $data;
+                        })
+                        ->using(function (array $data, $record): void {
+                            // Convert hours + minutes to total minutes before saving
+                            $data['total_travel_time_minutes'] = 
+                                (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
+                            
+                            // Remove temporary fields
+                            unset($data['hours'], $data['minutes']);
+                            
+                            $record->update($data);
+                        }),
             ])
             ->headerActions([
+
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all record')
                     ->icon('heroicon-o-document-arrow-down')
@@ -110,6 +133,7 @@ class DispatchedTripsTable
                         // Redirect to export URL
                         return redirect($exportUrl);
                     }),
+                    
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

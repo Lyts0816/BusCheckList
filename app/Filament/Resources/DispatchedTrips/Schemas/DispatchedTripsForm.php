@@ -20,6 +20,8 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Components\Grid;
 use Closure;
 
 class DispatchedTripsForm
@@ -109,14 +111,12 @@ class DispatchedTripsForm
                         DateTimePicker::make('date_time_in_terminal')
                             ->label('Date/Time in Terminal')
                             ->required()
-                            ->native(false)
                             ->seconds(false)
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_parking')
                             ->label('Date/Time of Parking')
                             ->required()
-                            ->native(false)
                             ->seconds(false)
                             ->afterOrEqual('date_time_in_terminal')
                             ->validationMessages([
@@ -127,7 +127,6 @@ class DispatchedTripsForm
                         DateTimePicker::make('date_time_of_departure')
                             ->label('Date/Time of Departure')
                             ->required()
-                            ->native(false)
                             ->seconds(false)
                             ->afterOrEqual('date_time_of_parking')
                             ->validationMessages([
@@ -138,7 +137,6 @@ class DispatchedTripsForm
                         DateTimePicker::make('date_time_of_arrival')
                             ->label('Date/Time of Arrival')
                             ->required()
-                            ->native(false)
                             ->seconds(false)
                             ->afterOrEqual('date_time_of_departure')
                             ->validationMessages([
@@ -148,13 +146,11 @@ class DispatchedTripsForm
 
                         TimePicker::make('idle_time_start')
                             ->label('Idle Time Start')
-                            ->native(false)
                             ->seconds(false)
                             ->columnSpan(1),
 
                         TimePicker::make('idle_time_end')
                             ->label('Idle Time End')
-                            ->native(false)
                             ->seconds(false)
                             ->afterOrEqual('idle_time_start')
                             ->validationMessages([
@@ -165,14 +161,28 @@ class DispatchedTripsForm
 
                 Section::make('Trip Statistics')
                     ->schema([
-                        TextInput::make('total_travel_time_minutes')
-                            ->label('Total Travel Time (Hours)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(99999)
-                            ->default(0)
-                            ->suffix('Hrs')
+                        Section::make('Total Travel Time')
+                            ->schema([
+                                TextInput::make('hours')
+                                    ->label('Hours')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(999)
+                                    ->default(0)
+                                    ->suffix('hrs')
+                                    ->required()
+                                    ->columnSpan(1),
+
+                                TextInput::make('minutes')
+                                    ->label('Minutes')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(59)
+                                    ->default(0)
+                                    ->suffix('mins')
+                                    ->required()
+                                    ->columnSpan(1),
+                            ])
                             ->columnSpan(1),
 
                         TextInput::make('total_add_time_minutes')

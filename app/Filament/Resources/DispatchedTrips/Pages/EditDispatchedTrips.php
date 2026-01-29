@@ -18,4 +18,5 @@ class EditDispatchedTrips extends EditRecord
             DeleteAction::make(),
         ];
     }
+
 }

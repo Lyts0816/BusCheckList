@@ -23,6 +23,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\ComputersDashboard;
 use App\Filament\Pages\OperationsDashboard;
+use App\Filament\Widgets\ActiveUsersWidget;
+use App\Filament\Pages\ActiveUserDashboard;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -64,6 +66,7 @@ class AdminPanelProvider extends PanelProvider
                 LogbookDashboard::class,
                 ComputersDashboard::class,
                 OperationsDashboard::class,
+                ActiveUserDashboard::class,
                 
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

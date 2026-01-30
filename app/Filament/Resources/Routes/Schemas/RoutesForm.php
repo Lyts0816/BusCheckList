@@ -13,31 +13,30 @@ class RoutesForm
     {
         $mindanaoLocalities = [
             // Cities
-            'Butuan City' => 'Butuan City',
-            'Cagayan de Oro City' => 'Cagayan de Oro City',
-            'Davao City' => 'Davao City',
-            'General Santos City' => 'General Santos City',
-            'Iligan City' => 'Iligan City',
-            'Koronadal City' => 'Koronadal City',
-            'Pagadian City' => 'Pagadian City',
-            'Zamboanga City' => 'Zamboanga City',
+            'Butuan' => 'Butuan',
+            'Cagayan de Oro' => 'Cagayan de Oro',
+            'Davao' => 'Davao',
+            'General Santos' => 'General Santos',
+            'Iligan' => 'Iligan',
+            'Koronadal' => 'Koronadal',
+            'Pagadian' => 'Pagadian',
+            'Zamboanga' => 'Zamboanga',
 
             // South Cotabato municipalities
-            'Polomolok, South Cotabato' => 'Polomolok, South Cotabato',
-            'Tupi, South Cotabato' => 'Tupi, South Cotabato',
-            'Tantangan, South Cotabato' => 'Tantangan, South Cotabato',
-            'Sto. Niño, South Cotabato' => 'Sto. Niño, South Cotabato',
-            'T’boli, South Cotabato' => 'T’boli, South Cotabato',
-            'Isulan, Sultan Kudarat' => 'Isulan, Sultan Kudarat',
+            'Polomolok' => 'Polomolok',
+            'Tupi' => 'Tupi',
+            'Tantangan' => 'Tantangan',
+            'Sto. Niño' => 'Sto. Niño',
+            'Isulan' => 'Isulan',
 
             // Sarangani
-            'Alabel, Sarangani' => 'Alabel, Sarangani',
-            'Glan, Sarangani' => 'Glan, Sarangani',
+            'Alabel' => 'Alabel',
+            'Glan' => 'Glan',
 
             // Bukidnon
-            'Valencia City, Bukidnon' => 'Valencia City, Bukidnon',
-            'Malaybalay City, Bukidnon' => 'Malaybalay City, Bukidnon',
-            'Quezon, Bukidnon' => 'Quezon, Bukidnon',
+            'Valencia' => 'Valencia',
+            'Malaybalay' => 'Malaybalay',
+            'Quezon' => 'Quezon',
         ];
 
         return $schema

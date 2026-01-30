@@ -107,14 +107,14 @@ class DispatchedTripsInfolist
                                 $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
                                     ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
                             ),
-
-                        TextEntry::make('remarks')
-                            ->label('Remarks')
-                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpan(4)
                     ->compact(),
+
+                TextEntry::make('remarks')
+                    ->label('Remarks')
+                    ->columnSpanFull(),
 
             ])->columns(4);
     }

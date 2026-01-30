@@ -71,6 +71,7 @@ class DispatchedTripsInfolist
 
                         TextEntry::make('date_time_of_arrival')
                             ->label('Date/Time of Arrival')
+
                             ->dateTime(),
 
                         TextEntry::make('date_time_of_departure')
@@ -92,10 +93,20 @@ class DispatchedTripsInfolist
                 Section::make('Trip Statistics')
                     ->schema([
                         TextEntry::make('total_travel_time_minutes')
-                            ->label('Total Travel Time (Hours)'),
+                            ->label('Total Travel Time')
+                            ->formatStateUsing(
+                                fn($state) =>
+                                $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
+                                    ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
+                            ),
 
                         TextEntry::make('total_add_time_minutes')
-                            ->label('Total Add Time (Minutes)'),
+                            ->label('Total Add Time')
+                            ->formatStateUsing(
+                                fn($state) =>
+                                $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
+                                    ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
+                            ),
 
                         TextEntry::make('remarks')
                             ->label('Remarks')

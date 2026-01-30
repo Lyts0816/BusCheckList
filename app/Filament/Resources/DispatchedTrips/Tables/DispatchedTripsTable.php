@@ -62,7 +62,11 @@ class DispatchedTripsTable
                     ->label('KM Run')
                     ->sortable(),
                 TextColumn::make('total_travel_time_minutes')
-                    ->label('Total Travel Time (Minutes)')
+                    ->label('Total Travel Time')
+                    ->formatStateUsing(fn($state) => 
+                        $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') . 
+                        ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
+                    )
                     ->sortable()
                     ->searchable(),
             ])

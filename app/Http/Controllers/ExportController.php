@@ -390,8 +390,8 @@ class ExportController extends Controller
             'Date/Time of Departure',
             'Idle Time Start',
             'Idle Time End',
-            'Total Travel Time (Minutes)',
-            'Total Add Time (Minutes)',
+            'Total Travel Time',
+            'Total Add Time',
             'Remarks'
         ];
 
@@ -401,6 +401,26 @@ class ExportController extends Controller
 
         // Add data rows
         foreach ($dispatchedTrips as $trip) {
+            // Format total travel time
+            $travelTimeFormatted = 'N/A';
+            if ($trip->total_travel_time_minutes) {
+                $hours = intdiv($trip->total_travel_time_minutes, 60);
+                $minutes = $trip->total_travel_time_minutes % 60;
+                $hourLabel = $hours !== 1 ? 'hours' : 'hour';
+                $minuteLabel = $minutes !== 1 ? 'minutes' : 'minute';
+                $travelTimeFormatted = "{$hours} {$hourLabel} and {$minutes} {$minuteLabel}";
+            }
+
+            // Format total add time
+            $addTimeFormatted = 'N/A';
+            if ($trip->total_add_time_minutes) {
+                $addHours = intdiv($trip->total_add_time_minutes, 60);
+                $addMinutes = $trip->total_add_time_minutes % 60;
+                $addHourLabel = $addHours !== 1 ? 'hours' : 'hour';
+                $addMinuteLabel = $addMinutes !== 1 ? 'minutes' : 'minute';
+                $addTimeFormatted = "{$addHours} {$addHourLabel} and {$addMinutes} {$addMinuteLabel}";
+            }
+
             $row = [
                 $trip->trip_number ?? 'N/A',
                 $trip->route?->from ?? 'N/A',
@@ -417,8 +437,8 @@ class ExportController extends Controller
                 $trip->date_time_of_departure ? $trip->date_time_of_departure->format('Y-m-d H:i:s') : 'N/A',
                 $trip->idle_time_start ?? 'N/A',
                 $trip->idle_time_end ?? 'N/A',
-                $trip->total_travel_time_minutes ?? 'N/A',
-                $trip->total_add_time_minutes ?? 'N/A',
+                $travelTimeFormatted,
+                $addTimeFormatted,
                 $trip->remarks ?? 'N/A',
             ];
 

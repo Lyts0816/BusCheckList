@@ -61,11 +61,11 @@ class DispatchedTripsTable
 
                 TextColumn::make('date_time_of_departure')
                     ->dateTime('M d, Y h:i A')
-                    ->label('Departure')
+                    ->label('Departures')
                     ->sortable(),
 
                 TextColumn::make('km_run')
-                    ->label('KM Run')
+                    ->label('KM Runs')
                     ->sortable(),
                 TextColumn::make('total_travel_time_minutes')
                     ->label('Total Travel Time')

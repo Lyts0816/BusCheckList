@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PrinterExport;
 use App\Http\Controllers\SystemUnitExport;
 use App\Http\Controllers\PeripheralsExport;
+use App\Http\Controllers\Auth\LogoutController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -26,4 +27,5 @@ Route::middleware('auth')->group(function () {
         ->name('export.system-units');
     Route::get('/export/peripherals', [PeripheralsExport::class, 'exportPeripherals'])
         ->name('export.peripherals');
+    Route::post('/logout', LogoutController::class)->name('logout');
 });

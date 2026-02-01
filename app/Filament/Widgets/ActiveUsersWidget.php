@@ -11,7 +11,7 @@ class ActiveUsersWidget extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $minutes = 5;
+        $minutes = 1;
 
         $user = Auth::user();
 

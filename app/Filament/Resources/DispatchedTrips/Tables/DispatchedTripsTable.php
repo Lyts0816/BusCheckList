@@ -12,6 +12,12 @@ use Filament\Tables\Columns\DateTimeColumn;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use App\Models\BusClass;
+use App\Models\Routes;
+use Illuminate\Support\Facades\DB;
 
 class DispatchedTripsTable
 {
@@ -71,7 +77,34 @@ class DispatchedTripsTable
                     ->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('bus_class_id')
+                    ->label('Bus Class')
+                    ->relationship('busClass', 'class_name')
+                    ->searchable(),
+
+                SelectFilter::make('route_id')
+                    ->label('Route')
+                    ->preload()
+                    ->options(Routes::all()->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
+                    ->searchable(),
+
+                Filter::make('date_time_of_arrival')
+                    ->label('Arrival Date')
+                    ->schema([
+                        DatePicker::make('arrival_from')->label('From'),
+                        DatePicker::make('arrival_until')->label('To'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when(
+                                $data['arrival_from'] ?? null,
+                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '>=', $date)
+                            )
+                            ->when(
+                                $data['arrival_until'] ?? null,
+                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '<=', $date)
+                            );
+                    }),
             ])
             ->recordActions([
                     ViewAction::make(),

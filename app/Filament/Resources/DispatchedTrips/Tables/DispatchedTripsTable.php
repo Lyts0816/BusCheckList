@@ -32,31 +32,31 @@ class DispatchedTripsTable
 
                 TextColumn::make('date_time_of_arrival')
                     ->dateTime('M d, Y h:i A')
-                    ->label('Arrival')
+                    ->label('Arrivals')
                     ->sortable(),
 
 
                 TextColumn::make('route.from')
-                    ->label('Route')
+                    ->label('Routes')
                     ->formatStateUsing(fn($record) => $record->route->from . ' - ' . $record->route->to)
                     ->sortable(),
 
                 TextColumn::make('busNumber.bus_number')
-                    ->label('Bus Number')
+                    ->label('Bus Numbers')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('busClass.class_name')
-                    ->label('Bus Class')
+                    ->label('Bus Classes')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('driver.driver_name')
-                    ->label('Driver')
+                    ->label('Drivers')
                     ->sortable(),
 
                 TextColumn::make('conductor.conductor_name')
-                    ->label('Conductor')
+                    ->label('Conductors')
                     ->sortable(),
 
                 TextColumn::make('date_time_of_departure')

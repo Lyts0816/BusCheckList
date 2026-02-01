@@ -69,9 +69,10 @@ class DispatchedTripsTable
                     ->sortable(),
                 TextColumn::make('total_travel_time_minutes')
                     ->label('Total Travel Time')
-                    ->formatStateUsing(fn($state) => 
-                        $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') . 
-                        ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
+                    ->formatStateUsing(
+                        fn($state) =>
+                        $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
+                            ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
                     )
                     ->sortable()
                     ->searchable(),
@@ -79,13 +80,15 @@ class DispatchedTripsTable
             ->filters([
                 SelectFilter::make('bus_class_id')
                     ->label('Bus Class')
+                    ->preload()
                     ->relationship('busClass', 'class_name')
                     ->searchable(),
 
                 SelectFilter::make('route_id')
                     ->label('Route')
                     ->preload()
-                    ->options(Routes::all()->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
+                    ->relationship('route', 'from')
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->from . ' - ' . $record->to)
                     ->searchable(),
 
                 Filter::make('date_time_of_arrival')
@@ -107,35 +110,35 @@ class DispatchedTripsTable
                     }),
             ])
             ->recordActions([
-                    ViewAction::make(),
-                    EditAction::make()
-                        ->mutateRecordDataUsing(function (array $data): array {
-                            // Convert total_travel_time_minutes back to hours + minutes for editing
-                            $totalTravelMinutes = $data['total_travel_time_minutes'] ?? 0;
-                            $data['hours'] = intdiv($totalTravelMinutes, 60);
-                            $data['minutes'] = $totalTravelMinutes % 60;
-                            
-                            // Convert total_add_time_minutes back to add_time_hours + add_time_minutes for editing
-                            $totalAddMinutes = $data['total_add_time_minutes'] ?? 0;
-                            $data['add_time_hours'] = intdiv($totalAddMinutes, 60);
-                            $data['add_time_minutes'] = $totalAddMinutes % 60;
-                            
-                            return $data;
-                        })
-                        ->using(function (array $data, $record): void {
-                            // Convert hours + minutes to total_travel_time_minutes before saving
-                            $data['total_travel_time_minutes'] = 
-                                (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
-                            
-                            // Convert add_time_hours + add_time_minutes to total_add_time_minutes before saving
-                            $data['total_add_time_minutes'] = 
-                                (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
-                            
-                            // Remove temporary fields
-                            unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
-                            
-                            $record->update($data);
-                        }),
+                ViewAction::make(),
+                EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        // Convert total_travel_time_minutes back to hours + minutes for editing
+                        $totalTravelMinutes = $data['total_travel_time_minutes'] ?? 0;
+                        $data['hours'] = intdiv($totalTravelMinutes, 60);
+                        $data['minutes'] = $totalTravelMinutes % 60;
+
+                        // Convert total_add_time_minutes back to add_time_hours + add_time_minutes for editing
+                        $totalAddMinutes = $data['total_add_time_minutes'] ?? 0;
+                        $data['add_time_hours'] = intdiv($totalAddMinutes, 60);
+                        $data['add_time_minutes'] = $totalAddMinutes % 60;
+
+                        return $data;
+                    })
+                    ->using(function (array $data, $record): void {
+                        // Convert hours + minutes to total_travel_time_minutes before saving
+                        $data['total_travel_time_minutes'] =
+                            (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
+
+                        // Convert add_time_hours + add_time_minutes to total_add_time_minutes before saving
+                        $data['total_add_time_minutes'] =
+                            (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
+
+                        // Remove temporary fields
+                        unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
+
+                        $record->update($data);
+                    }),
             ])
             ->headerActions([
 
@@ -144,7 +147,7 @@ class DispatchedTripsTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function () {
-                        
+
                         // Get the current page URL with all query parameters
                         $currentUrl = request()->fullUrl();
                         $parsedUrl = parse_url($currentUrl);
@@ -167,11 +170,10 @@ class DispatchedTripsTable
                         // Extract other relevant filters
                         foreach ($queryParams as $key => $value) {
                             if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
-                               
                             }
                         }
 
-                        
+
                         if (!empty($exportParams)) {
                             $exportUrl .= '?' . http_build_query($exportParams);
                         }
@@ -179,11 +181,11 @@ class DispatchedTripsTable
                         // Redirect to export URL
                         return redirect($exportUrl);
                     }),
-                    
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    
+
                     BulkAction::make('export_selected')
                         ->label('Export Selected')
                         ->icon('heroicon-o-document-arrow-down')

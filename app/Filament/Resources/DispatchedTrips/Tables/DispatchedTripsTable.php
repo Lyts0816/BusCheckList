@@ -79,13 +79,13 @@ class DispatchedTripsTable
             ])
             ->filters([
                 SelectFilter::make('bus_class_id')
-                    ->label('Bus Class')
+                    ->label('Bus Classes')
                     ->preload()
                     ->relationship('busClass', 'class_name')
                     ->searchable(),
 
                 SelectFilter::make('route_id')
-                    ->label('Route')
+                    ->label('Routes')
                     ->preload()
                     ->relationship('route', 'from')
                     ->getOptionLabelFromRecordUsing(fn($record) => $record->from . ' - ' . $record->to)

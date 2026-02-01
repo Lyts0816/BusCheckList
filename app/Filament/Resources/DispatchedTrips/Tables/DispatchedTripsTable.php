@@ -79,6 +79,7 @@ class DispatchedTripsTable
             ->filters([
                 SelectFilter::make('bus_class_id')
                     ->label('Bus Class')
+                    ->preload()
                     ->relationship('busClass', 'class_name')
                     ->searchable(),
 

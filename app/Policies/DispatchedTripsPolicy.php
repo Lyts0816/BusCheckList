@@ -13,7 +13,7 @@ class DispatchedTripsPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -21,7 +21,7 @@ class DispatchedTripsPolicy
      */
     public function view(User $user, DispatchedTrips $dispatchedTrips): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -29,7 +29,7 @@ class DispatchedTripsPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -37,7 +37,7 @@ class DispatchedTripsPolicy
      */
     public function update(User $user, DispatchedTrips $dispatchedTrips): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -45,7 +45,7 @@ class DispatchedTripsPolicy
      */
     public function delete(User $user, DispatchedTrips $dispatchedTrips): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -53,7 +53,7 @@ class DispatchedTripsPolicy
      */
     public function restore(User $user, DispatchedTrips $dispatchedTrips): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 
     /**
@@ -61,6 +61,6 @@ class DispatchedTripsPolicy
      */
     public function forceDelete(User $user, DispatchedTrips $dispatchedTrips): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isOperations() || $user->isAdminOperations();
     }
 }

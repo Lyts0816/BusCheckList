@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Drivers;
+use App\Models\BusClass;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class DriversPolicy
+class BusClassPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class DriversPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Drivers $drivers): bool
+    public function view(User $user, BusClass $busClass): bool
     {
         return $user->isAdmin() || $user->isAdminOperations();
     }
@@ -35,7 +35,7 @@ class DriversPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Drivers $drivers): bool
+    public function update(User $user, BusClass $busClass): bool
     {
         return $user->isAdmin() || $user->isAdminOperations();
     }
@@ -43,7 +43,7 @@ class DriversPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Drivers $drivers): bool
+    public function delete(User $user, BusClass $busClass): bool
     {
         return $user->isAdmin() || $user->isAdminOperations();
     }
@@ -51,7 +51,7 @@ class DriversPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Drivers $drivers): bool
+    public function restore(User $user, BusClass $busClass): bool
     {
         return $user->isAdmin() || $user->isAdminOperations();
     }
@@ -59,7 +59,7 @@ class DriversPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Drivers $drivers): bool
+    public function forceDelete(User $user, BusClass $busClass): bool
     {
         return $user->isAdmin() || $user->isAdminOperations();
     }

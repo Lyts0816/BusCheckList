@@ -26,7 +26,7 @@ class BusNumbersTable
                     ->label('Bus Type'),
 
                 TextColumn::make('seat_capacity')
-                    ->label('Seat Capacity'),
+                    ->label('Seating Capacity'),
             ])
             ->filters([
                 //

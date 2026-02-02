@@ -41,17 +41,15 @@ class RoutesForm
 
         return $schema
             ->components([
-                Select::make('from')
+                TextInput::make('from')
                     ->label('From')
-                    ->required()
-                    ->options($mindanaoLocalities)
-                    ->searchable(),
+                    ->maxValue(50)
+                    ->required(),
 
-                Select::make('to')
+                TextInput::make('to')
                     ->label('To')
-                    ->required()
-                    ->options($mindanaoLocalities)
-                    ->searchable(),
+                    ->maxValue(50)
+                    ->required(),
 
                 TextInput::make('distance')
                     ->label('Distance (in km)')

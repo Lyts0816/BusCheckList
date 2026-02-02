@@ -24,6 +24,7 @@ use Filament\Forms\Set;
 use Filament\Forms\Components\Grid;
 use Closure;
 
+
 class DispatchedTripsForm
 {
     public static function configure(Schema $schema): Schema
@@ -74,6 +75,15 @@ class DispatchedTripsForm
                             ->label('Bus Number')
                             ->required()
                             ->options(BusNumber::pluck('bus_number', 'id'))
+                            ->createOptionForm([
+                                TextInput::make('bus_number')
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function ($data) {
+                                return BusNumber::create([
+                                    'bus_number' => $data['bus_number'],
+                                ])->getKey();
+                            })
                             ->searchable()
                             ->columnSpan(1),
 
@@ -81,6 +91,15 @@ class DispatchedTripsForm
                             ->label('Bus Class')
                             ->required()
                             ->options(BusClass::pluck('class_name', 'id'))
+                            ->createOptionForm([
+                                TextInput::make('class_name')
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function ($data) {
+                                return BusClass::create([
+                                    'class_name' => $data['class_name'],
+                                ])->getKey();
+                            })
                             ->searchable()
                             ->columnSpan(1),
 
@@ -88,6 +107,15 @@ class DispatchedTripsForm
                             ->label('Nature of Trip')
                             ->required()
                             ->options(NatureOfTrip::pluck('nature_of_trip_name', 'id'))
+                            ->createOptionForm([
+                                TextInput::make('nature_of_trip_name')
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function ($data) {
+                                return NatureOfTrip::create([
+                                    'nature_of_trip_name' => $data['nature_of_trip_name'],
+                                ])->getKey();
+                            })
                             ->searchable()
                             ->columnSpan(2),
 
@@ -95,6 +123,15 @@ class DispatchedTripsForm
                             ->label('Driver')
                             ->required()
                             ->options(Drivers::pluck('driver_name', 'id'))
+                            ->createOptionForm([
+                                TextInput::make('driver_name')
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function ($data) {
+                                return Drivers::create([
+                                    'driver_name' => $data['driver_name'],
+                                ])->getKey();
+                            })
                             ->searchable()
                             ->columnSpan(1),
 
@@ -102,8 +139,18 @@ class DispatchedTripsForm
                             ->label('Conductor')
                             ->required()
                             ->options(Conductors::pluck('conductor_name', 'id'))
+                            ->createOptionForm([
+                                TextInput::make('conductor_name')
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function ($data) {
+                                return Conductors::create([
+                                    'conductor_name' => $data['conductor_name'],
+                                ])->getKey();
+                            })
                             ->searchable()
                             ->columnSpan(1),
+
                     ])->columns(2)->columnSpanFull(),
 
                 Section::make('DateTime Information')

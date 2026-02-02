@@ -15,9 +15,11 @@ class DriversForm
                     ->required()
                     ->helperText('LAST NAME, FIRST NAME M.I.')
                     ->maxValue(50)
+                    ->unique(ignoreRecord: true)
                     ->validationMessages([
                         'required' => 'Driver name is required',
                         'maxValue' => 'Driver name cannot be greater than 50 characters.',
+                        'unique' => 'Driver name already exists.',
                     ]),
 
                 TextInput::make('status')

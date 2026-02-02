@@ -21,6 +21,7 @@ class UserForm
                         'admin' => 'Admin',
                         'user' => 'User',
                         'operations' => 'Operations',
+                        'admin_operations' => 'Admin Operations',
                     ])
                     ->required(),
                 TextInput::make('email')

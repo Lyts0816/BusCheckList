@@ -13,7 +13,7 @@ class NatureOfTripPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -21,7 +21,7 @@ class NatureOfTripPolicy
      */
     public function view(User $user, NatureOfTrip $natureOfTrip): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -29,7 +29,7 @@ class NatureOfTripPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -37,7 +37,7 @@ class NatureOfTripPolicy
      */
     public function update(User $user, NatureOfTrip $natureOfTrip): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -45,7 +45,7 @@ class NatureOfTripPolicy
      */
     public function delete(User $user, NatureOfTrip $natureOfTrip): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -53,7 +53,7 @@ class NatureOfTripPolicy
      */
     public function restore(User $user, NatureOfTrip $natureOfTrip): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 
     /**
@@ -61,6 +61,6 @@ class NatureOfTripPolicy
      */
     public function forceDelete(User $user, NatureOfTrip $natureOfTrip): bool
     {
-        return $user->isAdmin() || $user->isOperations();
+        return $user->isAdmin() || $user->isAdminOperations();
     }
 }

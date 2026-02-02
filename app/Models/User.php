@@ -12,6 +12,7 @@ class User extends Authenticatable
     const ROLE_ADMIN = 'admin';
     const ROLE_USER = 'user';
     const ROLE_OPERATIONS = 'operations';
+    const ROLE_ADMIN_OPERATIONS = 'admin_operations';
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -48,9 +49,14 @@ class User extends Authenticatable
         return $this->role === self::ROLE_OPERATIONS;
     }
 
+    public function isAdminOperations()
+    {
+        return $this->role === self::ROLE_ADMIN_OPERATIONS;
+    }
+
     public function canViewOperationsDashboard(): bool
     {
-        return $this->isAdmin() || $this->isOperations();
+        return $this->isAdmin() || $this->isOperations() || $this->role === self::ROLE_ADMIN_OPERATIONS;
     }
 
     public function canViewLogbookDashboard(): bool

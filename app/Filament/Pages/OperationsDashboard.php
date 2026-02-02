@@ -21,7 +21,7 @@ class OperationsDashboard extends BaseDashboard
 
     public static function canAccess(): bool
     {
-        return  Auth::user()->role === User::ROLE_ADMIN || Auth::user()->role === User::ROLE_OPERATIONS;
+        return  Auth::user()->role === User::ROLE_ADMIN || Auth::user()->role === User::ROLE_OPERATIONS || Auth::user()->role === User::ROLE_ADMIN_OPERATIONS;
     }
 
     public function getWidgets(): array

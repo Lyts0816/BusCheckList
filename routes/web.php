@@ -21,6 +21,10 @@ Route::middleware('auth')->group(function () {
         ->name('export.bus-daily-checklist');
     Route::get('/export/dispatched-trips', [ExportController::class, 'exportDispatchedTrips'])
         ->name('export.dispatched-trips');
+    Route::get('/export/conductors', [ExportController::class, 'exportConductors'])
+        ->name('export.conductors');
+    Route::get('/export/drivers', [ExportController::class, 'exportDrivers'])
+        ->name('export.drivers');
     Route::get('/export/printers', [PrinterExport::class, 'exportAssignedPrinters'])
         ->name('export.printers');
     Route::get('/export/system-units', [SystemUnitExport::class, 'exportAssignedSystemUnits'])

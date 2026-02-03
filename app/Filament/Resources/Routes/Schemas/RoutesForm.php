@@ -11,34 +11,6 @@ class RoutesForm
 
     public static function configure(Schema $schema): Schema
     {
-        $mindanaoLocalities = [
-            // Cities
-            'Butuan' => 'Butuan',
-            'Cagayan de Oro' => 'Cagayan de Oro',
-            'Davao' => 'Davao',
-            'General Santos' => 'General Santos',
-            'Iligan' => 'Iligan',
-            'Koronadal' => 'Koronadal',
-            'Pagadian' => 'Pagadian',
-            'Zamboanga' => 'Zamboanga',
-
-            // South Cotabato municipalities
-            'Polomolok' => 'Polomolok',
-            'Tupi' => 'Tupi',
-            'Tantangan' => 'Tantangan',
-            'Sto. Niño' => 'Sto. Niño',
-            'Isulan' => 'Isulan',
-
-            // Sarangani
-            'Alabel' => 'Alabel',
-            'Glan' => 'Glan',
-
-            // Bukidnon
-            'Valencia' => 'Valencia',
-            'Malaybalay' => 'Malaybalay',
-            'Quezon' => 'Quezon',
-        ];
-
         return $schema
             ->components([
                 TextInput::make('from')

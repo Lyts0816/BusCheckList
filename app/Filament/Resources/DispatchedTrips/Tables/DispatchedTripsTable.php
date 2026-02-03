@@ -77,6 +77,7 @@ class DispatchedTripsTable
                     ->sortable()
                     ->searchable(),
             ])
+            ->defaultSort('trip_number', 'desc')
             ->filters([
                 SelectFilter::make('bus_class_id')
                     ->label('Bus Classes')

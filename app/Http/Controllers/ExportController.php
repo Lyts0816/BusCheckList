@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssignedComputer;
+use App\Models\Conductors;
+use App\Models\Drivers;
 use App\Models\DispatchedTrips;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -298,9 +300,165 @@ class ExportController extends Controller
             return 'N/A';
         }
 
-        // Convert to string and escape quotes
+        // Convert to string
         $value = (string) $value;
+
+        // Normalize non-breaking spaces and mis-decoded UTF-8 ("Â ")
+        $value = str_replace(["\xC2\xA0", "Â "], ' ', $value);
+
+        // Collapse excess whitespace at start/end
+        $value = trim($value);
+
+        // Escape quotes for CSV
         return str_replace('"', '""', $value);
+    }
+
+    public function exportConductors(Request $request)
+    {
+        $query = Conductors::query();
+
+        // Bulk export: if ids are provided, only export those
+        if ($request->has('ids') && !empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        } else {
+            // Apply search filters if provided
+            if ($request->has('search') && !empty($request->search)) {
+                $searchTerm = $request->search;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('conductor_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('status', 'like', "%{$searchTerm}%")
+                        ->orWhere('remarks', 'like', "%{$searchTerm}%");
+                });
+            }
+
+            // Apply sorting if provided
+            if ($request->has('sort') && !empty($request->sort)) {
+                $sortField = $request->sort;
+                $sortDirection = $request->get('direction', 'asc');
+                $query->orderBy($sortField, $sortDirection);
+            } else {
+                $query->orderBy('id', 'desc');
+            }
+        }
+
+        $conductors = $query->get();
+        $csvContent = $this->generateConductorsCSV($conductors);
+
+        $filename = 'conductors_' . date('Y-m-d_H-i-s');
+        if ($request->has('search') || $request->has('ids')) {
+            $filename .= '_filtered';
+        }
+        $filename .= '.csv';
+
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    private function generateConductorsCSV($conductors)
+    {
+        $title = 'CONDUCTORS LIST - ' . now()->format('F d, Y');
+        $headers = [
+            'ID',
+            'Conductor Name',
+            'Status',
+            'Remarks',
+            'Created At',
+            'Updated At'
+        ];
+
+        $csv  = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
+
+        foreach ($conductors as $conductor) {
+            $row = [
+                $conductor->id,
+                $conductor->conductor_name,
+                $conductor->status,
+                $conductor->remarks ?? 'N/A',
+                $conductor->created_at,
+                $conductor->updated_at,
+            ];
+
+            $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
+        }
+
+        return $csv;
+    }
+
+    public function exportDrivers(Request $request)
+    {
+        $query = Drivers::query();
+
+        // Bulk export: if ids are provided, only export those
+        if ($request->has('ids') && !empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        } else {
+            // Apply search filters if provided
+            if ($request->has('search') && !empty($request->search)) {
+                $searchTerm = $request->search;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('driver_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('status', 'like', "%{$searchTerm}%")
+                        ->orWhere('remarks', 'like', "%{$searchTerm}%");
+                });
+            }
+
+            // Apply sorting if provided
+            if ($request->has('sort') && !empty($request->sort)) {
+                $sortField = $request->sort;
+                $sortDirection = $request->get('direction', 'asc');
+                $query->orderBy($sortField, $sortDirection);
+            } else {
+                $query->orderBy('id', 'desc');
+            }
+        }
+
+        $drivers = $query->get();
+        $csvContent = $this->generateDriversCSV($drivers);
+
+        $filename = 'drivers_' . date('Y-m-d_H-i-s');
+        if ($request->has('search') || $request->has('ids')) {
+            $filename .= '_filtered';
+        }
+        $filename .= '.csv';
+
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    private function generateDriversCSV($drivers)
+    {
+        $title = 'DRIVERS LIST - ' . now()->format('F d, Y');
+        $headers = [
+            'ID',
+            'Driver Name',
+            'Status',
+            'Remarks',
+            'Created At',
+            'Updated At'
+        ];
+
+        $csv  = '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
+
+        foreach ($drivers as $driver) {
+            $row = [
+                $driver->id,
+                $driver->driver_name,
+                $driver->status,
+                $driver->remarks ?? 'N/A',
+                $driver->created_at,
+                $driver->updated_at,
+            ];
+
+            $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
+        }
+
+        return $csv;
     }
 
     public function exportDispatchedTrips(Request $request)

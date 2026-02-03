@@ -352,7 +352,7 @@ class ExportController extends Controller
         $filename .= '.csv';
 
         return response($csvContent)
-            ->header('Content-Type', 'text/csv')
+            ->header('Content-Type', 'text/csv; charset=utf-8')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
@@ -368,7 +368,9 @@ class ExportController extends Controller
             'Updated At'
         ];
 
-        $csv  = '"' . $title . '"' . "\n\n";
+        // Start with UTF-8 BOM
+        $csv = "\xEF\xBB\xBF";
+        $csv .= '"' . $title . '"' . "\n\n";
         $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         foreach ($conductors as $conductor) {
@@ -426,7 +428,7 @@ class ExportController extends Controller
         $filename .= '.csv';
 
         return response($csvContent)
-            ->header('Content-Type', 'text/csv')
+            ->header('Content-Type', 'text/csv; charset=utf-8')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
@@ -442,7 +444,9 @@ class ExportController extends Controller
             'Updated At'
         ];
 
-        $csv  = '"' . $title . '"' . "\n\n";
+        // Start with UTF-8 BOM
+        $csv = "\xEF\xBB\xBF";
+        $csv .= '"' . $title . '"' . "\n\n";
         $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         foreach ($drivers as $driver) {

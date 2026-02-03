@@ -15,7 +15,7 @@ class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVa
 
     public function model(array $row)
     {
-        $busNumber = strtoupper(trim($row['bus_number'] ?? ''));
+        $busNumber = strtoupper(trim((string)$row['bus_number'] ?? ''));
         
         // Track imported bus numbers to check for duplicates within the same file
         $this->importedBusNumbers[] = $busNumber;
@@ -33,7 +33,7 @@ class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVa
         return [
             '*.bus_number' => [
                 'required',
-                'string',
+                'regex:/^[A-Z0-9]+$/',
                 'max:255',
                 Rule::unique('bus_numbers', 'bus_number'),
             ],
@@ -50,6 +50,7 @@ class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVa
         return [
             '*.bus_number.unique' => 'The bus number :input already exists in the database.',
             '*.bus_number.required' => 'Bus number is required.',
+            '*.bus_number.regex' => 'The bus number must contain only letters and numbers.',
             '*.seat_capacity.integer' => 'Seat capacity must be a number.',
             '*.seat_capacity.min' => 'Seat capacity must be at least 1.',
         ];

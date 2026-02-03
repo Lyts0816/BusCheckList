@@ -7,18 +7,18 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
 
-class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithValidation
+class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithValidation, WithBatchInserts
 {
     private $importedBusNumbers = [];
+    private $rowCount = 0;
 
     public function model(array $row)
     {
         $busNumber = strtoupper(trim((string)$row['bus_number'] ?? ''));
-        
-        // Track imported bus numbers to check for duplicates within the same file
-        $this->importedBusNumbers[] = $busNumber;
         
         return new BusNumber([
             'bus_number' => $busNumber,
@@ -26,6 +26,26 @@ class BusNumberImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVa
             'bus_type' => strtoupper(trim($row['bus_type'] ?? '')),
             'seat_capacity' => $row['seat_capacity'] ?? null,
         ]);
+    }
+    
+    public function batchSize(): int
+    {
+        return 100;
+    }
+    
+    public function prepareForValidation($data, $index)
+    {
+        $busNumber = strtoupper(trim((string)($data['bus_number'] ?? '')));
+        
+        // Check for duplicates within the same import file
+        if (in_array($busNumber, $this->importedBusNumbers)) {
+            throw new \Exception("Duplicate bus number '{$busNumber}' found in the import file at row " . ($index + 2) . ".");
+        }
+        
+        $this->importedBusNumbers[] = $busNumber;
+        $this->rowCount++;
+        
+        return $data;
     }
 
     public function rules(): array

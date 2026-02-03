@@ -15,8 +15,10 @@ class BusNumberForm
                     ->maxValue(10)
                     ->label('Bus Number')
                     ->required()
+                    ->unique(table: 'bus_numbers', column: 'bus_number', ignoreRecord: true)
                     ->validationMessages([
                         'maxValue' => 'Bus Number cannot be greater than 10 characters.',
+                        'unique' => 'This bus number already exists.',
                     ]),
 
                 TextInput::make('bus_model')

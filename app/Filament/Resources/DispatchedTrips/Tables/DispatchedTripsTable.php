@@ -3,21 +3,14 @@
 namespace App\Filament\Resources\DispatchedTrips\Tables;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\DateTimeColumn;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
-use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
-use App\Models\BusClass;
-use App\Models\Routes;
-use Illuminate\Support\Facades\DB;
 
 class DispatchedTripsTable
 {

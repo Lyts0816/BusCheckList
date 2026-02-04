@@ -15,7 +15,9 @@ class NatureOfTripForm
                 TextInput::make('nature_of_trip_name')
                     ->required()
                     ->maxValue(30)
+                    ->unique(ignoreRecord: true)
                     ->validationMessages([
+                        'unique' => 'Nature of Trip Name already exists',
                         'required' => 'Nature of Trip Name is required',
                         'maxValue' => 'Nature of Trip Name must not exceed 30 characters',
                     ]),

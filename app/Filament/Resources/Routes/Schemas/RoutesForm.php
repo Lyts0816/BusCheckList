@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Routes\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
+use Illuminate\Validation\Rule;
 
 class RoutesForm
 {
@@ -16,7 +17,25 @@ class RoutesForm
                 TextInput::make('from')
                     ->label('From')
                     ->maxValue(50)
-                    ->required(),
+                    ->required()
+                    ->rules([
+                        function ($get) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $recordId = request()->route('record');
+                                
+                                $query = \App\Models\Routes::where('from', $value)
+                                    ->where('to', $get('to'));
+                                
+                                if ($recordId) {
+                                    $query->where('id', '!=', $recordId);
+                                }
+                                    
+                                if ($query->exists()) {
+                                    $fail('This route (From → To combination) already exists.');
+                                }
+                            };
+                        },
+                    ]),
 
                 TextInput::make('to')
                     ->label('To')

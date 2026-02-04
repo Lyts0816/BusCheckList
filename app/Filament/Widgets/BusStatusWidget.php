@@ -5,9 +5,13 @@ namespace App\Filament\Widgets;
 use App\Models\DispatchedTrips;
 use App\Models\BusClass;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Carbon;
 
 class BusStatusWidget extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected bool $isCollapsible = true;
     protected static bool $isLazy = false;
 
@@ -15,7 +19,14 @@ class BusStatusWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $startDate = $this->pageFilters['start_date'] ?? now()->startOfMonth();
+        $endDate = $this->pageFilters['end_date'] ?? now();
+
         $busClassData = DispatchedTrips::with('busClass')
+            ->whereBetween('date_time_of_departure', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ])
             ->selectRaw('bus_class_id, count(*) as count')
             ->groupBy('bus_class_id')
             ->get()

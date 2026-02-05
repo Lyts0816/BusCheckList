@@ -11,6 +11,10 @@ use Illuminate\Http\Response;
 
 class ExportController extends Controller
 {
+    // ===================================================================
+    // ASSIGNED COMPUTERS EXPORT
+    // ===================================================================
+
     public function exportAssignedComputers(Request $request)
     {
         // Start with base query
@@ -200,6 +204,10 @@ class ExportController extends Controller
         return $csv;
     }
 
+    // ===================================================================
+    // BUS DAILY CHECKLIST EXPORT
+    // ===================================================================
+
     public function exportBusDailyChecklist(Request $request)
     {
         $query = \App\Models\BusDailyChecklist::with('bus');
@@ -293,6 +301,10 @@ class ExportController extends Controller
         return $csv;
     }
 
+    // ===================================================================
+    // CSV HELPER METHODS
+    // ===================================================================
+
     private function escapeCsvValue($value)
     {
         // Handle null values
@@ -312,6 +324,10 @@ class ExportController extends Controller
         // Escape quotes for CSV
         return str_replace('"', '""', $value);
     }
+
+    // ===================================================================
+    // CONDUCTORS EXPORT
+    // ===================================================================
 
     public function exportConductors(Request $request)
     {
@@ -389,6 +405,10 @@ class ExportController extends Controller
         return $csv;
     }
 
+    // ===================================================================
+    // DRIVERS EXPORT
+    // ===================================================================
+
     public function exportDrivers(Request $request)
     {
         $query = Drivers::query();
@@ -464,6 +484,10 @@ class ExportController extends Controller
 
         return $csv;
     }
+
+    // ===================================================================
+    // DISPATCHED TRIPS EXPORT
+    // ===================================================================
 
     public function exportDispatchedTrips(Request $request)
     {

@@ -55,9 +55,9 @@ class DispatchedTripsResource extends Resource
     {
         return [
             'index' => ListDispatchedTrips::route('/'),
-            // 'create' => CreateDispatchedTrips::route('/create'),
-            // 'view' => ViewDispatchedTrips::route('/{record}'),
-            // 'edit' => EditDispatchedTrips::route('/{record}/edit'),
+            'create' => CreateDispatchedTrips::route('/create'),
+            'view' => ViewDispatchedTrips::route('/{record}'),
+            'edit' => EditDispatchedTrips::route('/{record}/edit'),
         ];
     }
 }

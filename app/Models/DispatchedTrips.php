@@ -12,6 +12,7 @@ class DispatchedTrips extends Model
     protected $table = 'dispatched_trips';
 
     protected $fillable = [
+        'dispatch_sheet_id',
         'trip_number',
         'route_id',
         'bus_number_id',
@@ -73,5 +74,10 @@ class DispatchedTrips extends Model
     public function conductor()
     {
         return $this->belongsTo(Conductors::class, 'conductor_id');
+    }
+
+    public function dispatchSheet()
+    {
+        return $this->belongsTo(DispatchSheet::class);
     }
 }

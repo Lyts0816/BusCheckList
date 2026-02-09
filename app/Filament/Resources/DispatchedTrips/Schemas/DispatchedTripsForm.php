@@ -32,8 +32,10 @@ class DispatchedTripsForm
         return $schema
             ->components([
                 TextInput::make('trip_number')
-                    ->label('Trip Number')
+                    ->inlineLabel()
+                    ->label('Trip #')
                     ->columnSpanFull()
+                    ->extraInputAttributes(['class' => 'h-5 text-2xs p-0.5'])
                     ->required()
                     ->maxLength(100)
                     ->default(function () {
@@ -47,10 +49,12 @@ class DispatchedTripsForm
                     ->disabled()
                     ->dehydrated(),
 
-                Section::make('Trip Details')
+                Section::make()
                     ->schema([
                         Select::make('route_id')
-                            ->label('From-To Route')
+                            ->inlineLabel()
+                            ->label('Route')
+                            ->placeholder('Route')
                             ->required()
                             ->options(Routes::all()->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
                             ->searchable()
@@ -62,107 +66,80 @@ class DispatchedTripsForm
                             ->columnSpan(1),
 
                         TextInput::make('km_run')
-                            ->label('KM Run')
+                            ->inlineLabel()
+                            ->label('KM')
+                            ->placeholder('KM')
+                            ->extraInputAttributes(['class' => 'h-5 w-12 text-2xs p-0.5'])
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(9999)
                             ->default(0)
-                            ->suffix('km')
                             ->columnSpan(1),
 
                         Select::make('bus_number_id')
-                            ->label('Bus Number')
+                            ->inlineLabel()
+                            ->label('Bus #')
+                            ->placeholder('Bus')
                             ->required()
                             ->options(BusNumber::pluck('bus_number', 'id'))
-                            // ->createOptionForm([
-                            //     TextInput::make('bus_number')
-                            //         ->required(),
-                            // ])
-                            // ->createOptionUsing(function ($data) {
-                            //     return BusNumber::create([
-                            //         'bus_number' => $data['bus_number'],
-                            //     ])->getKey();
-                            // })
                             ->searchable()
                             ->columnSpan(1),
 
                         Select::make('bus_class_id')
-                            ->label('Bus Class')
+                            ->inlineLabel()
+                            ->label('Class')
+                            ->placeholder('Class')
                             ->required()
                             ->options(BusClass::pluck('class_name', 'id'))
-                            // ->createOptionForm([
-                            //     TextInput::make('class_name')
-                            //         ->required(),
-                            // ])
-                            // ->createOptionUsing(function ($data) {
-                            //     return BusClass::create([
-                            //         'class_name' => $data['class_name'],
-                            //     ])->getKey();
-                            // })
                             ->searchable()
                             ->columnSpan(1),
 
                         Select::make('nature_of_trip_id')
-                            ->label('Nature of Trip')
+                            ->inlineLabel()
+                            ->label('Nature')
+                            ->placeholder('Nature')
                             ->required()
                             ->options(NatureOfTrip::pluck('nature_of_trip_name', 'id'))
-                            // ->createOptionForm([
-                            //     TextInput::make('nature_of_trip_name')
-                            //         ->required(),
-                            // ])
-                            // ->createOptionUsing(function ($data) {
-                            //     return NatureOfTrip::create([
-                            //         'nature_of_trip_name' => $data['nature_of_trip_name'],
-                            //     ])->getKey();
-                            // })
                             ->searchable()
-                            ->columnSpan(2),
+                            ->columnSpan(1),
 
                         Select::make('driver_id')
+                            ->inlineLabel()
                             ->label('Driver')
+                            ->placeholder('Driver')
                             ->required()
                             ->options(Drivers::pluck('driver_name', 'id'))
-                            // ->createOptionForm([
-                            //     TextInput::make('driver_name')
-                            //         ->required(),
-                            // ])
-                            // ->createOptionUsing(function ($data) {
-                            //     return Drivers::create([
-                            //         'driver_name' => $data['driver_name'],
-                            //     ])->getKey();
-                            // })
                             ->searchable()
                             ->columnSpan(1),
 
                         Select::make('conductor_id')
+                            ->inlineLabel()
                             ->label('Conductor')
+                            ->placeholder('Conductor')
                             ->required()
                             ->options(Conductors::pluck('conductor_name', 'id'))
-                            // ->createOptionForm([
-                            //     TextInput::make('conductor_name')
-                            //         ->required(),
-                            // ])
-                            // ->createOptionUsing(function ($data) {
-                            //     return Conductors::create([
-                            //         'conductor_name' => $data['conductor_name'],
-                            //     ])->getKey();
-                            // })
                             ->searchable()
                             ->columnSpan(1),
 
-                    ])->columns(2)->columnSpanFull(),
+                    ])->columns(7)->columnSpanFull(),
 
-                Section::make('DateTime Information')
+                Section::make()
                     ->schema([
                         DateTimePicker::make('date_time_in_terminal')
-                            ->label('Date/Time in Terminal')
+                            ->inlineLabel()
+                            ->label('In Terminal')
+                            ->placeholder('In Terminal')
+                            ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5'])
                             ->required()
                             ->seconds(false)
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_parking')
-                            ->label('Date/Time of Parking')
+                            ->inlineLabel()
+                            ->label('Parking')
+                            ->placeholder('Parking')
+                            ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5'])
                             ->required()
                             ->seconds(false)
                             ->afterOrEqual('date_time_in_terminal')
@@ -172,7 +149,10 @@ class DispatchedTripsForm
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_departure')
-                            ->label('Date/Time of Departure')
+                            ->inlineLabel()
+                            ->label('Departure')
+                            ->placeholder('Departure')
+                            ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5'])
                             ->required()
                             ->seconds(false)
                             ->afterOrEqual('date_time_of_parking')
@@ -182,7 +162,10 @@ class DispatchedTripsForm
                             ->columnSpan(1),
 
                         DateTimePicker::make('date_time_of_arrival')
-                            ->label('Date/Time of Arrival')
+                            ->inlineLabel()
+                            ->label('Arrival')
+                            ->placeholder('Arrival')
+                            ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5'])
                             ->required()
                             ->seconds(false)
                             ->afterOrEqual('date_time_of_departure')
@@ -192,100 +175,82 @@ class DispatchedTripsForm
                             ->columnSpan(1),
 
                         TimePicker::make('idle_time_start')
-                            ->label('Idle Time Start')
+                            ->inlineLabel()
+                            ->extraInputAttributes(['class' => 'h-5 w-14 text-2xs p-0.5'])
+                            ->label('Idle Start')
                             ->seconds(false)
                             ->columnSpan(1),
 
                         TimePicker::make('idle_time_end')
-                            ->label('Idle Time End')
+                            ->inlineLabel()
+                            ->label('Idle End')
+                            ->extraInputAttributes(['class' => 'h-5 w-14 text-2xs p-0.5'])
+                            ->maxWidth('xs')
                             ->seconds(false)
                             ->afterOrEqual('idle_time_start')
                             ->validationMessages([
                                 'after_or_equal' => 'Idle time end must be after or equal to idle time start.',
                             ])
                             ->columnSpan(1),
-                    ])->columns(2)->columnSpanFull(),
+                    ])->columns(6)->columnSpanFull(),
 
-                Section::make('Trip Statistics')
+                Section::make()
                     ->schema([
-                        Section::make('Total Travel Time')
-                            ->schema([
-                                TextInput::make('hours')
-                                    ->label('Hours')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(999)
-                                    ->default(0)
-                                    ->suffix('hrs')
-                                    ->required()
-                                    ->columnSpan(1),
-
-                                TextInput::make('minutes')
-                                    ->label('Minutes')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(59)
-                                    ->default(0)
-                                    ->suffix('mins')
-                                    ->required()
-                                    ->columnSpan(1),
-                            ])
+                        TextInput::make('hours')
+                            ->inlineLabel()
+                            ->label('Hours')
+                            ->extraInputAttributes(['class' => 'h-5 w-12 text-2xs p-0.5'])
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(999)
+                            ->default(0)
+                            ->suffix('h')
+                            ->required()
                             ->columnSpan(1),
 
-                        Section::make('Total Additional Time')
-                            ->schema([
-                                TextInput::make('add_time_hours')
-                                    ->label('Hours')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(999)
-                                    ->default(0)
-                                    ->suffix('hrs')
-                                    ->required()
-                                    ->columnSpan(1),
+                        TextInput::make('minutes')
+                            ->inlineLabel()
+                            ->label('Mins')
+                            ->extraInputAttributes(['class' => 'h-5 w-12 text-2xs p-0.5'])
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(59)
+                            ->default(0)
+                            ->suffix('m')
+                            ->required()
+                            ->columnSpan(1),
 
-                                TextInput::make('add_time_minutes')
-                                    ->label('Minutes')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(59)
-                                    ->default(0)
-                                    ->suffix('mins')
-                                    ->required()
-                                    ->columnSpan(1),
-                            ])->columnSpan(1),
+                        TextInput::make('add_time_hours')
+                            ->inlineLabel()
+                            ->label('Add H')
+                            ->extraInputAttributes(['class' => 'h-5 w-12 text-2xs p-0.5'])
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(999)
+                            ->default(0)
+                            ->suffix('h')
+                            ->required()
+                            ->columnSpan(1),
 
-                        // TextInput::make('ticket_number')
-                        //     ->label('Ticket Number')
-                        //     ->integer()
-                        //     ->default(0)
-                        //     ->columnSpan(1),
+                        TextInput::make('add_time_minutes')
+                            ->inlineLabel()
+                            ->label('Add M')
+                            ->extraInputAttributes(['class' => 'h-5 w-12 text-2xs p-0.5'])
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(59)
+                            ->default(0)
+                            ->suffix('m')
+                            ->required()
+                            ->columnSpan(1),
 
-                        // TextInput::make('passengers_on_board')
-                        //     ->label('Passengers on Board')
-                        //     ->integer()
-                        //     ->default(0)
-                        //     ->columnSpan(1),
-
-                        // TextInput::make('baggage_amount')
-                        //     ->label('Baggage Amount')
-                        //     ->integer()
-                        //     ->default(0)
-                        //     ->columnSpan(1),
-
-                        // TextInput::make('baggage_ticket_no')
-                        //     ->label('Baggage Ticket No')
-                        //     ->integer()
-                        //     ->default(0)
-                        //     ->columnSpan(1),
-                    ])->columns(2)->columnSpanFull(),
-
-                Textarea::make('remarks')
-                    ->label('Remarks')
-                    ->nullable()
-                    ->maxLength(500)
-                    ->rows(3)
-                    ->columnSpanFull(),
+                        Textarea::make('remarks')
+                            ->label('Remarks')
+                            ->nullable()
+                            ->maxLength(500)
+                            ->rows(1)
+                            ->columnSpan(2),
+                    ])->columns(6)->columnSpanFull(),
             ]);
     }
 }

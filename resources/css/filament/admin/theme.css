@@ -1,0 +1,48 @@
+/* Reduce navbar/topbar height and spacing */
+.fi-topbar {
+    @apply h-12 py-2;
+}
+
+.fi-topbar-heading {
+    @apply text-lg;
+}
+
+/* Reduce page header padding */
+.fi-page-heading {
+    @apply py-2;
+}
+
+/* Reduce section heading margins */
+.fi-section-heading {
+    @apply my-2;
+}
+
+/* Reduce form section spacing */
+.fi-section {
+    @apply py-2 px-4;
+}
+
+/* Reduce input field padding */
+input, select, textarea {
+    @apply py-1 px-2;
+}
+
+/* Reduce gap between form sections */
+.fi-form-section {
+    @apply gap-2;
+}
+
+/* Reduce gap between inline label and input */
+[class*="fi-input"][class*="inline"] {
+    @apply gap-0.5;
+}
+
+.fi-fo-field-wrapper.fi-fo-field-wrapper--inline-label {
+    @apply gap-0.5;
+}
+
+/* Reduce inline label font size */
+.fi-fo-field-wrapper.fi-fo-field-wrapper--inline-label > label {
+    @apply text-2xs;
+}
+

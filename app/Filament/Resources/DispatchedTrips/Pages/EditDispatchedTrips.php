@@ -11,6 +11,10 @@ class EditDispatchedTrips extends EditRecord
 {
     protected static string $resource = DispatchedTripsResource::class;
 
+    protected ?string $heading = 'Edit Trip';
+
+    protected ?string $subheading = null;
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Convert stored total_travel_time_minutes back to hours + minutes

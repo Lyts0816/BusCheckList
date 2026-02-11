@@ -10,6 +10,8 @@ use App\Models\DispatchSheet;
 use Filament\Schemas\Components\FusedGroup;
 use App\Models\NatureOfTrip;
 use App\Models\DispatchedTrips;
+use App\Models\Drivers;
+use App\Models\Conductors;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TimePicker;
@@ -24,16 +26,16 @@ class DispatchedTripsForm
         $setBusDetails = function (?int $busId, callable $set): void {
             if (! $busId) {
                 $set('bus_class', null);
-                $set('driver_name', null);
-                $set('conductor_name', null);
+                $set('snap_drivers', null);
+                $set('snap_conductors', null);
 
                 return;
             }
 
             $bus = BusNumber::with(['driver', 'conductor'])->find($busId);
             $set('bus_class', $bus?->bus_class);
-            $set('driver_name', $bus?->driver?->driver_name);
-            $set('conductor_name', $bus?->conductor?->conductor_name);
+            $set('snap_drivers', $bus?->driver?->driver_name);
+            $set('snap_conductors', $bus?->conductor?->conductor_name);
         };
 
         return $schema
@@ -105,23 +107,25 @@ class DispatchedTripsForm
                                     ->columnSpan(1),
 
                                 Select::make('nature_of_trip_id')
-                                    ->placeholder('Nature')
                                     ->required()
                                     ->options(NatureOfTrip::pluck('nature_of_trip_name', 'id'))
                                     ->searchable()
                                     ->columnSpan(1),
 
-                                TextInput::make('driver_name')
-                                    ->placeholder('Driver')
-                                    ->readOnly(true)
-                                    ->dehydrated(false)
+                                Select::make('snap_drivers')
+                                    ->label('Driver')
+                                    ->options(Drivers::pluck('driver_name', 'driver_name'))
+                                    ->searchable()
+                                    ->required()
                                     ->columnSpan(1),
 
-                                TextInput::make('conductor_name')
-                                    ->placeholder('Conductor')
-                                    ->readOnly(true)
-                                    ->dehydrated(false)
+                                Select::make('snap_conductors')
+                                    ->label('Conductor')
+                                    ->options(Conductors::pluck('conductor_name', 'conductor_name'))
+                                    ->searchable()
+                                    ->required()
                                     ->columnSpan(1),
+
                             ])->columnSpan(2),
 
                         //--------------------------------------------

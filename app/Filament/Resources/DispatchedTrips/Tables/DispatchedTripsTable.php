@@ -12,6 +12,7 @@ use Filament\Actions\BulkAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class DispatchedTripsTable
 {
@@ -24,48 +25,42 @@ class DispatchedTripsTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('time_of_arrival')
-                    ->time('h:i A')
-                    ->label('Arrivals')
-                    ->sortable(),
-
-
-                TextColumn::make('dispatchSheet.route.from')
-                    ->label('Routes')
-                    ->formatStateUsing(function ($record) {
-                        $route = $record->dispatchSheet?->route;
-
-                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
-                    })
-                    ->sortable(),
+                TextColumn::make('dispatchSheet.dispatch_date')
+                    ->label('Dispatch Date')
+                    ->date('M d, Y')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('busNumber.bus_number')
-                    ->label('Bus Numbers')
+                    ->label('Bus Number')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('busNumber.bus_class')
-                    ->label('Bus Classes')
+                TextColumn::make('snap_drivers')
+                    ->label('Driver')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('time_of_departure')
+                TextColumn::make('snap_conductors')
+                    ->label('Conductor')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('time_of_arrival')
                     ->time('h:i A')
-                    ->label('Departures')
+                    ->label('Time of Arrival')
                     ->sortable(),
 
-                TextColumn::make('km_run')
-                    ->label('KM Runs')
-                    ->sortable(),
-                TextColumn::make('total_travel_time_minutes')
-                    ->label('Total Travel Time')
-                    ->formatStateUsing(
-                        fn($state) =>
-                        $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
-                            ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
-                    )
+                TextColumn::make('dispatchSheet.route.from')
+                    ->label('Route')
+                    ->formatStateUsing(function ($record) {
+                        $route = $record->dispatchSheet?->route;
+                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                    })
                     ->sortable()
                     ->searchable(),
+
+
             ])
             ->defaultSort('trip_number', 'desc')
             ->filters([
@@ -122,11 +117,11 @@ class DispatchedTripsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
 
                 \Filament\Actions\Action::make('export_csv')
-                    ->label('Export all record')
+                    ->label('Export CSV')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function () {
@@ -165,17 +160,67 @@ class DispatchedTripsTable
                         return redirect($exportUrl);
                     }),
 
+                \Filament\Actions\Action::make('export_pdf')
+                    ->label('Export PDF')
+                    ->icon('heroicon-o-document')
+                    ->color('info')
+                    ->action(function () {
+
+                        // Get the current page URL with all query parameters
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        // Parse query parameters
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        // Build export URL with current filters
+                        $exportUrl = route('export.dispatched-trips-pdf');
+                        $exportParams = [];
+
+                        // Extract search parameter from tableSearch
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        // Extract other relevant filters
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                            }
+                        }
+
+
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        // Redirect to export URL
+                        return redirect($exportUrl);
+                    }),
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
 
-                    BulkAction::make('export_selected')
-                        ->label('Export Selected')
+                    BulkAction::make('export_selected_csv')
+                        ->label('Export Selected (CSV)')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
                         ->action(function ($records) {
                             $ids = $records->pluck('id')->toArray();
                             $exportUrl = route('export.dispatched-trips') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+
+                    BulkAction::make('export_selected_pdf')
+                        ->label('Export Selected (PDF)')
+                        ->icon('heroicon-o-document')
+                        ->color('info')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.dispatched-trips-pdf') . '?ids=' . implode(',', $ids);
                             return redirect($exportUrl);
                         }),
                 ]),

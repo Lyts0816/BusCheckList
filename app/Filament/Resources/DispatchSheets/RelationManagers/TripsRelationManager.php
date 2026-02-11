@@ -11,7 +11,10 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use BackedEnum;
+use Dom\Text;
 use Filament\Actions\ViewAction;
+use App\Models\Drivers;
+use App\Models\Conductors;
 
 class TripsRelationManager extends RelationManager
 {
@@ -30,30 +33,34 @@ class TripsRelationManager extends RelationManager
                     ->label('Trip Number')
                     ->sortable()
                     ->searchable(),
-
-                TextColumn::make('time_of_departure')
-                    ->time('h:i A')
-                    ->label('Departure')
-                    ->sortable(),
+                TextColumn::make('busNumber.bus_number')
+                    ->label('Bus Number')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('time_of_arrival')
                     ->time('h:i A')
                     ->label('Arrival')
                     ->sortable(),
-
-                TextColumn::make('dispatchSheet.route.from')
-                    ->label('Route')
-                    ->formatStateUsing(function ($record) {
-                        $route = $record->dispatchSheet?->route;
-
-                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
-                    })
-                    ->sortable(),
-
-                TextColumn::make('busNumber.bus_number')
-                    ->label('Bus Number')
+                
+                TextColumn::make('snap_drivers')
+                    ->label('Driver')
                     ->sortable()
                     ->searchable(),
+                    
+                TextColumn::make('snap_conductors')
+                    ->label('Conductor')
+                    ->sortable()
+                    ->searchable(),
+
+                // TextColumn::make('dispatchSheet.route.from')
+                //     ->label('Route')
+                //     ->formatStateUsing(function ($record) {
+                //         $route = $record->dispatchSheet?->route;
+
+                //         return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                //     })
+                //     ->sortable(),
 
             ])
             ->defaultSort('trip_number', 'desc')

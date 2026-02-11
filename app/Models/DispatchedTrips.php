@@ -16,6 +16,8 @@ class DispatchedTrips extends Model
         'dispatch_sheet_id',
         'trip_number',
         'nature_of_trip_id',
+        'driver_id',
+        'conductor_id',
         'time_in_terminal',
         'time_of_parking',
         'time_of_departure',
@@ -29,6 +31,8 @@ class DispatchedTrips extends Model
         'baggage_amount',
         'baggage_ticket_no',
         'remarks',
+        'snap_drivers',
+        'snap_conductors',
     ];
 
     protected $casts = [
@@ -54,5 +58,15 @@ class DispatchedTrips extends Model
     public function dispatchSheet()
     {
         return $this->belongsTo(DispatchSheet::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Drivers::class, 'driver_id');
+    }
+
+    public function conductor()
+    {
+        return $this->belongsTo(Conductors::class, 'conductor_id');
     }
 }

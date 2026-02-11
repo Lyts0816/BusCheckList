@@ -27,12 +27,6 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
-            $table->foreignId('bus_class_id')
-                ->constrained('bus_classes')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
-
-
             $table->foreignId('nature_of_trip_id')
                 ->constrained('nature_of_trips')
                 ->cascadeOnUpdate()

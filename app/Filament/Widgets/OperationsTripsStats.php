@@ -21,13 +21,32 @@ class OperationsTripsStats extends StatsOverviewWidget
         $startDate = $this->pageFilters['start_date'] ?? now()->startOfMonth();
         $endDate = $this->pageFilters['end_date'] ?? now();
 
-        $startDateTime = Carbon::parse($startDate)->startOfDay();
-        $endDateTime = Carbon::parse($endDate)->endOfDay();
+        $tripsDeparted = DispatchedTrips::whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('dispatch_date', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        })
+            ->whereNotNull('time_of_departure')
+            ->count();
 
-        $tripsDeparted = DispatchedTrips::whereBetween('date_time_of_departure', [$startDateTime, $endDateTime])->count();
-        $tripsArrived = DispatchedTrips::whereBetween('date_time_of_arrival', [$startDateTime, $endDateTime])->count();
-        $inTransit = DispatchedTrips::whereNotNull('date_time_of_departure')
-            ->whereNull('date_time_of_arrival')
+        $tripsArrived = DispatchedTrips::whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('dispatch_date', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        })
+            ->whereNotNull('time_of_arrival')
+            ->count();
+
+        $inTransit = DispatchedTrips::whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('dispatch_date', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        })
+            ->whereNotNull('time_of_departure')
+            ->whereNull('time_of_arrival')
             ->count();
 
         return [

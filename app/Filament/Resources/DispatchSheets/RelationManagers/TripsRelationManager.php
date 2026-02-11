@@ -10,13 +10,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use BackedEnum;
 use Filament\Actions\ViewAction;
 
 class TripsRelationManager extends RelationManager
 {
     protected static string $relationship = 'trips';
-
-    protected static ?string $title = 'Dispatch Trips';
 
     public function form(Schema $schema): Schema
     {
@@ -32,19 +31,23 @@ class TripsRelationManager extends RelationManager
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('date_time_of_departure')
-                    ->dateTime('M d, Y h:i A')
+                TextColumn::make('time_of_departure')
+                    ->time('h:i A')
                     ->label('Departure')
                     ->sortable(),
 
-                TextColumn::make('date_time_of_arrival')
-                    ->dateTime('M d, Y h:i A')
+                TextColumn::make('time_of_arrival')
+                    ->time('h:i A')
                     ->label('Arrival')
                     ->sortable(),
 
-                TextColumn::make('route.from')
+                TextColumn::make('dispatchSheet.route.from')
                     ->label('Route')
-                    ->formatStateUsing(fn($record) => $record->route?->from . ' - ' . $record->route?->to)
+                    ->formatStateUsing(function ($record) {
+                        $route = $record->dispatchSheet?->route;
+
+                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                    })
                     ->sortable(),
 
                 TextColumn::make('busNumber.bus_number')
@@ -52,9 +55,6 @@ class TripsRelationManager extends RelationManager
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('driver.driver_name')
-                    ->label('Driver')
-                    ->sortable(),
             ])
             ->defaultSort('trip_number', 'desc')
             ->headerActions([
@@ -73,8 +73,8 @@ class TripsRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
-                ViewAction::make()
-                    ->modalWidth('7xl'),
+                // ViewAction::make()
+                //     ->modalWidth('7xl'),
                 EditAction::make()
                     ->modalWidth('7xl')
                     ->mutateRecordDataUsing(function (array $data): array {
@@ -99,7 +99,7 @@ class TripsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                DeleteAction::make(),
+                // DeleteAction::make(),
             ]);
     }
 }

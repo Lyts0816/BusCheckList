@@ -19,10 +19,10 @@ class DispatchedTripsInfolist
                         TextEntry::make('trip_number')
                             ->label('Trip Number'),
 
-                        TextEntry::make('route.from')
+                        TextEntry::make('dispatchSheet.route.from')
                             ->label('From'),
 
-                        TextEntry::make('route.to')
+                        TextEntry::make('dispatchSheet.route.to')
                             ->label('To'),
 
                         TextEntry::make('km_run')
@@ -40,43 +40,30 @@ class DispatchedTripsInfolist
                         TextEntry::make('busNumber.bus_number')
                             ->label('Bus Number'),
 
-                        TextEntry::make('busClass.class_name')
+                        TextEntry::make('busNumber.bus_class')
                             ->label('Bus Class'),
                     ])
                     ->columns(2)
                     ->columnSpan(4)
                     ->compact(),
 
-                Section::make('Personnel')
+                Section::make('Time Information')
                     ->schema([
-                        TextEntry::make('driver.driver_name')
-                            ->label('Driver'),
+                        TextEntry::make('time_in_terminal')
+                            ->label('Time in Terminal')
+                            ->time(),
 
-                        TextEntry::make('conductor.conductor_name')
-                            ->label('Conductor'),
-                    ])
-                    ->columns(2)
-                    ->columnSpan(4)
-                    ->compact(),
+                        TextEntry::make('time_of_parking')
+                            ->label('Time of Parking')
+                            ->time(),
 
-                Section::make('DateTime Information')
-                    ->schema([
-                        TextEntry::make('date_time_in_terminal')
-                            ->label('Date/Time in Terminal')
-                            ->dateTime(),
+                        TextEntry::make('time_of_arrival')
+                            ->label('Time of Arrival')
+                            ->time(),
 
-                        TextEntry::make('date_time_of_parking')
-                            ->label('Date/Time of Parking')
-                            ->dateTime(),
-
-                        TextEntry::make('date_time_of_arrival')
-                            ->label('Date/Time of Arrival')
-
-                            ->dateTime(),
-
-                        TextEntry::make('date_time_of_departure')
-                            ->label('Date/Time of Departure')
-                            ->dateTime(),
+                        TextEntry::make('time_of_departure')
+                            ->label('Time of Departure')
+                            ->time(),
 
                         TextEntry::make('idle_time_start')
                             ->label('Idle Time Start')

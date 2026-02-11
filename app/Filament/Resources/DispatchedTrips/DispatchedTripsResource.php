@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\DispatchedTrips;
 
-use App\Filament\Resources\DispatchedTrips\Pages\CreateDispatchedTrips;
-use App\Filament\Resources\DispatchedTrips\Pages\EditDispatchedTrips;
 use App\Filament\Resources\DispatchedTrips\Pages\ListDispatchedTrips;
 use App\Filament\Resources\DispatchedTrips\Pages\ViewDispatchedTrips;
 use App\Filament\Resources\DispatchedTrips\Schemas\DispatchedTripsForm;
@@ -55,9 +53,7 @@ class DispatchedTripsResource extends Resource
     {
         return [
             'index' => ListDispatchedTrips::route('/'),
-            'create' => CreateDispatchedTrips::route('/create'),
             'view' => ViewDispatchedTrips::route('/{record}'),
-            'edit' => EditDispatchedTrips::route('/{record}/edit'),
         ];
     }
 }

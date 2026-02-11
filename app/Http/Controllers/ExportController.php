@@ -493,12 +493,9 @@ class ExportController extends Controller
     {
         // Start with base query
         $query = DispatchedTrips::with([
-            'route',
+            'dispatchSheet.route',
             'busNumber',
-            'busClass',
             'natureOfTrip',
-            'driver',
-            'conductor'
         ]);
 
         // Bulk export: if ids are provided, only export those
@@ -514,15 +511,14 @@ class ExportController extends Controller
                         ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
                             $bq->where('bus_number', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('busClass', function ($bcq) use ($searchTerm) {
-                            $bcq->where('class_name', 'like', "%{$searchTerm}%");
+                        ->orWhereHas('dispatchSheet.route', function ($rq) use ($searchTerm) {
+                            $rq->where('from', 'like', "%{$searchTerm}%")
+                                ->orWhere('to', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('driver', function ($dq) use ($searchTerm) {
-                            $dq->where('driver_name', 'like', "%{$searchTerm}%");
+                        ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_class', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('conductor', function ($cq) use ($searchTerm) {
-                            $cq->where('conductor_name', 'like', "%{$searchTerm}%");
-                        });
+                        ;
                 });
             }
 
@@ -568,12 +564,10 @@ class ExportController extends Controller
             'Bus Number',
             'Bus Class',
             'Nature of Trip',
-            'Driver',
-            'Conductor',
-            'Date/Time in Terminal',
-            'Date/Time of Parking',
-            'Date/Time of Arrival',
-            'Date/Time of Departure',
+            'Time in Terminal',
+            'Time of Parking',
+            'Time of Arrival',
+            'Time of Departure',
             'Idle Time Start',
             'Idle Time End',
             'Total Travel Time',
@@ -609,18 +603,16 @@ class ExportController extends Controller
 
             $row = [
                 $trip->trip_number ?? 'N/A',
-                $trip->route?->from ?? 'N/A',
-                $trip->route?->to ?? 'N/A',
+                $trip->dispatchSheet?->route?->from ?? 'N/A',
+                $trip->dispatchSheet?->route?->to ?? 'N/A',
                 $trip->km_run ?? 'N/A',
                 $trip->busNumber?->bus_number ?? 'N/A',
-                $trip->busClass?->class_name ?? 'N/A',
+                $trip->busNumber?->bus_class ?? 'N/A',
                 $trip->natureOfTrip?->nature_of_trip_name ?? 'N/A',
-                $trip->driver?->driver_name ?? 'N/A',
-                $trip->conductor?->conductor_name ?? 'N/A',
-                $trip->date_time_in_terminal ? $trip->date_time_in_terminal->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_parking ? $trip->date_time_of_parking->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_arrival ? $trip->date_time_of_arrival->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_departure ? $trip->date_time_of_departure->format('Y-m-d H:i:s') : 'N/A',
+                $trip->time_in_terminal ? $trip->time_in_terminal->format('H:i:s') : 'N/A',
+                $trip->time_of_parking ? $trip->time_of_parking->format('H:i:s') : 'N/A',
+                $trip->time_of_arrival ? $trip->time_of_arrival->format('H:i:s') : 'N/A',
+                $trip->time_of_departure ? $trip->time_of_departure->format('H:i:s') : 'N/A',
                 $trip->idle_time_start ?? 'N/A',
                 $trip->idle_time_end ?? 'N/A',
                 $travelTimeFormatted,

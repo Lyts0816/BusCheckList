@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DispatchSheets\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,6 +19,18 @@ class DispatchSheetsTable
                 TextColumn::make('dispatch_date')
                     ->date()
                     ->sortable(),
+                TextColumn::make('route')
+                    ->label('From - To')
+                    ->getStateUsing(function ($record) {
+                        $route = $record->route;
+
+                        return $route ? ($route->from . ' - ' . $route->to) : 'No Route';
+                    }),
+                
+                TextColumn::make('route.distance')
+                    ->label('Distance')
+                    ->sortable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

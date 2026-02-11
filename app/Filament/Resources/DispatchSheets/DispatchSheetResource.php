@@ -20,10 +20,10 @@ use Filament\Tables\Table;
 class DispatchSheetResource extends Resource
 {
     protected static ?string $model = DispatchSheet::class;
+    
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static ?string $recordTitleAttribute = 'Dispatch Sheet';
+    protected static ?string $navigationLabel = 'Dispatch Header';
 
     public static function form(Schema $schema): Schema
     {

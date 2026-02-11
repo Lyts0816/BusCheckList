@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\DispatchedTrips\Tables;
 
+use App\Models\BusNumber;
+use App\Models\Routes;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -23,15 +24,19 @@ class DispatchedTripsTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('date_time_of_arrival')
-                    ->dateTime('M d, Y h:i A')
+                TextColumn::make('time_of_arrival')
+                    ->time('h:i A')
                     ->label('Arrivals')
                     ->sortable(),
 
 
-                TextColumn::make('route.from')
+                TextColumn::make('dispatchSheet.route.from')
                     ->label('Routes')
-                    ->formatStateUsing(fn($record) => $record->route->from . ' - ' . $record->route->to)
+                    ->formatStateUsing(function ($record) {
+                        $route = $record->dispatchSheet?->route;
+
+                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                    })
                     ->sortable(),
 
                 TextColumn::make('busNumber.bus_number')
@@ -39,21 +44,13 @@ class DispatchedTripsTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('busClass.class_name')
+                TextColumn::make('busNumber.bus_class')
                     ->label('Bus Classes')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('driver.driver_name')
-                    ->label('Drivers')
-                    ->sortable(),
-
-                TextColumn::make('conductor.conductor_name')
-                    ->label('Conductors')
-                    ->sortable(),
-
-                TextColumn::make('date_time_of_departure')
-                    ->dateTime('M d, Y h:i A')
+                TextColumn::make('time_of_departure')
+                    ->time('h:i A')
                     ->label('Departures')
                     ->sortable(),
 
@@ -72,21 +69,41 @@ class DispatchedTripsTable
             ])
             ->defaultSort('trip_number', 'desc')
             ->filters([
-                SelectFilter::make('bus_class_id')
+                SelectFilter::make('bus_class')
                     ->label('Bus Classes')
-                    ->preload()
-                    ->relationship('busClass', 'class_name')
-                    ->searchable(),
+                    ->options(fn () => BusNumber::query()
+                        ->whereNotNull('bus_class')
+                        ->distinct()
+                        ->orderBy('bus_class')
+                        ->pluck('bus_class', 'bus_class'))
+                    ->searchable()
+                    ->query(function ($query, array $data) {
+                        $value = $data['value'] ?? null;
+
+                        return $query->when(
+                            $value,
+                            fn ($query) => $query->whereHas('busNumber', fn ($q) => $q->where('bus_class', $value))
+                        );
+                    }),
 
                 SelectFilter::make('route_id')
                     ->label('Routes')
-                    ->preload()
-                    ->relationship('route', 'from')
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->from . ' - ' . $record->to)
-                    ->searchable(),
+                    ->options(fn () => Routes::query()
+                        ->orderBy('from')
+                        ->get()
+                        ->mapWithKeys(fn ($route) => [$route->id => $route->from . ' - ' . $route->to]))
+                    ->searchable()
+                    ->query(function ($query, array $data) {
+                        $value = $data['value'] ?? null;
 
-                Filter::make('date_time_of_arrival')
-                    ->label('Arrival Date')
+                        return $query->when(
+                            $value,
+                            fn ($query) => $query->whereHas('dispatchSheet', fn ($q) => $q->where('route_id', $value))
+                        );
+                    }),
+
+                Filter::make('dispatch_date')
+                    ->label('Dispatch Date')
                     ->schema([
                         DatePicker::make('arrival_from')->label('From'),
                         DatePicker::make('arrival_until')->label('To'),
@@ -95,44 +112,16 @@ class DispatchedTripsTable
                         return $query
                             ->when(
                                 $data['arrival_from'] ?? null,
-                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '>=', $date)
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '>=', $date))
                             )
                             ->when(
                                 $data['arrival_until'] ?? null,
-                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '<=', $date)
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '<=', $date))
                             );
                     }),
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()
-                    ->mutateRecordDataUsing(function (array $data): array {
-                        // Convert total_travel_time_minutes back to hours + minutes for editing
-                        $totalTravelMinutes = $data['total_travel_time_minutes'] ?? 0;
-                        $data['hours'] = intdiv($totalTravelMinutes, 60);
-                        $data['minutes'] = $totalTravelMinutes % 60;
-
-                        // Convert total_add_time_minutes back to add_time_hours + add_time_minutes for editing
-                        $totalAddMinutes = $data['total_add_time_minutes'] ?? 0;
-                        $data['add_time_hours'] = intdiv($totalAddMinutes, 60);
-                        $data['add_time_minutes'] = $totalAddMinutes % 60;
-
-                        return $data;
-                    })
-                    ->using(function (array $data, $record): void {
-                        // Convert hours + minutes to total_travel_time_minutes before saving
-                        $data['total_travel_time_minutes'] =
-                            (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
-
-                        // Convert add_time_hours + add_time_minutes to total_add_time_minutes before saving
-                        $data['total_add_time_minutes'] =
-                            (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
-
-                        // Remove temporary fields
-                        unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
-
-                        $record->update($data);
-                    }),
             ])
             ->headerActions([
 

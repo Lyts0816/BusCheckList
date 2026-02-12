@@ -615,7 +615,7 @@ class ExportController extends Controller
             }
 
             // Format baggage amount
-            $baggageAmount = $trip->baggage_amount ? '₱' . number_format($trip->baggage_amount, 2) : 'N/A';
+            $baggageAmount = $trip->baggage_amount ? number_format($trip->baggage_amount, 2) : 'N/A';
 
             $row = [
                 $trip->trip_number ?? 'N/A',

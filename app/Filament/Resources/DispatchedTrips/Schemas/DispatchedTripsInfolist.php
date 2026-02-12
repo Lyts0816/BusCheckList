@@ -120,7 +120,7 @@ class DispatchedTripsInfolist
 
                         TextEntry::make('baggage_amount')
                             ->label('Baggage Amount')
-                            ->formatStateUsing(fn($state) => $state ? '₱' . number_format($state, 2) : '-'),
+                            ->formatStateUsing(fn($state) => $state ? number_format($state, 2) : '-'),
 
                         TextEntry::make('baggage_ticket_no')
                             ->label('Baggage Ticket #'),

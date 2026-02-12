@@ -23,7 +23,7 @@ class DispatchSheetResource extends Resource
     
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $navigationLabel = 'Dispatch Header';
+    protected static ?string $navigationLabel = 'Dispatch Main Forms';
 
     public static function form(Schema $schema): Schema
     {

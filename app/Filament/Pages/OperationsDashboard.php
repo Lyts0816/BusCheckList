@@ -20,7 +20,7 @@ class OperationsDashboard extends BaseDashboard
     // ...
     protected static string $routePath = '/operations-dashboard';
 
-    protected static ?string $title = 'Operations Dashboard';
+    protected static ?string $title = 'Ops. Dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 

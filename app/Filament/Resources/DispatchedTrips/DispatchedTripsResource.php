@@ -23,6 +23,8 @@ class DispatchedTripsResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Trips';
 
+    protected static ?string $navigationLabel = 'Dispatch Trips List';
+
     // protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
 
     protected static ?int $navigationSort = 1;

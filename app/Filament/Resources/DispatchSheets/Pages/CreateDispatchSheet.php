@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateDispatchSheet extends CreateRecord
 {
     protected static string $resource = DispatchSheetResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('edit', ['record' => $this->record]);
+    }
 }

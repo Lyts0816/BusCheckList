@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\BusClasses\Tables;
+namespace App\Filament\Resources\DispatchSheets\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -9,32 +10,32 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class BusClassesTable
+class DispatchSheetsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('class_name')
-                    ->label('Bus Class Name')
-                    ->searchable(),
+                TextColumn::make('dispatch_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('route')
+                    ->label('From - To')
+                    ->getStateUsing(function ($record) {
+                        $route = $record->route;
 
-                TextColumn::make('description')
-                    ->label('Description')
-                    ->wrap(),
-
-                TextColumn::make('remarks')
-                    ->label('Remarks')
-                    ->searchable(),
+                        return $route ? ($route->from . ' - ' . $route->to) : 'No Route';
+                    }),
+                
+                TextColumn::make('route.distance')
+                    ->label('Distance')
+                    ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('updated_at')
-                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -48,7 +49,7 @@ class BusClassesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    // DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -23,10 +23,12 @@ class TripTypeWidget extends ChartWidget
         $endDate = $this->pageFilters['end_date'] ?? now();
 
         $tripTypeData = DispatchedTrips::with('natureOfTrip')
-            ->whereBetween('date_time_of_departure', [
-                Carbon::parse($startDate)->startOfDay(),
-                Carbon::parse($endDate)->endOfDay(),
-            ])
+            ->whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('dispatch_date', [
+                    Carbon::parse($startDate)->startOfDay(),
+                    Carbon::parse($endDate)->endOfDay(),
+                ]);
+            })
             ->selectRaw('nature_of_trip_id, count(*) as count')
             ->groupBy('nature_of_trip_id')
             ->get()

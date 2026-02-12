@@ -23,10 +23,12 @@ class OperationsChecklistStats extends StatsOverviewWidget
         $startDate = $this->pageFilters['start_date'] ?? now()->startOfMonth();
         $endDate = $this->pageFilters['end_date'] ?? now();
 
-        $tripsQuery = DispatchedTrips::whereBetween('date_time_of_departure', [
-            Carbon::parse($startDate)->startOfDay(),
-            Carbon::parse($endDate)->endOfDay(),
-        ]);
+        $tripsQuery = DispatchedTrips::whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('dispatch_date', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        });
 
         $trips = $tripsQuery->count();
         $driversOnDuty = Drivers::where('status', 'Active')->count();

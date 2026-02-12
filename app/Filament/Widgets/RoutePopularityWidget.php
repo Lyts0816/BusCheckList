@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\DispatchedTrips;
-use App\Models\Routes;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
@@ -22,20 +21,22 @@ class RoutePopularityWidget extends ChartWidget
         $startDate = $this->pageFilters['start_date'] ?? now()->startOfMonth();
         $endDate = $this->pageFilters['end_date'] ?? now();
 
-        $routeData = DispatchedTrips::with('route')
-            ->whereBetween('date_time_of_departure', [
-                Carbon::parse($startDate)->startOfDay(),
-                Carbon::parse($endDate)->endOfDay(),
-            ])
-            ->selectRaw('route_id, count(*) as count')
-            ->groupBy('route_id')
-            ->orderByDesc('count')
-            ->limit(10)
+        $routeData = DispatchedTrips::with('dispatchSheet.route')
+            ->whereHas('dispatchSheet', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('dispatch_date', [
+                    Carbon::parse($startDate)->startOfDay(),
+                    Carbon::parse($endDate)->endOfDay(),
+                ]);
+            })
             ->get()
-            ->mapWithKeys(function ($item) {
-                $routeName = $item->route ? $item->route->from . ' → ' . $item->route->to : 'Unknown';
-                return [$routeName => $item->count];
-            });
+            ->groupBy(function ($trip) {
+                $route = $trip->dispatchSheet?->route;
+
+                return $route ? ($route->from . ' → ' . $route->to) : 'Unknown';
+            })
+            ->map(fn ($group) => $group->count())
+            ->sortDesc()
+            ->take(10);
 
         if ($routeData->isEmpty()) {
             return [

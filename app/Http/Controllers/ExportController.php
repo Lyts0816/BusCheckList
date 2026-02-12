@@ -8,6 +8,7 @@ use App\Models\Drivers;
 use App\Models\DispatchedTrips;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class ExportController extends Controller
 {
@@ -491,14 +492,11 @@ class ExportController extends Controller
 
     public function exportDispatchedTrips(Request $request)
     {
-        // Start with base query
+        // Start with base query - load all necessary relationships
         $query = DispatchedTrips::with([
-            'route',
+            'dispatchSheet.route',
             'busNumber',
-            'busClass',
             'natureOfTrip',
-            'driver',
-            'conductor'
         ]);
 
         // Bulk export: if ids are provided, only export those
@@ -514,15 +512,14 @@ class ExportController extends Controller
                         ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
                             $bq->where('bus_number', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('busClass', function ($bcq) use ($searchTerm) {
-                            $bcq->where('class_name', 'like', "%{$searchTerm}%");
+                        ->orWhereHas('dispatchSheet.route', function ($rq) use ($searchTerm) {
+                            $rq->where('from', 'like', "%{$searchTerm}%")
+                                ->orWhere('to', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('driver', function ($dq) use ($searchTerm) {
-                            $dq->where('driver_name', 'like', "%{$searchTerm}%");
+                        ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_class', 'like', "%{$searchTerm}%");
                         })
-                        ->orWhereHas('conductor', function ($cq) use ($searchTerm) {
-                            $cq->where('conductor_name', 'like', "%{$searchTerm}%");
-                        });
+                        ;
                 });
             }
 
@@ -551,7 +548,7 @@ class ExportController extends Controller
 
         // Return CSV as download
         return response($csvContent)
-            ->header('Content-Type', 'text/csv')
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
@@ -559,30 +556,36 @@ class ExportController extends Controller
     {
         $title = 'DISPATCHED TRIPS REPORT - ' . now()->format('F d, Y');
         
-        // CSV Headers based on DispatchedTripsForm fields
+        // CSV Headers matching the infolist structure
         $headers = [
             'Trip Number',
+            'Dispatch Date',
             'Route (From)',
             'Route (To)',
             'KM Run',
+            'Nature of Trip',
             'Bus Number',
             'Bus Class',
-            'Nature of Trip',
             'Driver',
             'Conductor',
-            'Date/Time in Terminal',
-            'Date/Time of Parking',
-            'Date/Time of Arrival',
-            'Date/Time of Departure',
+            'Time in Terminal',
+            'Time of Parking',
+            'Time of Arrival',
+            'Time of Departure',
             'Idle Time Start',
             'Idle Time End',
             'Total Travel Time',
             'Total Add Time',
+            'Ticket Serial #',
+            'Passengers on Board',
+            'Baggage Amount',
+            'Baggage Ticket #',
             'Remarks'
         ];
 
-        // Start CSV content with title and headers
-        $csv  = '"' . $title . '"' . "\n\n";
+        // Start CSV content with UTF-8 BOM, title and headers
+        $csv  = "\xEF\xBB\xBF"; // UTF-8 BOM
+        $csv .= '"' . $title . '"' . "\n\n";
         $csv .= '"' . implode('","', $headers) . '"' . "\n";
 
         // Add data rows
@@ -607,24 +610,32 @@ class ExportController extends Controller
                 $addTimeFormatted = "{$addHours} {$addHourLabel} and {$addMinutes} {$addMinuteLabel}";
             }
 
+            // Format baggage amount
+            $baggageAmount = $trip->baggage_amount ? '₱' . number_format($trip->baggage_amount, 2) : 'N/A';
+
             $row = [
                 $trip->trip_number ?? 'N/A',
-                $trip->route?->from ?? 'N/A',
-                $trip->route?->to ?? 'N/A',
-                $trip->km_run ?? 'N/A',
-                $trip->busNumber?->bus_number ?? 'N/A',
-                $trip->busClass?->class_name ?? 'N/A',
+                $trip->dispatchSheet?->dispatch_date ? date('M d, Y', strtotime($trip->dispatchSheet->dispatch_date)) : 'N/A',
+                $trip->dispatchSheet?->route?->from ?? 'N/A',
+                $trip->dispatchSheet?->route?->to ?? 'N/A',
+                $trip->dispatchSheet?->distance_at_dispatch ? $trip->dispatchSheet->distance_at_dispatch . ' km' : 'N/A',
                 $trip->natureOfTrip?->nature_of_trip_name ?? 'N/A',
-                $trip->driver?->driver_name ?? 'N/A',
-                $trip->conductor?->conductor_name ?? 'N/A',
-                $trip->date_time_in_terminal ? $trip->date_time_in_terminal->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_parking ? $trip->date_time_of_parking->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_arrival ? $trip->date_time_of_arrival->format('Y-m-d H:i:s') : 'N/A',
-                $trip->date_time_of_departure ? $trip->date_time_of_departure->format('Y-m-d H:i:s') : 'N/A',
-                $trip->idle_time_start ?? 'N/A',
-                $trip->idle_time_end ?? 'N/A',
+                $trip->busNumber?->bus_number ?? 'N/A',
+                $trip->busNumber?->bus_class ?? 'N/A',
+                $trip->snap_drivers ?? 'N/A',
+                $trip->snap_conductors ?? 'N/A',
+                $trip->time_in_terminal ? $trip->time_in_terminal->format('h:i A') : 'N/A',
+                $trip->time_of_parking ? $trip->time_of_parking->format('h:i A') : 'N/A',
+                $trip->time_of_arrival ? $trip->time_of_arrival->format('h:i A') : 'N/A',
+                $trip->time_of_departure ? $trip->time_of_departure->format('h:i A') : 'N/A',
+                $trip->idle_time_start ? $trip->idle_time_start->format('h:i A') : 'N/A',
+                $trip->idle_time_end ? $trip->idle_time_end->format('h:i A') : 'N/A',
                 $travelTimeFormatted,
                 $addTimeFormatted,
+                $trip->ticket_number ?? 'N/A',
+                $trip->passengers_on_board ?? 'N/A',
+                $baggageAmount,
+                $trip->baggage_ticket_no ?? 'N/A',
                 $trip->remarks ?? 'N/A',
             ];
 
@@ -632,5 +643,70 @@ class ExportController extends Controller
         }
 
         return $csv;
+    }
+
+    // ===================================================================
+    // DISPATCHED TRIPS PDF EXPORT
+    // ===================================================================
+
+    public function exportDispatchedTripsPDF(Request $request)
+    {
+        // Start with base query - load all necessary relationships
+        $query = DispatchedTrips::with([
+            'dispatchSheet.route',
+            'busNumber',
+            'natureOfTrip',
+        ]);
+
+        // Bulk export: if ids are provided, only export those
+        if ($request->has('ids') && !empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        } else {
+            // Apply search filters if provided
+            if ($request->has('search') && !empty($request->search)) {
+                $searchTerm = $request->search;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('trip_number', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_number', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('dispatchSheet.route', function ($rq) use ($searchTerm) {
+                            $rq->where('from', 'like', "%{$searchTerm}%")
+                                ->orWhere('to', 'like', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('busNumber', function ($bq) use ($searchTerm) {
+                            $bq->where('bus_class', 'like', "%{$searchTerm}%");
+                        });
+                });
+            }
+
+            // Apply sorting if provided
+            if ($request->has('sort') && !empty($request->sort)) {
+                $sortField = $request->sort;
+                $sortDirection = $request->get('direction', 'desc');
+                $query->orderBy($sortField, $sortDirection);
+            } else {
+                $query->orderBy('id', 'desc');
+            }
+        }
+
+        // Get the filtered results
+        $dispatchedTrips = $query->get();
+
+        // Generate PDF
+        $pdf = PDF::loadView('exports.dispatched-trips-pdf', [
+            'trips' => $dispatchedTrips,
+            'exportDate' => now()->format('F d, Y'),
+        ]);
+
+        // Generate filename
+        $filename = 'dispatched_trips_' . date('Y-m-d_H-i-s');
+        if ($request->has('search') || $request->has('ids')) {
+            $filename .= '_filtered';
+        }
+        $filename .= '.pdf';
+
+        return $pdf->download($filename);
     }
 }

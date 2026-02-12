@@ -10,10 +10,14 @@ class ViewDispatchedTrips extends ViewRecord
 {
     protected static string $resource = DispatchedTripsResource::class;
 
+    protected ?string $heading = 'View Trip';
+
+    protected ?string $subheading = null;
+
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            // EditAction::make(),
         ];
     }
 }

@@ -22,4 +22,9 @@ class Conductors extends Model
     {
         return $this->hasMany(DispatchedTrips::class, 'conductor_id');
     }
+
+    public function busNumbers()
+    {
+        return $this->hasMany(BusNumber::class, 'conductor_id');
+    }
 }

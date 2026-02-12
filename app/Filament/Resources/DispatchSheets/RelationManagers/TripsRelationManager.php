@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Filament\Resources\DispatchSheets\RelationManagers;
+
+use App\Filament\Resources\DispatchedTrips\Schemas\DispatchedTripsForm;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use BackedEnum;
+use Dom\Text;
+use Filament\Actions\ViewAction;
+use App\Models\Drivers;
+use App\Models\Conductors;
+
+class TripsRelationManager extends RelationManager
+{
+    protected static string $relationship = 'trips';
+
+    public function form(Schema $schema): Schema
+    {
+        return DispatchedTripsForm::configure($schema);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('trip_number')
+                    ->label('Trip Number')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('busNumber.bus_number')
+                    ->label('Bus Number')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('time_of_arrival')
+                    ->time('h:i A')
+                    ->label('Arrival')
+                    ->sortable(),
+                
+                TextColumn::make('snap_drivers')
+                    ->label('Driver')
+                    ->sortable()
+                    ->searchable(),
+                    
+                TextColumn::make('snap_conductors')
+                    ->label('Conductor')
+                    ->sortable()
+                    ->searchable(),
+
+                // TextColumn::make('dispatchSheet.route.from')
+                //     ->label('Route')
+                //     ->formatStateUsing(function ($record) {
+                //         $route = $record->dispatchSheet?->route;
+
+                //         return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                //     })
+                //     ->sortable(),
+
+            ])
+            ->defaultSort('trip_number', 'desc')
+            ->headerActions([
+                CreateAction::make()
+                    ->modalWidth('7xl')
+                    ->mutateDataUsing(function (array $data): array {
+                        $data['total_travel_time_minutes'] =
+                            (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
+
+                        $data['total_add_time_minutes'] =
+                            (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
+
+                        unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
+
+                        return $data;
+                    }),
+            ])
+            ->recordActions([
+                // ViewAction::make()
+                //     ->modalWidth('7xl'),
+                EditAction::make()
+                    ->modalWidth('7xl')
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        $totalTravelMinutes = $data['total_travel_time_minutes'] ?? 0;
+                        $data['hours'] = intdiv($totalTravelMinutes, 60);
+                        $data['minutes'] = $totalTravelMinutes % 60;
+
+                        $totalAddMinutes = $data['total_add_time_minutes'] ?? 0;
+                        $data['add_time_hours'] = intdiv($totalAddMinutes, 60);
+                        $data['add_time_minutes'] = $totalAddMinutes % 60;
+
+                        return $data;
+                    })
+                    ->mutateDataUsing(function (array $data): array {
+                        $data['total_travel_time_minutes'] =
+                            (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
+
+                        $data['total_add_time_minutes'] =
+                            (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
+
+                        unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
+
+                        return $data;
+                    }),
+                // DeleteAction::make(),
+            ]);
+    }
+}

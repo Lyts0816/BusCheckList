@@ -10,6 +10,10 @@ class CreateDispatchedTrips extends CreateRecord
 {
     protected static string $resource = DispatchedTripsResource::class;
 
+    protected ?string $heading = 'New Trip';
+
+    protected ?string $subheading = null;
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Convert hours + minutes to total_travel_time_minutes

@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\DispatchedTrips\Tables;
 
+use App\Models\BusNumber;
+use App\Models\Routes;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -11,6 +12,7 @@ use Filament\Actions\BulkAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class DispatchedTripsTable
 {
@@ -23,70 +25,80 @@ class DispatchedTripsTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('date_time_of_arrival')
-                    ->dateTime('M d, Y h:i A')
-                    ->label('Arrivals')
-                    ->sortable(),
-
-
-                TextColumn::make('route.from')
-                    ->label('Routes')
-                    ->formatStateUsing(fn($record) => $record->route->from . ' - ' . $record->route->to)
-                    ->sortable(),
+                TextColumn::make('dispatchSheet.dispatch_date')
+                    ->label('Dispatch Date')
+                    ->date('M d, Y')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('busNumber.bus_number')
-                    ->label('Bus Numbers')
+                    ->label('Bus Number')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('busClass.class_name')
-                    ->label('Bus Classes')
+                TextColumn::make('snap_drivers')
+                    ->label('Driver')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('driver.driver_name')
-                    ->label('Drivers')
-                    ->sortable(),
-
-                TextColumn::make('conductor.conductor_name')
-                    ->label('Conductors')
-                    ->sortable(),
-
-                TextColumn::make('date_time_of_departure')
-                    ->dateTime('M d, Y h:i A')
-                    ->label('Departures')
-                    ->sortable(),
-
-                TextColumn::make('km_run')
-                    ->label('KM Runs')
-                    ->sortable(),
-                TextColumn::make('total_travel_time_minutes')
-                    ->label('Total Travel Time')
-                    ->formatStateUsing(
-                        fn($state) =>
-                        $state ? intdiv($state, 60) . ' hour' . (intdiv($state, 60) !== 1 ? 's' : '') .
-                            ' and ' . ($state % 60) . ' minute' . (($state % 60) !== 1 ? 's' : '') : '0 minutes'
-                    )
+                TextColumn::make('snap_conductors')
+                    ->label('Conductor')
                     ->sortable()
                     ->searchable(),
+
+                TextColumn::make('time_of_arrival')
+                    ->time('h:i A')
+                    ->label('Time of Arrival')
+                    ->sortable(),
+
+                TextColumn::make('dispatchSheet.route.from')
+                    ->label('Route')
+                    ->formatStateUsing(function ($record) {
+                        $route = $record->dispatchSheet?->route;
+                        return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
+                    })
+                    ->sortable()
+                    ->searchable(),
+
+
             ])
             ->defaultSort('trip_number', 'desc')
             ->filters([
-                SelectFilter::make('bus_class_id')
+                SelectFilter::make('bus_class')
                     ->label('Bus Classes')
-                    ->preload()
-                    ->relationship('busClass', 'class_name')
-                    ->searchable(),
+                    ->options(fn () => BusNumber::query()
+                        ->whereNotNull('bus_class')
+                        ->distinct()
+                        ->orderBy('bus_class')
+                        ->pluck('bus_class', 'bus_class'))
+                    ->searchable()
+                    ->query(function ($query, array $data) {
+                        $value = $data['value'] ?? null;
+
+                        return $query->when(
+                            $value,
+                            fn ($query) => $query->whereHas('busNumber', fn ($q) => $q->where('bus_class', $value))
+                        );
+                    }),
 
                 SelectFilter::make('route_id')
                     ->label('Routes')
-                    ->preload()
-                    ->relationship('route', 'from')
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->from . ' - ' . $record->to)
-                    ->searchable(),
+                    ->options(fn () => Routes::query()
+                        ->orderBy('from')
+                        ->get()
+                        ->mapWithKeys(fn ($route) => [$route->id => $route->from . ' - ' . $route->to]))
+                    ->searchable()
+                    ->query(function ($query, array $data) {
+                        $value = $data['value'] ?? null;
 
-                Filter::make('date_time_of_arrival')
-                    ->label('Arrival Date')
+                        return $query->when(
+                            $value,
+                            fn ($query) => $query->whereHas('dispatchSheet', fn ($q) => $q->where('route_id', $value))
+                        );
+                    }),
+
+                Filter::make('dispatch_date')
+                    ->label('Dispatch Date')
                     ->schema([
                         DatePicker::make('arrival_from')->label('From'),
                         DatePicker::make('arrival_until')->label('To'),
@@ -95,49 +107,21 @@ class DispatchedTripsTable
                         return $query
                             ->when(
                                 $data['arrival_from'] ?? null,
-                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '>=', $date)
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '>=', $date))
                             )
                             ->when(
                                 $data['arrival_until'] ?? null,
-                                fn($query, $date) => $query->whereDate('date_time_of_arrival', '<=', $date)
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '<=', $date))
                             );
                     }),
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()
-                    ->mutateRecordDataUsing(function (array $data): array {
-                        // Convert total_travel_time_minutes back to hours + minutes for editing
-                        $totalTravelMinutes = $data['total_travel_time_minutes'] ?? 0;
-                        $data['hours'] = intdiv($totalTravelMinutes, 60);
-                        $data['minutes'] = $totalTravelMinutes % 60;
-
-                        // Convert total_add_time_minutes back to add_time_hours + add_time_minutes for editing
-                        $totalAddMinutes = $data['total_add_time_minutes'] ?? 0;
-                        $data['add_time_hours'] = intdiv($totalAddMinutes, 60);
-                        $data['add_time_minutes'] = $totalAddMinutes % 60;
-
-                        return $data;
-                    })
-                    ->using(function (array $data, $record): void {
-                        // Convert hours + minutes to total_travel_time_minutes before saving
-                        $data['total_travel_time_minutes'] =
-                            (($data['hours'] ?? 0) * 60) + ($data['minutes'] ?? 0);
-
-                        // Convert add_time_hours + add_time_minutes to total_add_time_minutes before saving
-                        $data['total_add_time_minutes'] =
-                            (($data['add_time_hours'] ?? 0) * 60) + ($data['add_time_minutes'] ?? 0);
-
-                        // Remove temporary fields
-                        unset($data['hours'], $data['minutes'], $data['add_time_hours'], $data['add_time_minutes']);
-
-                        $record->update($data);
-                    }),
-            ])
+            ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
 
                 \Filament\Actions\Action::make('export_csv')
-                    ->label('Export all record')
+                    ->label('Export CSV')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function () {
@@ -176,17 +160,67 @@ class DispatchedTripsTable
                         return redirect($exportUrl);
                     }),
 
+                \Filament\Actions\Action::make('export_pdf')
+                    ->label('Export PDF')
+                    ->icon('heroicon-o-document')
+                    ->color('info')
+                    ->action(function () {
+
+                        // Get the current page URL with all query parameters
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        // Parse query parameters
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        // Build export URL with current filters
+                        $exportUrl = route('export.dispatched-trips-pdf');
+                        $exportParams = [];
+
+                        // Extract search parameter from tableSearch
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        // Extract other relevant filters
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                            }
+                        }
+
+
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        // Redirect to export URL
+                        return redirect($exportUrl);
+                    }),
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
 
-                    BulkAction::make('export_selected')
-                        ->label('Export Selected')
+                    BulkAction::make('export_selected_csv')
+                        ->label('Export Selected (CSV)')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
                         ->action(function ($records) {
                             $ids = $records->pluck('id')->toArray();
                             $exportUrl = route('export.dispatched-trips') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+
+                    BulkAction::make('export_selected_pdf')
+                        ->label('Export Selected (PDF)')
+                        ->icon('heroicon-o-document')
+                        ->color('info')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.dispatched-trips-pdf') . '?ids=' . implode(',', $ids);
                             return redirect($exportUrl);
                         }),
                 ]),

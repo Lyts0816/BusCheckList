@@ -20,6 +20,11 @@ class Routes extends Model
     // Relationships
     public function dispatchedTrips()
     {
-        return $this->hasMany(DispatchedTrips::class, 'route_id');
+        return $this->hasManyThrough(
+            DispatchedTrips::class,
+            DispatchSheet::class,
+            'route_id',
+            'dispatch_sheet_id'
+        );
     }
 }

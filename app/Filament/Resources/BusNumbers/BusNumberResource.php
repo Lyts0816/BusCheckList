@@ -53,9 +53,9 @@ class BusNumberResource extends Resource
     {
         return [
             'index' => ListBusNumbers::route('/'),
-            // 'create' => CreateBusNumber::route('/create'),
-            // 'view' => ViewBusNumber::route('/{record}'),
-            // 'edit' => EditBusNumber::route('/{record}/edit'),
+            'create' => CreateBusNumber::route('/create'),
+            'view' => ViewBusNumber::route('/{record}'),
+            'edit' => EditBusNumber::route('/{record}/edit'),
         ];
     }
 }

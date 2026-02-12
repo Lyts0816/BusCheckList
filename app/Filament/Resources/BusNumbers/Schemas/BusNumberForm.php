@@ -12,7 +12,7 @@ class BusNumberForm
     {
         return $schema
             ->components([
-                
+
                 TextInput::make('bus_number')
                     ->maxValue(10)
                     ->label('Bus Number')
@@ -21,40 +21,8 @@ class BusNumberForm
                     ->validationMessages([
                         'maxValue' => 'Bus Number cannot be greater than 10 characters.',
                         'unique' => 'This bus number already exists.',
-                    ]),
-
-                TextInput::make('bus_model')
-                    ->label('Bus Model')
-                    ->datalist([
-                        'YUTONG',
-                        'HIGER',
-                        'ZHONGTONG',
                     ])
-                    ->maxValue(15)
-                    ->validationMessages([
-                        'maxValue' => 'Bus Model cannot be greater than 15 characters.',
-                    ]),
-
-                TextInput::make('bus_class')
-                    ->label('Bus Class')
-                    ->maxValue(50)
-                    ->validationMessages([
-                        'maxValue' => 'Bus Class cannot be greater than 50 characters.',
-                    ]),
-
-                TextInput::make('bus_type')
-                    ->label('Bus Type')
-                    ->maxValue(25)
-                    ->validationMessages([
-                        'maxValue' => 'Bus Type cannot be greater than 25 characters.',
-                    ]),
-
-                TextInput::make('seat_capacity')
-                    ->label('Seat Capacity')
-                    ->maxValue(2)
-                    ->validationMessages([
-                        'maxValue' => 'Seat Capacity cannot be greater than 2 characters.',
-                    ]),
+                    ->columnSpanFull(),
 
                 Select::make('driver_id')
                     ->label('Driver')
@@ -69,6 +37,33 @@ class BusNumberForm
                     ->searchable()
                     ->preload()
                     ->nullable(),
+                
+                Select::make('bus_class')
+                    ->label('Bus Class')
+                    ->options([
+                        'AIRCONDITIONED' => 'AIRCONDITIONED',
+                        'NON-AIRCONDITIONED' => 'NON-AIRCONDITIONED',
+                    ])
+                    ->required(),
+
+                TextInput::make('bus_model')
+                    ->label('Bus Model')
+                    ->datalist([
+                        'YUTONG',
+                        'HIGER',
+                        'ZHONGTONG',
+                    ])
+                    ->maxValue(15)
+                    ->validationMessages([
+                        'maxValue' => 'Bus Model cannot be greater than 15 characters.',
+                    ]),
+
+                TextInput::make('seat_capacity')
+                    ->label('Seat Capacity')
+                    ->maxValue(2)
+                    ->validationMessages([
+                        'maxValue' => 'Seat Capacity cannot be greater than 2 characters.',
+                    ]),
             ]);
     }
 }

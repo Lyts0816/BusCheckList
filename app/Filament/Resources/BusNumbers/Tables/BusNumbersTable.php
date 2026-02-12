@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BusNumbers\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,11 +20,22 @@ class BusNumbersTable
                     ->label('Bus Number')
                     ->searchable(),
 
+                TextColumn::make('bus_class')
+                    ->label('Bus Class')
+                    ->sortable(),
+
+                TextColumn::make('driver.driver_name')
+                    ->label('Driver Name')
+                    ->searchable()
+                    ->sortable(),
+                
+                TextColumn::make('conductor.conductor_name')
+                    ->label('Conductor Name')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('bus_model')
                     ->label('Bus Model'),
-
-                TextColumn::make('bus_type')
-                    ->label('Bus Type'),
 
                 TextColumn::make('seat_capacity')
                     ->label('Seating Capacity'),

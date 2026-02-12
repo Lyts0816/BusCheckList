@@ -15,6 +15,9 @@ use Dom\Text;
 use Filament\Actions\ViewAction;
 use App\Models\Drivers;
 use App\Models\Conductors;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
 
 class TripsRelationManager extends RelationManager
 {
@@ -53,15 +56,6 @@ class TripsRelationManager extends RelationManager
                     ->sortable()
                     ->searchable(),
 
-                // TextColumn::make('dispatchSheet.route.from')
-                //     ->label('Route')
-                //     ->formatStateUsing(function ($record) {
-                //         $route = $record->dispatchSheet?->route;
-
-                //         return $route ? ($route->from . ' - ' . $route->to) : 'Unknown';
-                //     })
-                //     ->sortable(),
-
             ])
             ->defaultSort('trip_number', 'desc')
             ->headerActions([
@@ -78,10 +72,82 @@ class TripsRelationManager extends RelationManager
 
                         return $data;
                     }),
+
+                Action::make('export_all_csv')
+                    ->label('Export All (CSV)')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        $dispatchSheetId = $this->getOwnerRecord()?->id;
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        $exportUrl = route('export.dispatched-trips');
+                        $exportParams = [];
+
+                        if ($dispatchSheetId) {
+                            $exportParams['dispatch_sheet_id'] = $dispatchSheetId;
+                        }
+
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                            }
+                        }
+
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        return redirect($exportUrl);
+                    }),
+
+                Action::make('export_all_pdf')
+                    ->label('Export All (PDF)')
+                    ->icon('heroicon-o-document')
+                    ->color('info')
+                    ->action(function () {
+                        $dispatchSheetId = $this->getOwnerRecord()?->id;
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        $exportUrl = route('export.dispatched-trips-pdf');
+                        $exportParams = [];
+
+                        if ($dispatchSheetId) {
+                            $exportParams['dispatch_sheet_id'] = $dispatchSheetId;
+                        }
+
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                            }
+                        }
+
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        return redirect($exportUrl);
+                    }),
             ])
             ->recordActions([
-                // ViewAction::make()
-                //     ->modalWidth('7xl'),
                 EditAction::make()
                     ->modalWidth('7xl')
                     ->mutateRecordDataUsing(function (array $data): array {
@@ -106,7 +172,29 @@ class TripsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                // DeleteAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('export_selected_csv')
+                        ->label('Export Selected (CSV)')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.dispatched-trips') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+
+                    BulkAction::make('export_selected_pdf')
+                        ->label('Export Selected (PDF)')
+                        ->icon('heroicon-o-document')
+                        ->color('info')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.dispatched-trips-pdf') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+                ]),
             ]);
     }
 }

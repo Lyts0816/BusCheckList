@@ -499,6 +499,10 @@ class ExportController extends Controller
             'natureOfTrip',
         ]);
 
+        if ($request->filled('dispatch_sheet_id')) {
+            $query->where('dispatch_sheet_id', $request->dispatch_sheet_id);
+        }
+
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
@@ -657,6 +661,10 @@ class ExportController extends Controller
             'busNumber',
             'natureOfTrip',
         ]);
+
+        if ($request->filled('dispatch_sheet_id')) {
+            $query->where('dispatch_sheet_id', $request->dispatch_sheet_id);
+        }
 
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {

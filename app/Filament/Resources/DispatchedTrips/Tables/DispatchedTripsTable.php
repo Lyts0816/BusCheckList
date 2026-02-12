@@ -64,20 +64,19 @@ class DispatchedTripsTable
             ])
             ->defaultSort('trip_number', 'desc')
             ->filters([
-                SelectFilter::make('bus_class')
-                    ->label('Bus Classes')
+                
+                SelectFilter::make('bus_number')
+                    ->label('Bus Number')
                     ->options(fn () => BusNumber::query()
-                        ->whereNotNull('bus_class')
-                        ->distinct()
-                        ->orderBy('bus_class')
-                        ->pluck('bus_class', 'bus_class'))
+                        ->orderBy('bus_number')
+                        ->pluck('bus_number', 'bus_number'))
                     ->searchable()
                     ->query(function ($query, array $data) {
                         $value = $data['value'] ?? null;
 
                         return $query->when(
                             $value,
-                            fn ($query) => $query->whereHas('busNumber', fn ($q) => $q->where('bus_class', $value))
+                            fn ($query) => $query->whereHas('busNumber', fn ($q) => $q->where('bus_number', $value))
                         );
                     }),
 
@@ -100,17 +99,17 @@ class DispatchedTripsTable
                 Filter::make('dispatch_date')
                     ->label('Dispatch Date')
                     ->schema([
-                        DatePicker::make('arrival_from')->label('From'),
-                        DatePicker::make('arrival_until')->label('To'),
+                        DatePicker::make('dispatch_from')->label('From'),
+                        DatePicker::make('dispatch_until')->label('To'),
                     ])
                     ->query(function ($query, array $data) {
                         return $query
                             ->when(
-                                $data['arrival_from'] ?? null,
+                                $data['dispatch_from'] ?? null,
                                 fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '>=', $date))
                             )
                             ->when(
-                                $data['arrival_until'] ?? null,
+                                $data['dispatch_until'] ?? null,
                                 fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '<=', $date))
                             );
                     }),

@@ -63,4 +63,12 @@ class BusNumberPolicy
     {
         return $user->isAdmin() || $user->isAdminOperations() || $user->isOperations();
     }
+
+    /**
+     * Determine whether the user can import bus numbers.
+     */
+    public function import(User $user): bool
+    {
+        return $user->isAdmin() || $user->isAdminOperations();
+    }
 }

@@ -5,10 +5,12 @@ namespace App\Filament\Resources\BusNumbers\Pages;
 use App\Filament\Resources\BusNumbers\BusNumberResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Facades\Filament;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\BusNumberImport;
+use App\Models\BusNumber;
 use Illuminate\Support\Facades\Storage;
 
 class ListBusNumbers extends ListRecords
@@ -24,6 +26,8 @@ class ListBusNumbers extends ListRecords
 
             Action::make('ImportBusNumbers')
                 ->label('Upload Excel')
+                ->authorize(fn (): bool => Filament::auth()->user()?->can('import', BusNumber::class) ?? false)
+                ->visible(fn (): bool => Filament::auth()->user()?->can('import', BusNumber::class) ?? false)
                 ->modalSubmitActionLabel('Import')
                 ->schema([
                     FileUpload::make('file')

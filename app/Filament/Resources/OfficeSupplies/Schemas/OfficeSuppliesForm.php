@@ -14,7 +14,14 @@ class OfficeSuppliesForm
             ->components([
                 TextInput::make('name')
                     ->label('Item Name')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->validationMessages([
+                        'required' => 'Item name is required',
+                        'maxValue' => 'Item name cannot be greater than 50 characters.',
+                        'unique' => 'Item name already exists.',
+                    ]),
+                    
 
                 TextInput::make('category')
                     ->label('Category')
@@ -27,6 +34,7 @@ class OfficeSuppliesForm
                 TextInput::make('stock')
                     ->label('Stock Quantity')
                     ->numeric()
+                    ->maxValue(999)
                     ->required(),
 
             ]);

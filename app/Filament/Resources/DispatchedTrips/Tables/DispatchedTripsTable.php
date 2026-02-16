@@ -120,7 +120,7 @@ class DispatchedTripsTable
             ->headerActions([
 
                 \Filament\Actions\Action::make('export_csv')
-                    ->label('Export CSV')
+                    ->label('Export All in CSV')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function () {
@@ -160,7 +160,7 @@ class DispatchedTripsTable
                     }),
 
                 \Filament\Actions\Action::make('export_pdf')
-                    ->label('Export PDF')
+                    ->label('Export All in PDF')
                     ->icon('heroicon-o-document')
                     ->color('info')
                     ->action(function () {

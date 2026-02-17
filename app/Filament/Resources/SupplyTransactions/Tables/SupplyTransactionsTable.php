@@ -19,10 +19,11 @@ class SupplyTransactionsTable
                     ->badge()
                     ->color(fn(string $state) => $state === 'IN' ? 'success' : 'danger'),
 
-                TextColumn::make('department')
-                    ->searchable(),
+                // TextColumn::make('department')
+                //     ->searchable(),
 
                 TextColumn::make('user')
+                    ->label('Transacted By')
                     ->searchable(),
 
                 TextColumn::make('created_at')

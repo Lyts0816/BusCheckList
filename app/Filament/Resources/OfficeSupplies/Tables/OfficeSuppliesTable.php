@@ -28,7 +28,7 @@ class OfficeSuppliesTable
                 TextColumn::make('stock')
                     ->label('Stock Quantity')
                     ->badge()
-                    ->color(fn (int $state) => $state <= 5 ? 'danger' : 'success')
+                    ->color(fn (int $state) => $state <= 3 ? 'danger' : 'success')
                     ->sortable(),
 
                 TextColumn::make('created_at')

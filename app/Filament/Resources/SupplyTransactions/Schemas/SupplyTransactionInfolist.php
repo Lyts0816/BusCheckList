@@ -12,8 +12,9 @@ class SupplyTransactionInfolist
         return $schema
             ->components([
                 TextEntry::make('type'),
-                TextEntry::make('department'),
-                TextEntry::make('user'),
+
+                // TextEntry::make('department'),
+                // TextEntry::make('user'),
                 TextEntry::make('created_at')
                     ->dateTime(),
                 TextEntry::make('updated_at')

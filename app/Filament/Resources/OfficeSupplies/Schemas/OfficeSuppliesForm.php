@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OfficeSupplies\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 
@@ -17,20 +18,42 @@ class OfficeSuppliesForm
                     ->label('Item Name')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->rule('regex:/^[A-Za-z\s]+$/')
                     ->validationMessages([
                         'required' => 'Item name is required',
                         'maxValue' => 'Item name cannot be greater than 50 characters.',
                         'unique' => 'Item name already exists.',
+                        'regex' => 'The item name may only contain letters and spaces.',
                     ]),
                     
 
-                TextInput::make('category')
+                Select::make('category')
                     ->label('Category')
-                    ->required(),
+                    ->required()
+                    ->options([
+                        'Writing Supplies' => 'Writing Supplies',
+                        'Paper Supplies' => 'Paper Supplies',
+                        'Filing & Organization Supplies' => 'Filing & Organization Supplies',
+                        'Cutting & Fastening Tools' => 'Cutting & Fastening Tools',
+                        'Printer & Technical Supplies' => 'Printer & Technical Supplies',
+                    ])
+                    ->validationMessages([
+                        'required' => 'Category is required',
+                    ]),
 
-                TextInput::make('unit')
+                Select::make('unit')
                     ->label('Unit of Measurement')
-                    ->required(),
+                    ->required()
+                    ->options([
+                        'PCS' => 'PCS',
+                        'BOX' => 'BOX',
+                        'PACK' => 'PACK',
+                        'REAM' => 'REAM',
+                        'SET' => 'SET',
+                        'ROLL' => 'ROLL',
+                        'PAIR' => 'PAIR',
+                        'CASE' => 'CASE',
+                    ]),
 
                 TextInput::make('stock')
                     ->label('Stock Quantity')

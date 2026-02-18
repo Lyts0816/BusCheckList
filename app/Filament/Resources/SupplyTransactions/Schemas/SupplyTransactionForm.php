@@ -27,7 +27,11 @@ class SupplyTransactionForm
 
             TextInput::make('user')
                 ->label('Recipient Name')
-                ->required(),
+                ->rule('regex:/^[A-Za-z\s]+$/')
+                ->required()
+                ->validationMessages([
+                    'regex' => 'The recipient name may only contain letters and spaces.',
+                ]),
 
             Textarea::make('remarks')
                 ->columnSpanFull(),

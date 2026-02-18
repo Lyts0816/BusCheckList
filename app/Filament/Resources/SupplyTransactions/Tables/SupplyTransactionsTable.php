@@ -23,7 +23,7 @@ class SupplyTransactionsTable
                 //     ->searchable(),
 
                 TextColumn::make('user')
-                    ->label('Transacted By')
+                    ->label('Recipient Name')
                     ->searchable(),
 
                 TextColumn::make('created_at')

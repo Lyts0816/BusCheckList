@@ -24,37 +24,47 @@ class AssignedComputersTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
+                    
                 TextColumn::make('assigned_to')
                     ->searchable(),
+
                 TextColumn::make('computer_name')
                     ->label('Computer Name')
                     ->searchable(),
+
                 TextColumn::make('department')
                     ->sortable(),
+
                 TextColumn::make('systemUnit.serial_number')
                     ->label('System Unit')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('keyboard.serial_number')
                     ->label('Keyboard')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('mouse.serial_number')
                     ->label('Mouse')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('monitor.serial_number')
                     ->label('Monitor')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('ups.serial_number')
                     ->label('UPS')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

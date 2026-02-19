@@ -18,6 +18,7 @@ class BorrowLogsTable
     {
         return $table
             ->columns([
+                
                 TextColumn::make('borrower_name')
                     ->label('Borrower')
                     ->searchable()
@@ -58,7 +59,6 @@ class BorrowLogsTable
                     ]),
             ])
             ->filters([
-             
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -67,7 +67,6 @@ class BorrowLogsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     // DeleteBulkAction::make(),
-
                 ]),
             ]);
     }

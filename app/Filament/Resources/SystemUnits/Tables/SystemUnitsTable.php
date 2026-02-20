@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 use Filament\Actions\ActionGroup;
+use Filament\Support\Enums\Size;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
@@ -120,6 +121,7 @@ class SystemUnitsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
+
             ->filters([
 
                 SelectFilter::make('assigned_to')
@@ -276,16 +278,26 @@ class SystemUnitsTable
                         $year = $data['value'] ?? null;
                         return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
-            ], layout: FiltersLayout::Modal)
+            ], layout: FiltersLayout::Modal)->filtersFormColumns(2)
 
             ->recordActions([
-
                 ActionGroup::make([
-                ViewAction::make(),
-                EditAction::make(),
-                ])
-                
-            ], position: RecordActionsPosition::BeforeCells)
+                    
+                    ViewAction::make()
+                        ->color('gray')
+                        ->hiddenLabel()
+                        ->icon('heroicon-m-eye')
+                        ->tooltip('View details'),
+
+                    EditAction::make()
+                        ->color('primary')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit record'),
+                ])->buttonGroup()
+
+            ],position: RecordActionsPosition::BeforeCells)
+            
 
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')

@@ -286,7 +286,7 @@ class SystemUnitsTable
                     ViewAction::make()
                         ->color('gray')
                         ->hiddenLabel()
-                        ->icon('heroicon-m-eye')
+                        ->icon('heroicon-o-eye')
                         ->tooltip('View details'),
 
                     EditAction::make()

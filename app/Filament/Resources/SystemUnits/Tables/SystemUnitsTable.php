@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
+use Filament\Actions\ActionGroup;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
@@ -24,6 +25,7 @@ class SystemUnitsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID'),
+
                 TextColumn::make('assignedComputer.assigned_to')
                     ->label('Assigned To')
                     ->searchable()
@@ -31,6 +33,7 @@ class SystemUnitsTable
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
                     }),
+
                 TextColumn::make('assignedComputer.department')
                     ->label('Department')
                     ->searchable()
@@ -38,18 +41,27 @@ class SystemUnitsTable
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->department ?? 'no-department';
                     }),
+
                 TextColumn::make('asset_code')
                     ->sortable()
                     ->searchable(),
+
                 TextColumn::make('serial_number')
                     ->sortable()
                     ->searchable(),
+
+                TextColumn::make('ip_address')
+                    ->label('IP Address')
+                    ->searchable(),
+
                 TextColumn::make('model')
                     ->sortable()
                     ->searchable(),
+
                 TextColumn::make('date_aquired')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('years_in_service')
                     ->label('Years in Service')
                     ->getStateUsing(function (SystemUnit $record) {
@@ -71,31 +83,37 @@ class SystemUnitsTable
                             "(TIMESTAMPDIFF(MONTH, date_aquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
                         );
                     }),
+
                 TextColumn::make('OS')
                     ->label('OS')
                     ->sortable(),
+
                 TextColumn::make('windows_serial_number')
                     ->sortable(),
+
                 TextColumn::make('microsoft_serial_number')
                     ->searchable(),
+
                 TextColumn::make('ram')
                     ->label('RAM')
                     ->sortable(),
+
                 TextColumn::make('storage')
                     ->label('Storage')
                     ->sortable(),
+
                 TextColumn::make('processor')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('ip_address')
-                    ->label('IP Address')
-                    ->searchable(),
+
                 TextColumn::make('description')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -261,9 +279,14 @@ class SystemUnitsTable
             ], layout: FiltersLayout::Modal)
 
             ->recordActions([
+
+                ActionGroup::make([
                 ViewAction::make(),
                 EditAction::make(),
-            ],position: RecordActionsPosition::BeforeCells)
+                ])
+                
+            ], position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')
@@ -299,6 +322,7 @@ class SystemUnitsTable
                     }),
             ])
             ->toolbarActions([
+
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     BulkAction::make('export_selected')
@@ -311,6 +335,7 @@ class SystemUnitsTable
                             return redirect($exportUrl);
                         }),
                 ]),
+
             ]);
     }
 }

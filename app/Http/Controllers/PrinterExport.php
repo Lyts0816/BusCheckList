@@ -104,6 +104,16 @@ class PrinterExport extends Controller
 
     private function escapeCsvValue($value)
     {
-        return str_replace('"', '""', $value); // Escape double quotes
+        $value = trim((string) $value);
+
+        if (
+            $value !== '' &&
+            preg_match('/^\d+$/', $value) &&
+            (strlen($value) >= 12 || (strlen($value) > 1 && str_starts_with($value, '0')))
+        ) {
+            $value = '="' . $value . '"';
+        }
+
+        return str_replace('"', '""', $value);
     }
 }

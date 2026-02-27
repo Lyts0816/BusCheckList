@@ -160,12 +160,12 @@ class ExportController extends Controller
                 $computer->department,
                 $computer->system_unit_id,
                 $computer->systemUnit?->asset_code ?? 'N/A',
-                $computer->systemUnit?->serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->systemUnit?->serial_number),
                 $computer->systemUnit?->model ?? 'N/A',
                 $computer->systemUnit?->date_aquired ?? 'N/A',
                 $computer->systemUnit?->OS ?? 'N/A',
-                $computer->systemUnit?->windows_serial_number ?? 'N/A',
-                $computer->systemUnit?->microsoft_serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->systemUnit?->windows_serial_number),
+                $this->preserveCsvText($computer->systemUnit?->microsoft_serial_number),
                 $computer->systemUnit?->ram ?? 'N/A',
                 $computer->systemUnit?->storage ?? 'N/A',
                 $computer->systemUnit?->processor ?? 'N/A',
@@ -173,25 +173,25 @@ class ExportController extends Controller
                 $computer->systemUnit?->description ?? 'N/A',
                 $computer->keyboard_id ?? 'N/A',
                 $computer->keyboard?->asset_code ?? 'N/A',
-                $computer->keyboard?->serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->keyboard?->serial_number),
                 $computer->keyboard?->model ?? 'N/A',
                 $computer->keyboard?->date_acquired ?? 'N/A',
                 $computer->keyboard?->description ?? 'N/A',
                 $computer->mouse_id ?? 'N/A',
                 $computer->mouse?->asset_code ?? 'N/A',
-                $computer->mouse?->serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->mouse?->serial_number),
                 $computer->mouse?->model ?? 'N/A',
                 $computer->mouse?->date_acquired ?? 'N/A',
                 $computer->mouse?->description ?? 'N/A',
                 $computer->monitor_id ?? 'N/A',
                 $computer->monitor?->asset_code ?? 'N/A',
-                $computer->monitor?->serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->monitor?->serial_number),
                 $computer->monitor?->model ?? 'N/A',
                 $computer->monitor?->date_acquired ?? 'N/A',
                 $computer->monitor?->description ?? 'N/A',
                 $computer->ups_id ?? 'N/A',
                 $computer->ups?->asset_code ?? 'N/A',
-                $computer->ups?->serial_number ?? 'N/A',
+                $this->preserveCsvText($computer->ups?->serial_number),
                 $computer->ups?->model ?? 'N/A',
                 $computer->ups?->date_acquired ?? 'N/A',
                 $computer->ups?->description ?? 'N/A',
@@ -322,8 +322,27 @@ class ExportController extends Controller
         // Collapse excess whitespace at start/end
         $value = trim($value);
 
+        // Keep long/leading-zero digit strings as text so Excel won't convert to scientific notation
+        if (
+            $value !== '' &&
+            !str_starts_with($value, '="') &&
+            preg_match('/^\d+$/', $value) &&
+            (strlen($value) >= 12 || (strlen($value) > 1 && str_starts_with($value, '0')))
+        ) {
+            $value = '="' . $value . '"';
+        }
+
         // Escape quotes for CSV
         return str_replace('"', '""', $value);
+    }
+
+    private function preserveCsvText($value)
+    {
+        if ($value === null || $value === '') {
+            return 'N/A';
+        }
+
+        return '="' . (string) $value . '"';
     }
 
     // ===================================================================

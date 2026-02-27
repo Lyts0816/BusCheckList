@@ -25,11 +25,13 @@ class SystemUnitsTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('assignedComputer.assigned_to')
                     ->label('Assigned To')
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     // ->sortable()
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
@@ -38,6 +40,7 @@ class SystemUnitsTable
                 TextColumn::make('assignedComputer.department')
                     ->label('Department')
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     // ->sortable()
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->department ?? 'no-department';
@@ -45,26 +48,32 @@ class SystemUnitsTable
 
                 TextColumn::make('asset_code')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('serial_number')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('ip_address')
                     ->label('IP Address')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('model')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('date_aquired')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('years_in_service')
                     ->label('Years in Service')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->getStateUsing(function (SystemUnit $record) {
                         if (! $record->date_aquired) {
                             return 'N/A';
@@ -87,28 +96,35 @@ class SystemUnitsTable
 
                 TextColumn::make('OS')
                     ->label('OS')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('windows_serial_number')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('microsoft_serial_number')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('ram')
                     ->label('RAM')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('storage')
                     ->label('Storage')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('processor')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('description')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -11,6 +11,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\BulkAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -22,40 +23,49 @@ class AssignedComputersTable
         return $table
             ->columns([
                 TextColumn::make('id')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('ID')
                     ->sortable(),
                     
                 TextColumn::make('assigned_to')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 TextColumn::make('computer_name')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Computer Name')
                     ->searchable(),
 
                 TextColumn::make('department')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('systemUnit.serial_number')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('System Unit')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('keyboard.serial_number')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Keyboard')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('mouse.serial_number')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Mouse')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('monitor.serial_number')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Monitor')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('ups.serial_number')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('UPS')
                     ->searchable()
                     ->sortable(),
@@ -75,9 +85,23 @@ class AssignedComputersTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->color('gray')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-eye')
+                        ->tooltip('View details'),
+
+                    EditAction::make()
+                        ->color('primary')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit record'),
+                ])->buttonGroup()
+
             ],position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
             \Filament\Actions\Action::make('export_csv')
                 ->label('Export all record')

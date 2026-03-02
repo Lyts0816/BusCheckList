@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
 
 use Filament\Tables\Filters\SelectFilter;
@@ -26,8 +27,10 @@ class PeripheralsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID'),
+                    
                 TextColumn::make('item_type')
                     ->searchable(),
+
                 TextColumn::make('assignedComputers.assigned_to')
                     ->label('Assigned To')
                     // ->searchable()
@@ -41,6 +44,7 @@ class PeripheralsTable
 
                         return 'Unassigned';
                     }),
+
                 TextColumn::make('department')
                     ->label('Department')
                     // ->searchable()
@@ -54,15 +58,20 @@ class PeripheralsTable
 
                         return 'N/A';
                     }),
+
                 TextColumn::make('asset_code')
                     ->searchable(),
+
                 TextColumn::make('serial_number')
                     ->searchable(),
+
                 TextColumn::make('model')
                     ->searchable(),
+
                 TextColumn::make('date_acquired')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('years_in_service')
                     ->label('Years in Service')
                     ->getStateUsing(function (Peripherals $record) {
@@ -84,11 +93,14 @@ class PeripheralsTable
                             "(TIMESTAMPDIFF(MONTH, date_acquired, CURDATE()) / 12) " . ($direction === 'asc' ? 'asc' : 'desc')
                         );
                     }),
+
                 TextColumn::make('description')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->dateTime()
@@ -96,6 +108,7 @@ class PeripheralsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
+            
             ->filters([
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
@@ -225,9 +238,23 @@ class PeripheralsTable
                     }),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->color('gray')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-eye')
+                        ->tooltip('View details'),
+
+                    EditAction::make()
+                        ->color('primary')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit record'),
+                ])->buttonGroup()
+
             ],position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')

@@ -59,6 +59,7 @@ class SystemUnitsTable
                 TextColumn::make('ip_address')
                     ->label('IP Address')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('model')
@@ -314,7 +315,6 @@ class SystemUnitsTable
 
             ],position: RecordActionsPosition::BeforeCells)
             
-
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')
@@ -348,6 +348,7 @@ class SystemUnitsTable
                         // Redirect to export URL
                         return redirect($exportUrl);
                     }),
+
             ])
             ->toolbarActions([
 

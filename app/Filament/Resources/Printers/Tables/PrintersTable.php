@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -24,30 +25,38 @@ class PrintersTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
+
                 TextColumn::make('department')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('printer_host')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('printer_model')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('printer_asset_code')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('printer_serial_number')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('date_aquired')
                     ->date()
                     ->label('Date Acquired')
                     ->sortable(),
+
                 TextColumn::make('description'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -109,8 +118,19 @@ class PrintersTable
             ])
             ->filtersFormMaxHeight('400px')
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->color('gray')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-eye')
+                        ->tooltip('View details'),
+
+                    EditAction::make()
+                        ->color('primary')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit record'),
+                ])->buttonGroup()
             ],position: RecordActionsPosition::BeforeCells)
             ->headerActions([
             \Filament\Actions\Action::make('export_csv')

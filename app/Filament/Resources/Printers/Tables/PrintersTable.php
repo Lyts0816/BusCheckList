@@ -56,7 +56,7 @@ class PrintersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                    
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -67,14 +67,15 @@ class PrintersTable
             ->filters([
                 SelectFilter::make('printer_model')
                     ->label('Model')
-                    ->options(fn () => Printer::query()
-                        ->whereNotNull('printer_model')
-                        ->where('printer_model', '!=', '')
-                        ->select('printer_model')
-                        ->distinct()
-                        ->orderBy('printer_model')
-                        ->pluck('printer_model', 'printer_model')
-                        ->toArray()
+                    ->options(
+                        fn() => Printer::query()
+                            ->whereNotNull('printer_model')
+                            ->where('printer_model', '!=', '')
+                            ->select('printer_model')
+                            ->distinct()
+                            ->orderBy('printer_model')
+                            ->pluck('printer_model', 'printer_model')
+                            ->toArray()
                     ),
 
                 SelectFilter::make('month')
@@ -96,7 +97,7 @@ class PrintersTable
                     ->query(function (Builder $query, array $data): Builder {
                         $month = $data['value'] ?? null;
 
-                        return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
+                        return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
                     }),
 
                 SelectFilter::make('year')
@@ -113,7 +114,7 @@ class PrintersTable
                     ->query(function (Builder $query, array $data): Builder {
                         $year = $data['value'] ?? null;
 
-                        return $query->when($year, fn (Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
+                        return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
             ])
             ->filtersFormMaxHeight('400px')
@@ -131,51 +132,50 @@ class PrintersTable
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
                 ])->buttonGroup()
-            ],position: RecordActionsPosition::BeforeCells)
+            ], position: RecordActionsPosition::BeforeCells)
             ->headerActions([
-            \Filament\Actions\Action::make('export_csv')
-                ->label('Export all record')
-                ->icon('heroicon-o-document-arrow-down')
-                ->color('success')
-                ->action(function () {
-                    // Get the current page URL with all query parameters
-                    $currentUrl = request()->fullUrl();
-                    $parsedUrl = parse_url($currentUrl);
+                \Filament\Actions\Action::make('export_csv')
+                    ->label('Export all record')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        // Get the current page URL with all query parameters
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
 
-                    // Parse query parameters
-                    $queryParams = [];
-                    if (isset($parsedUrl['query'])) {
-                        parse_str($parsedUrl['query'], $queryParams);
-                    }
+                        // Parse query parameters
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
 
-                    // Build export URL with current filters
-                    $exportUrl = route('export.printers');
-                    $exportParams = [];
+                        // Build export URL with current filters
+                        $exportUrl = route('export.printers');
+                        $exportParams = [];
 
-                    // Extract search parameter from tableSearch
-                    if (isset($queryParams['tableSearch'])) {
-                        $exportParams['search'] = $queryParams['tableSearch'];
-                    }
+                        // Extract search parameter from tableSearch
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
 
-                    // Extract other relevant filters
-                    foreach ($queryParams as $key => $value) {
-                        if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
-                            // Parse Filament filter format
-                            if ($key === 'tableFilters[department][value]') {
-                                $exportParams['department'] = $value;
-                                
+                        // Extract other relevant filters
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                                // Parse Filament filter format
+                                if ($key === 'tableFilters[department][value]') {
+                                    $exportParams['department'] = $value;
+                                }
                             }
                         }
-                    }
 
-                    // Build final URL
-                    if (!empty($exportParams)) {
-                        $exportUrl .= '?' . http_build_query($exportParams);
-                    }
+                        // Build final URL
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
 
-                    // Redirect to export URL
-                    return redirect($exportUrl);
-                }),
+                        // Redirect to export URL
+                        return redirect($exportUrl);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

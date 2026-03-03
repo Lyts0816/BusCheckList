@@ -18,18 +18,24 @@ class BusesTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->hidden(),
+
                 TextColumn::make('bus_number')
                     ->searchable(),
+
                 TextColumn::make('model')
                     ->searchable(),
+
                 TextColumn::make('status')
                     ->searchable(),
+
                 TextColumn::make('base_location')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

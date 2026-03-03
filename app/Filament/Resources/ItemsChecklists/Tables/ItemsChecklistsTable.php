@@ -18,27 +18,36 @@ class ItemsChecklistsTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->hidden(),
+
                 TextColumn::make('item_type')
                     ->searchable(),
+
                 TextColumn::make('item_model')
                     ->searchable(),
+
                 TextColumn::make('bus.bus_number')
                     ->label('Bus Number')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('item_asset_code')
                     ->searchable(),
+
                 TextColumn::make('status')
                     ->searchable(),
+
                 TextColumn::make('date_checked')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('remarks')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

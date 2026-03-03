@@ -18,14 +18,18 @@ class DriversTable
             ->columns([
                 TextColumn::make('driver_name')
                     ->searchable(),
+
                 TextColumn::make('status')
                     ->searchable(),
+
                 TextColumn::make('remarks')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

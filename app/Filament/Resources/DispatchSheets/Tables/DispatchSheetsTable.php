@@ -19,6 +19,7 @@ class DispatchSheetsTable
                 TextColumn::make('dispatch_date')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('route')
                     ->label('From - To')
                     ->getStateUsing(function ($record) {
@@ -26,7 +27,7 @@ class DispatchSheetsTable
 
                         return $route ? ($route->from . ' - ' . $route->to) : 'No Route';
                     }),
-                
+
                 TextColumn::make('route.distance')
                     ->label('Distance')
                     ->sortable(),
@@ -35,6 +36,7 @@ class DispatchSheetsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

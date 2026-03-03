@@ -16,7 +16,7 @@ class SupplyTransactionsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['items.supply']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['items.supply']))
             ->columns([
                 TextColumn::make('type')
                     ->badge()
@@ -46,7 +46,7 @@ class SupplyTransactionsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                    
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

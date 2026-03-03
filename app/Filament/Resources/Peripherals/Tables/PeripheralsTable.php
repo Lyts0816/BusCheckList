@@ -27,7 +27,7 @@ class PeripheralsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID'),
-                    
+
                 TextColumn::make('item_type')
                     ->searchable(),
 
@@ -108,7 +108,7 @@ class PeripheralsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
-            
+
             ->filters([
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
@@ -253,7 +253,7 @@ class PeripheralsTable
                         ->tooltip('Edit record'),
                 ])->buttonGroup()
 
-            ],position: RecordActionsPosition::BeforeCells)
+            ], position: RecordActionsPosition::BeforeCells)
 
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')

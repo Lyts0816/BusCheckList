@@ -329,7 +329,7 @@ class SystemUnitsTable
 
             ->recordActions([
                 ActionGroup::make([
-                    
+
                     ViewAction::make()
                         ->color('gray')
                         ->hiddenLabel()
@@ -343,8 +343,8 @@ class SystemUnitsTable
                         ->tooltip('Edit record'),
                 ])->buttonGroup()
 
-            ],position: RecordActionsPosition::BeforeCells)
-            
+            ], position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')

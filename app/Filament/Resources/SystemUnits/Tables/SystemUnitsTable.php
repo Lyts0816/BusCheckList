@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
@@ -60,6 +61,21 @@ class SystemUnitsTable
                     ->label('IP Address')
                     ->searchable()
                     ->sortable()
+                    ->badge()
+                    ->color(function (SystemUnit $record): ?string {
+                        $ip = $record->ip_address;
+
+                        if (blank($ip)) {
+                            return 'gray';
+                        }
+
+                        $hasDuplicate = SystemUnit::query()
+                            ->where('ip_address', $ip)
+                            ->whereKeyNot($record->getKey())
+                            ->exists();
+
+                        return $hasDuplicate ? 'danger' : 'gray';
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('model')
@@ -140,6 +156,20 @@ class SystemUnitsTable
             ->defaultSort('id', direction: 'desc')
 
             ->filters([
+
+                Filter::make('duplicate_ip_address')
+                    ->label('Duplicate IP Address')
+                    ->query(function (Builder $query): Builder {
+                        return $query
+                            ->whereNotNull('ip_address')
+                            ->where('ip_address', '!=', '')
+                            ->whereIn('ip_address', SystemUnit::query()
+                                ->select('ip_address')
+                                ->whereNotNull('ip_address')
+                                ->where('ip_address', '!=', '')
+                                ->groupBy('ip_address')
+                                ->havingRaw('COUNT(*) > 1'));
+                    }),
 
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')

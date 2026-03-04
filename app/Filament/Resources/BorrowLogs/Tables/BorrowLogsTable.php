@@ -20,30 +20,38 @@ class BorrowLogsTable
             ->columns([
                 
                 TextColumn::make('borrower_name')
+                    ->toggleable()
                     ->label('Borrower')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('department')
+                    ->toggleable()
                     ->sortable(),
 
                 TextColumn::make('borrowed_date')
+                    ->toggleable()
                     ->label('Date Borrowed')
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('department_head_name')
+                    ->toggleable()
                     ->label('Dept. Head'),
 
-                TextColumn::make('handled_by'),
+                TextColumn::make('handled_by')
+                    ->toggleable()
+                    ->label('Handled By'),
 
                 TextColumn::make('items_count')
+                    ->toggleable()
                     ->label('Total Borrowed Itemss')
                     ->badge()
                     ->counts('items') //relationship-aware
                     ->colors(['primary']),
 
                 TextColumn::make('return_status')
+                    ->toggleable()
                     ->label('Return Status')
                     ->badge()
                     ->getStateUsing(function ($record) {

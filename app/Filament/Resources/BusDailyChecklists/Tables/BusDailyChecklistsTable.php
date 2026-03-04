@@ -17,6 +17,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 
+use function PHPSTORM_META\map;
+use function Symfony\Component\String\b;
 
 class BusDailyChecklistsTable
 {
@@ -25,25 +27,36 @@ class BusDailyChecklistsTable
         return $table
             ->columns([
                 TextColumn::make('id')
+                    ->toggleable()
                     ->label('ID')
                     ->searchable(),
+
                 TextColumn::make('bus.bus_number')
+                    ->toggleable()
                     ->label('Bus Number')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('check_date')
+                    ->toggleable()
+                    ->label('Check Date')
                     ->date()
                     ->sortable(),
+
                 IconColumn::make('checked')
+                    ->toggleable()
+                    ->label('Checked')
                     ->boolean(),
+
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                    
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->searchPlaceholder('Search')
             ->defaultSort('id', direction: 'desc')

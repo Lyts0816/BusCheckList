@@ -16,22 +16,27 @@ class OfficeSuppliesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->toggleable()
                     ->label('Item Name')
                     ->sortable(),
 
                 TextColumn::make('category')
+                    ->toggleable()
                     ->label('Category'),
 
                 TextColumn::make('unit')
+                    ->toggleable()
                     ->label('Unit of Measurement'),
 
                 TextColumn::make('stock')
+                    ->toggleable()
                     ->label('Stock Quantity')
                     ->badge()
                     ->color(fn (int $state) => $state <= 3 ? 'danger' : 'success')
                     ->sortable(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->label('Created At')
                     ->dateTime(),
             ])

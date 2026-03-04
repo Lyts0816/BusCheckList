@@ -17,27 +17,33 @@ class BusNumbersTable
         return $table
             ->columns([
                 TextColumn::make('bus_number')
+                    ->toggleable()
                     ->label('Bus Number')
                     ->searchable(),
 
                 TextColumn::make('bus_class')
+                    ->toggleable()
                     ->label('Bus Class')
                     ->sortable(),
 
                 TextColumn::make('driver.driver_name')
+                    ->toggleable()
                     ->label('Driver Name')
                     ->searchable()
                     ->sortable(),
                 
                 TextColumn::make('conductor.conductor_name')
+                    ->toggleable()
                     ->label('Conductor Name')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('bus_model')
+                    ->toggleable()
                     ->label('Bus Model'),
 
                 TextColumn::make('seat_capacity')
+                    ->toggleable()
                     ->label('Seating Capacity'),
             ])
             ->filters([

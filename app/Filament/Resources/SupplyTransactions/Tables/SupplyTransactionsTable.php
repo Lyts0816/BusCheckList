@@ -19,6 +19,7 @@ class SupplyTransactionsTable
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['items.supply']))
             ->columns([
                 TextColumn::make('type')
+                    ->toggleable()
                     ->badge()
                     ->color(fn(string $state) => $state === 'IN' ? 'success' : 'danger'),
 
@@ -26,10 +27,12 @@ class SupplyTransactionsTable
                 //     ->searchable(),
 
                 TextColumn::make('user')
+                    ->toggleable()
                     ->label('Recipient Name')
                     ->searchable(),
 
                 TextColumn::make('items')
+                    ->toggleable()
                     ->label('Items')
                     ->getStateUsing(function (SupplyTransaction $record): string {
                         return $record->items
@@ -43,11 +46,13 @@ class SupplyTransactionsTable
                     ->wrap(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                     
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

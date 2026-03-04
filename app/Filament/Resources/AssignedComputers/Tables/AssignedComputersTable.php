@@ -23,49 +23,49 @@ class AssignedComputersTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('ID')
                     ->sortable(),
                     
                 TextColumn::make('assigned_to')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('computer_name')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('Computer Name')
                     ->searchable(),
 
                 TextColumn::make('department')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->sortable(),
 
                 TextColumn::make('systemUnit.serial_number')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('System Unit')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('keyboard.serial_number')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('Keyboard')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('mouse.serial_number')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('Mouse')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('monitor.serial_number')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('Monitor')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('ups.serial_number')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->label('UPS')
                     ->searchable()
                     ->sortable(),
@@ -73,12 +73,12 @@ class AssignedComputersTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
 
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([

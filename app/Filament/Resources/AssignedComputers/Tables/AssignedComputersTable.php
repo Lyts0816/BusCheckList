@@ -38,6 +38,7 @@ class AssignedComputersTable
                     ->searchable(),
 
                 TextColumn::make('department')
+                    ->label('Department')
                     ->toggleable()
                     ->sortable(),
 

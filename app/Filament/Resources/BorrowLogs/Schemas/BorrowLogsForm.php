@@ -79,6 +79,7 @@ class BorrowLogsForm
                                 // 'Damaged' => 'Damaged',
                                 // 'Lost' => 'Lost',
                             ])
+                            ->default('Borrowed')
                             ->columnSpanFull(),
                     ])
                     ->minItems(1)

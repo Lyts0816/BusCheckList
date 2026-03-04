@@ -16,24 +16,27 @@ class NatureOfTripsTable
         return $table
             ->columns([
                 TextColumn::make('nature_of_trip_name')
+                    ->toggleable()
                     ->label('Nature of Trip Name')
                     ->searchable(),
 
                 TextColumn::make('description')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('remarks')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //

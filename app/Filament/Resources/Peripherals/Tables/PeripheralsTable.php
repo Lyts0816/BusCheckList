@@ -10,7 +10,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
-
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
@@ -26,13 +25,16 @@ class PeripheralsTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->toggleable(),
 
                 TextColumn::make('item_type')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('assignedComputers.assigned_to')
                     ->label('Assigned To')
+                    ->toggleable()
                     // ->searchable()
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
@@ -47,6 +49,7 @@ class PeripheralsTable
 
                 TextColumn::make('department')
                     ->label('Department')
+                    ->toggleable()
                     // ->searchable()
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
@@ -60,19 +63,24 @@ class PeripheralsTable
                     }),
 
                 TextColumn::make('asset_code')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('serial_number')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('model')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('date_acquired')
+                    ->toggleable()
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('years_in_service')
+                    ->toggleable()
                     ->label('Years in Service')
                     ->getStateUsing(function (Peripherals $record) {
                         if (! $record->date_acquired) {
@@ -95,17 +103,17 @@ class PeripheralsTable
                     }),
 
                 TextColumn::make('description')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->defaultSort('id', direction: 'desc')
 

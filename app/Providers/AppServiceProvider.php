@@ -22,11 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(Logout::class, function ($event) {
-        $user = $event->user;
-        if ($user) {
-            $user->updateQuietly(['last_activity_at' => null]);
-        }
-    });
+            Event::listen(Logout::class, function ($event) {
+            $user = $event->user;
+            if ($user) {
+                $user->updateQuietly(['last_activity_at' => null]);
+            }
+        });
     }
 }

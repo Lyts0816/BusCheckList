@@ -16,29 +16,34 @@ class RoutesTable
         return $table
             ->columns([
                 TextColumn::make('from')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('to')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('distance')
+                    ->toggleable()
                     ->label('Distance (in km)')
                     ->numeric()
                     ->sortable(),
 
                 TextColumn::make('remarks')
+                    ->toggleable()
                     ->searchable(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->label('Created At')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->label('Updated At')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([])
             ->recordActions([

@@ -23,44 +23,53 @@ class PrintersTable
         return $table
             ->columns([
                 TextColumn::make('id')
+                    ->toggleable()
                     ->label('ID')
                     ->sortable(),
 
                 TextColumn::make('department')
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_host')
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_model')
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_asset_code')
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_serial_number')
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('date_aquired')
+                    ->toggleable()
                     ->date()
                     ->label('Date Acquired')
                     ->sortable(),
 
-                TextColumn::make('description'),
+                TextColumn::make('description')
+                    ->toggleable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
+                    ->toggleable(),
+                    
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->searchPlaceholder('Search')
             ->defaultSort('id', direction: 'desc')

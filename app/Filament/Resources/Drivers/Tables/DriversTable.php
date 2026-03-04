@@ -17,23 +17,29 @@ class DriversTable
         return $table
             ->columns([
                 TextColumn::make('driver_name')
+                    ->toggleable()
+                    ->label('Driver Name')
                     ->searchable(),
 
                 TextColumn::make('status')
+                    ->toggleable()
+                    ->label('Status')
                     ->searchable(),
 
                 TextColumn::make('remarks')
+                    ->toggleable()
+                    ->label('Remarks')
                     ->searchable(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //

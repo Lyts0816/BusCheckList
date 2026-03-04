@@ -17,10 +17,12 @@ class DispatchSheetsTable
         return $table
             ->columns([
                 TextColumn::make('dispatch_date')
+                    ->toggleable()
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('route')
+                    ->toggleable()
                     ->label('From - To')
                     ->getStateUsing(function ($record) {
                         $route = $record->route;
@@ -29,18 +31,19 @@ class DispatchSheetsTable
                     }),
 
                 TextColumn::make('route.distance')
+                    ->toggleable()
                     ->label('Distance')
                     ->sortable(),
 
                 TextColumn::make('created_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
+                    ->toggleable()
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //

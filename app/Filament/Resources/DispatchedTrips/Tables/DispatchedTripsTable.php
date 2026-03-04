@@ -21,37 +21,44 @@ class DispatchedTripsTable
         return $table
             ->columns([
                 TextColumn::make('trip_number')
+                    ->toggleable()
                     ->label('Trip Number')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('dispatchSheet.dispatch_date')
+                    ->toggleable()
                     ->label('Dispatch Date')
                     ->date('M d, Y')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('busNumber.bus_number')
+                    ->toggleable()
                     ->label('Bus Number')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('snap_drivers')
+                    ->toggleable()
                     ->label('Driver')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('snap_conductors')
+                    ->toggleable()
                     ->label('Conductor')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('time_of_arrival')
+                    ->toggleable()
                     ->time('h:i A')
                     ->label('Time of Arrival')
                     ->sortable(),
 
                 TextColumn::make('dispatchSheet.route.from')
+                    ->toggleable()
                     ->label('Route')
                     ->formatStateUsing(function ($record) {
                         $route = $record->dispatchSheet?->route;

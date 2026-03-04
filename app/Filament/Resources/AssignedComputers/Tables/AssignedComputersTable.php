@@ -28,6 +28,7 @@ class AssignedComputersTable
                     ->sortable(),
                     
                 TextColumn::make('assigned_to')
+                    ->label('Assigned To')
                     ->toggleable()
                     ->searchable(),
 

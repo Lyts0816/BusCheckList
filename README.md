@@ -101,33 +101,6 @@ Possible enhancements for future development:
 
 ---
 
-# 🤝 Contributing
-
-Contributions are welcome.
-
-1. Fork the repository
-2. Create a feature branch
-
-```
-git checkout -b feature/new-feature
-```
-
-3. Commit changes
-
-```
-git commit -m "Add new feature"
-```
-
-4. Push branch
-
-```
-git push origin feature/new-feature
-```
-
-5. Open a Pull Request
-
----
-
 # 📜 License
 
 This project is licensed under the **MIT License**.

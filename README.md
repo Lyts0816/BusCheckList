@@ -2,50 +2,140 @@
 ![Stars](https://img.shields.io/github/stars/Lyts0816/BusCheckList)
 ![Forks](https://img.shields.io/github/forks/Lyts0816/BusCheckList)
 ![Issues](https://img.shields.io/github/issues/Lyts0816/BusCheckList)
+![Pull Requests](https://img.shields.io/github/issues-pr/Lyts0816/BusCheckList)
 ![Last Commit](https://img.shields.io/github/last-commit/Lyts0816/BusCheckList)
+![Repo Size](https://img.shields.io/github/repo-size/Lyts0816/BusCheckList)
+![Top Language](https://img.shields.io/github/languages/top/Lyts0816/BusCheckList)
+![Contributors](https://img.shields.io/github/contributors/Lyts0816/BusCheckList)
 
 # 🚍 Bus, System Units, Peripherals, Printers, Document, Inventory Management System
 
-A powerful web-based management system built with **Laravel** and **Filament**, designed to simplify daily operations such as:
+A web-based **Asset and Operations Management System** built using **Laravel** and **Filament**.
 
-- 🚌 **Bus Inventory & Maintenance Checklists**  
-- 💻 **Computer and Peripherals Tracking**  
-- 🖨️ **Printer & IT Equipment Monitoring**  
-- 📂 **Document Filing and Records Management**
-
-This system centralizes asset tracking and checklist operations, making it easy to manage logistics, IT resources, and office documentation from one elegant interface.
+The goal of this system is to centralize operational monitoring and inventory management for transportation units, IT equipment, and administrative documents within a single modern dashboard.
 
 ---
 
-## 🧠 Built With
+# 📌 Overview
 
-- **[Laravel](https://laravel.com)** – The PHP framework for web artisans.  
-- **[FilamentPHP](https://filamentphp.com)** – A beautiful admin panel and form builder for Laravel.  
-- **MySQL – Reliable and efficient database backend.  
-- **TailwindCSS** – For sleek, responsive UI.  
+This system helps organizations manage:
+
+* 🚌 **Bus Inventory & Maintenance Checklists**
+* 💻 **Computer and Peripherals Tracking**
+* 🖨️ **Printer & IT Equipment Monitoring**
+* 📂 **Document Filing and Records Management**
+
+All modules are accessible through a unified **administrative interface powered by Filament**.
+
+---
+
+# 🧠 Technology Stack
+
+| Technology  | Purpose                           |
+| ----------- | --------------------------------- |
+| Laravel     | Backend application framework     |
+| FilamentPHP | Admin panel & resource management |
+| MySQL       | Database management               |
+| TailwindCSS | UI styling framework              |
+| AlpineJS    | Frontend interactivity            |
 
 ---
 
-## ⚙️ Key Features
+# ⚙️ Key Features
 
-### 🚌 Bus Management
-- Track bus details, acquisition dates, and operational status.  
-- Record daily checklist inspections (engine, brakes, lights, etc.).  
-- Generate reports for maintenance history and compliance.
+## 🚌 Bus Management
 
-### 💻 Computer & Peripherals Inventory
-- Manage computers, monitors, keyboards, mice, UPS units, and printers.  
-- Assign IT assets to departments or employees.  
-- Export inventories in CSV for audits and documentation.
-
-### 🗂️ Document Filing
-- Organize and store document metadata for quick retrieval.  
-- Categorize files by department, project, or type.  
-
-### 🖥️ Admin Dashboard (via Filament)
-- Real-time insights and metrics.  
-- Role-based access control (admins, IT staff, HR, etc.).  
-- Easy-to-use CRUD interfaces for all modules.
+* Track bus inventory and operational details
+* Maintain inspection checklists (engine, brakes, lights, tires, etc.)
+* Monitor maintenance history
+* Generate compliance reports
 
 ---
-This project is only for fun and practice.
+
+## 💻 Computer & Peripherals Inventory
+
+* Manage system units, monitors, keyboards, mice, UPS, printers
+* Assign equipment to departments or personnel
+* Track asset status and ownership
+* Export inventory reports for audits
+
+---
+
+## 🖨️ Printer & IT Equipment Monitoring
+
+* Maintain a centralized list of printers and peripherals
+* Track model numbers, purchase dates, and service history
+* Monitor device availability
+
+---
+
+## 🗂️ Document Filing System
+
+* Organize document records
+* Categorize by department, project, or classification
+* Search and retrieve records quickly
+
+---
+
+## 🖥️ Admin Dashboard
+
+Powered by **Filament Admin Panel**
+
+* Role-based access control
+* Resource CRUD management
+* Real-time administrative insights
+* Clean and responsive UI
+
+---
+
+# 📊 Future Improvements
+
+Possible enhancements for future development:
+
+* QR / Barcode asset tagging
+* Preventive maintenance notifications
+* Mobile-friendly checklist interface
+* Asset depreciation tracking
+* Export reports to PDF
+* Activity audit logs
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a feature branch
+
+```
+git checkout -b feature/new-feature
+```
+
+3. Commit changes
+
+```
+git commit -m "Add new feature"
+```
+
+4. Push branch
+
+```
+git push origin feature/new-feature
+```
+
+5. Open a Pull Request
+
+---
+
+# 📜 License
+
+This project is licensed under the **MIT License**.
+
+See the `LICENSE` file for details.
+
+---
+
+# ⚠️ Disclaimer
+
+This project was created primarily for **practice, experimentation, and learning purposes**.

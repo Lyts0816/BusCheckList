@@ -1,8 +1,8 @@
-![License](https://img.shields.io/github/license/USERNAME/REPO)
-![Stars](https://img.shields.io/github/stars/USERNAME/REPO)
-![Forks](https://img.shields.io/github/forks/USERNAME/REPO)
-![Issues](https://img.shields.io/github/issues/USERNAME/REPO)
-![Last Commit](https://img.shields.io/github/last-commit/USERNAME/REPO)
+![License](https://img.shields.io/github/license/Lyts0816/BusCheckList)
+![Stars](https://img.shields.io/github/stars/Lyts0816/BusCheckList)
+![Forks](https://img.shields.io/github/forks/Lyts0816/BusCheckList)
+![Issues](https://img.shields.io/github/issues/Lyts0816/BusCheckList)
+![Last Commit](https://img.shields.io/github/last-commit/Lyts0816/BusCheckList)
 
 # 🚍 Bus, System Units, Peripherals, Printers, Document, Inventory Management System
 

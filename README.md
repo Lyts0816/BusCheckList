@@ -1,3 +1,9 @@
+![License](https://img.shields.io/github/license/USERNAME/REPO)
+![Stars](https://img.shields.io/github/stars/USERNAME/REPO)
+![Forks](https://img.shields.io/github/forks/USERNAME/REPO)
+![Issues](https://img.shields.io/github/issues/USERNAME/REPO)
+![Last Commit](https://img.shields.io/github/last-commit/USERNAME/REPO)
+
 # 🚍 Bus, System Units, Peripherals, Printers, Document, Inventory Management System
 
 A powerful web-based management system built with **Laravel** and **Filament**, designed to simplify daily operations such as:

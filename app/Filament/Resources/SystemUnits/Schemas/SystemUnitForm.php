@@ -13,6 +13,7 @@ class SystemUnitForm
     {
         return $schema
             ->components([
+
                 TextInput::make('asset_code'),
 
                 TextInput::make('serial_number')
@@ -40,9 +41,6 @@ class SystemUnitForm
 
                 TextInput::make('microsoft_serial_number'),
 
-                // TextInput::make('ram')
-                //     ->label('RAM'),
-
                 TextInput::make('ram')
                     ->label('RAM')
                     ->datalist([
@@ -55,6 +53,7 @@ class SystemUnitForm
                         '128GB',
                         '256GB',
                     ]),
+
                 TextInput::make('storage')
                     ->label('Storage'),
 
@@ -77,6 +76,7 @@ class SystemUnitForm
                         'Other' => 'Other',
                         'Cant find Processor' => 'Cant find Processor',
                     ]),
+
                 TextInput::make('ip_address')
                     ->label('IP Address'),
 

@@ -53,6 +53,7 @@ class DispatchedTripsForm
                             ->dense()
                             ->gap(false)
                             ->schema([
+
                                 TextInput::make('trip_number')
                                     ->inlineLabel()
                                     ->label('Trip #')
@@ -107,7 +108,6 @@ class DispatchedTripsForm
                                     ->columnSpan(1),
 
                                 Select::make('nature_of_trip_id')
-                                    ->required()
                                     ->options(NatureOfTrip::pluck('nature_of_trip_name', 'id'))
                                     ->searchable()
                                     ->columnSpan(1),
@@ -116,14 +116,12 @@ class DispatchedTripsForm
                                     ->label('Driver')
                                     ->options(Drivers::pluck('driver_name', 'driver_name'))
                                     ->searchable()
-                                    ->required()
                                     ->columnSpan(1),
 
                                 Select::make('snap_conductors')
                                     ->label('Conductor')
                                     ->options(Conductors::pluck('conductor_name', 'conductor_name'))
                                     ->searchable()
-                                    ->required()
                                     ->columnSpan(1),
 
                             ])->columnSpan(2),
@@ -140,7 +138,6 @@ class DispatchedTripsForm
                                     ->label('Time in Terminal')
                                     ->seconds(false)
                                     ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5', '@change' => '$el.blur()'])
-                                    ->required()
                                     ->seconds(false)
                                     ->columnSpan(1),
 
@@ -148,7 +145,6 @@ class DispatchedTripsForm
                                     ->seconds(false)
                                     ->label('Time of Parking')
                                     ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5', '@change' => '$el.blur()'])
-                                    ->required()
                                     ->seconds(false)
                                     ->afterOrEqual('time_in_terminal')
                                     ->validationMessages([
@@ -160,7 +156,6 @@ class DispatchedTripsForm
                                     ->seconds(false)
                                     ->label('Time of Departure')
                                     ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5', '@change' => '$el.blur()'])
-                                    ->required()
                                     ->seconds(false)
                                     ->afterOrEqual('time_of_parking')
                                     ->validationMessages([
@@ -172,7 +167,6 @@ class DispatchedTripsForm
                                     ->seconds(false)
                                     ->label('Time of Arrival')
                                     ->extraInputAttributes(['class' => 'h-5 w-28 text-2xs p-0.5', '@change' => '$el.blur()'])
-                                    ->required()
                                     ->seconds(false)
                                     ->afterOrEqual('time_of_departure')
                                     ->validationMessages([
@@ -212,7 +206,6 @@ class DispatchedTripsForm
                                     ->minValue(0)
                                     ->maxValue(999)
                                     ->default(0)
-                                    ->required()
                                     ->columnSpan(1),
 
                                 TextInput::make('minutes')
@@ -222,8 +215,7 @@ class DispatchedTripsForm
                                     ->minValue(0)
                                     ->maxValue(59)
                                     ->default(0)
-                                    ->columnSpan(1)
-                                    ->required(),
+                                    ->columnSpan(1),
 
                                 TextInput::make('add_time_hours')
                                     ->numeric()
@@ -231,7 +223,6 @@ class DispatchedTripsForm
                                     ->maxValue(999)
                                     ->default(0)
                                     ->suffix('h')
-                                    ->required()
                                     ->columnSpan(1),
 
                                 TextInput::make('add_time_minutes')
@@ -240,7 +231,6 @@ class DispatchedTripsForm
                                     ->maxValue(59)
                                     ->default(0)
                                     ->suffix('m')
-                                    ->required()
                                     ->columnSpan(1),
 
                                 TextInput::make('ticket_number')
@@ -285,6 +275,7 @@ class DispatchedTripsForm
                                     ->maxLength(500)
                                     ->rows(1)
                                     ->columnSpan(2),
+                                    
                             ])->columns(2)->columnSpan(2)
 
                     ])->columns(5)->columnSpanFull(),

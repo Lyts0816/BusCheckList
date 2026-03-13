@@ -22,18 +22,23 @@ class UsersTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->hidden(),
+
                 TextColumn::make('name')
                     ->searchable(),
+
                 TextColumn::make('role')
                     ->label('Role')
                     ->sortable(),
+
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -47,8 +52,7 @@ class UsersTable
                 ViewAction::make(),
                 EditAction::make(),
             ])
-            ->headerActions([
-            ])
+            ->headerActions([])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

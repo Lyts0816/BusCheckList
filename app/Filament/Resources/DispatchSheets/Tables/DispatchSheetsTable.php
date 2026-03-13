@@ -29,7 +29,7 @@ class DispatchSheetsTable
 
                         return $route ? ($route->from . ' - ' . $route->to) : 'No Route';
                     }),
-                
+
                 TextColumn::make('route.distance')
                     ->toggleable()
                     ->label('Distance')

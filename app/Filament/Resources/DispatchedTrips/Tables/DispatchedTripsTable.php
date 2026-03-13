@@ -71,10 +71,10 @@ class DispatchedTripsTable
             ])
             ->defaultSort('trip_number', 'desc')
             ->filters([
-                
+
                 SelectFilter::make('bus_number')
                     ->label('Bus Number')
-                    ->options(fn () => BusNumber::query()
+                    ->options(fn() => BusNumber::query()
                         ->orderBy('bus_number')
                         ->pluck('bus_number', 'bus_number'))
                     ->searchable()
@@ -83,23 +83,23 @@ class DispatchedTripsTable
 
                         return $query->when(
                             $value,
-                            fn ($query) => $query->whereHas('busNumber', fn ($q) => $q->where('bus_number', $value))
+                            fn($query) => $query->whereHas('busNumber', fn($q) => $q->where('bus_number', $value))
                         );
                     }),
 
                 SelectFilter::make('route_id')
                     ->label('Routes')
-                    ->options(fn () => Routes::query()
+                    ->options(fn() => Routes::query()
                         ->orderBy('from')
                         ->get()
-                        ->mapWithKeys(fn ($route) => [$route->id => $route->from . ' - ' . $route->to]))
+                        ->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
                     ->searchable()
                     ->query(function ($query, array $data) {
                         $value = $data['value'] ?? null;
 
                         return $query->when(
                             $value,
-                            fn ($query) => $query->whereHas('dispatchSheet', fn ($q) => $q->where('route_id', $value))
+                            fn($query) => $query->whereHas('dispatchSheet', fn($q) => $q->where('route_id', $value))
                         );
                     }),
 
@@ -113,17 +113,17 @@ class DispatchedTripsTable
                         return $query
                             ->when(
                                 $data['dispatch_from'] ?? null,
-                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '>=', $date))
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn($q) => $q->whereDate('dispatch_date', '>=', $date))
                             )
                             ->when(
                                 $data['dispatch_until'] ?? null,
-                                fn($query, $date) => $query->whereHas('dispatchSheet', fn ($q) => $q->whereDate('dispatch_date', '<=', $date))
+                                fn($query, $date) => $query->whereHas('dispatchSheet', fn($q) => $q->whereDate('dispatch_date', '<=', $date))
                             );
                     }),
             ])
             ->recordActions([
                 ViewAction::make(),
-            ],position: RecordActionsPosition::BeforeCells)
+            ], position: RecordActionsPosition::BeforeCells)
             ->headerActions([
 
                 \Filament\Actions\Action::make('export_csv')

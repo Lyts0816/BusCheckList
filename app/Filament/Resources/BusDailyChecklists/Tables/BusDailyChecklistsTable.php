@@ -60,62 +60,63 @@ class BusDailyChecklistsTable
             ])
             ->searchPlaceholder('Search')
             ->defaultSort('id', direction: 'desc')
-            ->filters([
-                SelectFilter::make('month')
-                    ->label('Month')
-                    ->options([
-                        '1' => 'January',
-                        '2' => 'February',
-                        '3' => 'March',
-                        '4' => 'April',
-                        '5' => 'May',
-                        '6' => 'June',
-                        '7' => 'July',
-                        '8' => 'August',
-                        '9' => 'September',
-                        '10' => 'October',
-                        '11' => 'November',
-                        '12' => 'December',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        $month = $data['value'] ?? null;
+            ->filters(
+                [
+                    SelectFilter::make('month')
+                        ->label('Month')
+                        ->options([
+                            '1' => 'January',
+                            '2' => 'February',
+                            '3' => 'March',
+                            '4' => 'April',
+                            '5' => 'May',
+                            '6' => 'June',
+                            '7' => 'July',
+                            '8' => 'August',
+                            '9' => 'September',
+                            '10' => 'October',
+                            '11' => 'November',
+                            '12' => 'December',
+                        ])
+                        ->query(function (Builder $query, array $data): Builder {
+                            $month = $data['value'] ?? null;
 
-                        return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('check_date', (int) $m));
-                    }),
+                            return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('check_date', (int) $m));
+                        }),
 
-                SelectFilter::make('year')
-                    ->label('Year')
-                    ->options(function (): array {
-                        return BusDailyChecklist::query()
-                            ->selectRaw('YEAR(check_date) as year')
-                            ->distinct()
-                            ->orderBy('year', 'desc')
-                            ->pluck('year', 'year')
-                            ->toArray();
-                    })
-                    ->query(function (Builder $query, array $data): Builder {
-                        $year = $data['value'] ?? null;
+                    SelectFilter::make('year')
+                        ->label('Year')
+                        ->options(function (): array {
+                            return BusDailyChecklist::query()
+                                ->selectRaw('YEAR(check_date) as year')
+                                ->distinct()
+                                ->orderBy('year', 'desc')
+                                ->pluck('year', 'year')
+                                ->toArray();
+                        })
+                        ->query(function (Builder $query, array $data): Builder {
+                            $year = $data['value'] ?? null;
 
-                        return $query->when($year, fn (Builder $q, $y) => $q->whereYear('check_date', (int) $y));
-                    }),
+                            return $query->when($year, fn(Builder $q, $y) => $q->whereYear('check_date', (int) $y));
+                        }),
 
-                Filter::make('check_date')
-                    ->schema([
-                        DatePicker::make('date')
-                            ->label('Specific Date'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['date'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('check_date', $date),
-                        );
-                    }),
+                    Filter::make('check_date')
+                        ->schema([
+                            DatePicker::make('date')
+                                ->label('Specific Date'),
+                        ])
+                        ->query(function (Builder $query, array $data): Builder {
+                            return $query->when(
+                                $data['date'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('check_date', $date),
+                            );
+                        }),
 
-                TernaryFilter::make('checked')
-                    ->label('Checked')
-                    ->boolean(),
+                    TernaryFilter::make('checked')
+                        ->label('Checked')
+                        ->boolean(),
 
-            ]
+                ]
             )
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
@@ -126,22 +127,22 @@ class BusDailyChecklistsTable
                         // Get the current page URL with all query parameters
                         $currentUrl = request()->fullUrl();
                         $parsedUrl = parse_url($currentUrl);
-                        
+
                         // Parse query parameters
                         $queryParams = [];
                         if (isset($parsedUrl['query'])) {
                             parse_str($parsedUrl['query'], $queryParams);
                         }
-                        
+
                         // Build export URL with current filters
                         $exportUrl = route('export.bus-daily-checklist');
                         $exportParams = [];
-                        
+
                         // Extract search parameter
                         if (isset($queryParams['tableSearch'])) {
                             $exportParams['search'] = $queryParams['tableSearch'];
                         }
-                        
+
                         // Extract filters
                         foreach ($queryParams as $key => $value) {
                             if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
@@ -157,12 +158,12 @@ class BusDailyChecklistsTable
                                 }
                             }
                         }
-                        
+
                         // Build final URL
                         if (!empty($exportParams)) {
                             $exportUrl .= '?' . http_build_query($exportParams);
                         }
-                        
+
                         // Redirect to export URL
                         return redirect($exportUrl);
                     }),

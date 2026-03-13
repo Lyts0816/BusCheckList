@@ -6,6 +6,7 @@ use App\Filament\Resources\Peripherals\Pages\CreatePeripherals;
 use App\Filament\Resources\Peripherals\Pages\EditPeripherals;
 use App\Filament\Resources\Peripherals\Pages\ListPeripherals;
 use App\Filament\Resources\Peripherals\Pages\ViewPeripherals;
+use App\Filament\Resources\Peripherals\RelationManagers\MaintenanceLogsRelationManager;
 use App\Filament\Resources\Peripherals\Schemas\PeripheralsForm;
 use App\Filament\Resources\Peripherals\Schemas\PeripheralsInfolist;
 use App\Filament\Resources\Peripherals\Tables\PeripheralsTable;
@@ -44,7 +45,7 @@ class PeripheralsResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'maintenance' => MaintenanceLogsRelationManager::class,
         ];
     }
 
@@ -53,8 +54,8 @@ class PeripheralsResource extends Resource
         return [
             'index' => ListPeripherals::route('/'),
             // 'create' => CreatePeripherals::route('/create'),
-            // 'view' => ViewPeripherals::route('/{record}'),
-            // 'edit' => EditPeripherals::route('/{record}/edit'),
+            'view' => ViewPeripherals::route('/{record}'),
+            'edit' => EditPeripherals::route('/{record}/edit'),
         ];
     }
 }

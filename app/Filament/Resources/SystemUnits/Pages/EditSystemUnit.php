@@ -11,6 +11,11 @@ class EditSystemUnit extends EditRecord
 {
     protected static string $resource = SystemUnitResource::class;
 
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Printers\Tables;
 
+use App\Filament\Resources\Printers\PrintersResource;
 use App\Models\Printer;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
+use Filament\Support\Enums\Size;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -65,7 +68,7 @@ class PrintersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                    
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -76,14 +79,15 @@ class PrintersTable
             ->filters([
                 SelectFilter::make('printer_model')
                     ->label('Model')
-                    ->options(fn () => Printer::query()
-                        ->whereNotNull('printer_model')
-                        ->where('printer_model', '!=', '')
-                        ->select('printer_model')
-                        ->distinct()
-                        ->orderBy('printer_model')
-                        ->pluck('printer_model', 'printer_model')
-                        ->toArray()
+                    ->options(
+                        fn() => Printer::query()
+                            ->whereNotNull('printer_model')
+                            ->where('printer_model', '!=', '')
+                            ->select('printer_model')
+                            ->distinct()
+                            ->orderBy('printer_model')
+                            ->pluck('printer_model', 'printer_model')
+                            ->toArray()
                     ),
 
                 SelectFilter::make('month')
@@ -105,7 +109,7 @@ class PrintersTable
                     ->query(function (Builder $query, array $data): Builder {
                         $month = $data['value'] ?? null;
 
-                        return $query->when($month, fn (Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
+                        return $query->when($month, fn(Builder $q, $m) => $q->whereMonth('date_aquired', (int) $m));
                     }),
 
                 SelectFilter::make('year')
@@ -122,10 +126,11 @@ class PrintersTable
                     ->query(function (Builder $query, array $data): Builder {
                         $year = $data['value'] ?? null;
 
-                        return $query->when($year, fn (Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
+                        return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
             ])
             ->filtersFormMaxHeight('400px')
+
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
@@ -139,52 +144,65 @@ class PrintersTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-                ])->buttonGroup()
-            ],position: RecordActionsPosition::BeforeCells)
+
+                    Action::make('maintenance')
+                        ->color('warning')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-wrench-screwdriver')
+                        ->tooltip('Maintenance history')
+                        ->url(fn(Printer $record): string => PrintersResource::getUrl('edit', [
+                            'record' => $record,
+                            'relation' => 'maintenance',
+                        ])),
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary')
+            ], position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
-            \Filament\Actions\Action::make('export_csv')
-                ->label('Export all record')
-                ->icon('heroicon-o-document-arrow-down')
-                ->color('success')
-                ->action(function () {
-                    // Get the current page URL with all query parameters
-                    $currentUrl = request()->fullUrl();
-                    $parsedUrl = parse_url($currentUrl);
+                \Filament\Actions\Action::make('export_csv')
+                    ->label('Export all record')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        // Get the current page URL with all query parameters
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
 
-                    // Parse query parameters
-                    $queryParams = [];
-                    if (isset($parsedUrl['query'])) {
-                        parse_str($parsedUrl['query'], $queryParams);
-                    }
+                        // Parse query parameters
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
 
-                    // Build export URL with current filters
-                    $exportUrl = route('export.printers');
-                    $exportParams = [];
+                        // Build export URL with current filters
+                        $exportUrl = route('export.printers');
+                        $exportParams = [];
 
-                    // Extract search parameter from tableSearch
-                    if (isset($queryParams['tableSearch'])) {
-                        $exportParams['search'] = $queryParams['tableSearch'];
-                    }
+                        // Extract search parameter from tableSearch
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
 
-                    // Extract other relevant filters
-                    foreach ($queryParams as $key => $value) {
-                        if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
-                            // Parse Filament filter format
-                            if ($key === 'tableFilters[department][value]') {
-                                $exportParams['department'] = $value;
-                                
+                        // Extract other relevant filters
+                        foreach ($queryParams as $key => $value) {
+                            if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
+                                // Parse Filament filter format
+                                if ($key === 'tableFilters[department][value]') {
+                                    $exportParams['department'] = $value;
+                                }
                             }
                         }
-                    }
 
-                    // Build final URL
-                    if (!empty($exportParams)) {
-                        $exportUrl .= '?' . http_build_query($exportParams);
-                    }
+                        // Build final URL
+                        if (!empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
 
-                    // Redirect to export URL
-                    return redirect($exportUrl);
-                }),
+                        // Redirect to export URL
+                        return redirect($exportUrl);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

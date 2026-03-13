@@ -6,6 +6,7 @@ use App\Filament\Resources\Printers\Pages\CreatePrinters;
 use App\Filament\Resources\Printers\Pages\EditPrinters;
 use App\Filament\Resources\Printers\Pages\ListPrinters;
 use App\Filament\Resources\Printers\Pages\ViewPrinters;
+use App\Filament\Resources\Printers\RelationManagers\MaintenanceLogsRelationManager;
 use App\Filament\Resources\Printers\Schemas\PrintersForm;
 use App\Filament\Resources\Printers\Schemas\PrintersInfolist;
 use App\Filament\Resources\Printers\Tables\PrintersTable;
@@ -47,7 +48,7 @@ class PrintersResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'maintenance' => MaintenanceLogsRelationManager::class,
         ];
     }
 
@@ -56,8 +57,8 @@ class PrintersResource extends Resource
         return [
             'index' => ListPrinters::route('/'),
             // 'create' => CreatePrinters::route('/create'),
-            // 'view' => ViewPrinters::route('/{record}'),
-            // 'edit' => EditPrinters::route('/{record}/edit'),
+            'view' => ViewPrinters::route('/{record}'),
+            'edit' => EditPrinters::route('/{record}/edit'),
         ];
     }
 }

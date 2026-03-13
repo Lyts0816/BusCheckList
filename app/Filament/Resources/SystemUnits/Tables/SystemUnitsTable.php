@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\SystemUnits\Tables;
 
+use App\Filament\Resources\SystemUnits\SystemUnitResource;
 use App\Models\SystemUnit;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -329,7 +331,7 @@ class SystemUnitsTable
 
             ->recordActions([
                 ActionGroup::make([
-                    
+
                     ViewAction::make()
                         ->color('gray')
                         ->hiddenLabel()
@@ -341,10 +343,24 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-                ])->buttonGroup()
 
-            ],position: RecordActionsPosition::BeforeCells)
-            
+                    Action::make('maintenance')
+                        ->color('warning')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-wrench-screwdriver')
+                        ->tooltip('Maintenance history')
+                        ->url(fn(SystemUnit $record): string => SystemUnitResource::getUrl('edit', [
+                            'record' => $record,
+                            'relation' => 'maintenance',
+                        ])),
+                ])->label('More actions')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary')
+
+            ], position: RecordActionsPosition::BeforeCells)
+
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all records')

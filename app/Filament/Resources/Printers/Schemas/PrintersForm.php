@@ -25,21 +25,28 @@ class PrintersForm
                         'Cash' => 'Cash',
                         'Clinic' => 'Clinic',
                     ]),
+
                 TextInput::make('printer_host')
                     ->label('Printer Host')
                     ->unique(ignoreRecord: true),
-                TextInput::make('printer_asset_code')
+
+                TextInput::make('asset_code')
+                    ->label('Asset Code')
                     ->nullable(),
+
                 TextInput::make('printer_serial_number')
                     ->required()
                     ->helperText('If printer does not have a serial number, please input (NOSN + asset code, if no asset code, please input (NOSN + department name). Example: NOSN-MIS)')
                     ->label('Printer Serial Number')
                     ->unique(ignoreRecord: true),
+
                 TextInput::make('printer_model')
                     ->nullable(),
+
                 DatePicker::make('date_aquired')
                     ->label('Date Acquired')
                     ->nullable(),
+                    
                 TextInput::make('description'),
             ]);
     }

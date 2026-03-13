@@ -45,9 +45,7 @@ class RoutesTable
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([
-                
-            ])
+            ->filters([])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

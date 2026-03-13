@@ -31,7 +31,7 @@ class BusNumbersTable
                     ->label('Driver Name')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('conductor.conductor_name')
                     ->toggleable()
                     ->label('Conductor Name')

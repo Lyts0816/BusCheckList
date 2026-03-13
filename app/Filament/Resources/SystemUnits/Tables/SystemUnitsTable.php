@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\SystemUnits\Tables;
 
-use App\Filament\Resources\SystemUnits\SystemUnitResource;
 use App\Models\SystemUnit;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -16,8 +14,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 use Filament\Actions\ActionGroup;
-use Filament\Support\Enums\Size;
-
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 
@@ -344,6 +340,7 @@ class SystemUnitsTable
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
 
+                ]),
             ], position: RecordActionsPosition::BeforeCells)
 
             ->headerActions([
@@ -381,6 +378,7 @@ class SystemUnitsTable
                     }),
 
             ])
+
             ->toolbarActions([
 
                 BulkActionGroup::make([
@@ -395,6 +393,7 @@ class SystemUnitsTable
                             return redirect($exportUrl);
                         }),
                 ]),
+
 
             ]);
     }

@@ -144,8 +144,22 @@ class PrintersTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-                ])->buttonGroup()
+
+                    Action::make('maintenance')
+                        ->color('warning')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-wrench-screwdriver')
+                        ->tooltip('Maintenance history')
+                        ->url(fn(Printer $record): string => PrintersResource::getUrl('edit', [
+                            'record' => $record,
+                            'relation' => 'maintenance',
+                        ])),
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary')
             ], position: RecordActionsPosition::BeforeCells)
+            
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all record')

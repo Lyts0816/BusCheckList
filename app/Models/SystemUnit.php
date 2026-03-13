@@ -28,4 +28,9 @@ class SystemUnit extends Model
     {
         return $this->hasOne(AssignedComputer::class, 'system_unit_id');
     }
+
+    public function maintenanceLogs()
+    {
+        return $this->morphMany(AssetMaintenanceLog::class, 'maintainable');
+    }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\SystemUnits\Tables;
 
+use App\Filament\Resources\SystemUnits\SystemUnitResource;
 use App\Models\SystemUnit;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -341,7 +343,6 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-                ])->buttonGroup()
 
             ], position: RecordActionsPosition::BeforeCells)
 

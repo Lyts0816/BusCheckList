@@ -6,6 +6,7 @@ use App\Filament\Resources\SystemUnits\Pages\CreateSystemUnit;
 use App\Filament\Resources\SystemUnits\Pages\EditSystemUnit;
 use App\Filament\Resources\SystemUnits\Pages\ListSystemUnits;
 use App\Filament\Resources\SystemUnits\Pages\ViewSystemUnit;
+use App\Filament\Resources\SystemUnits\RelationManagers\MaintenanceLogsRelationManager;
 use App\Filament\Resources\SystemUnits\Schemas\SystemUnitForm;
 use App\Filament\Resources\SystemUnits\Schemas\SystemUnitInfolist;
 use App\Filament\Resources\SystemUnits\Tables\SystemUnitsTable;
@@ -44,7 +45,7 @@ class SystemUnitResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'maintenance' => MaintenanceLogsRelationManager::class,
         ];
     }
 
@@ -53,8 +54,8 @@ class SystemUnitResource extends Resource
         return [
             'index' => ListSystemUnits::route('/'),
             // 'create' => CreateSystemUnit::route('/create'),
-            // 'view' => ViewSystemUnit::route('/{record}'),
-            // 'edit' => EditSystemUnit::route('/{record}/edit'),
+            'view' => ViewSystemUnit::route('/{record}'),
+            'edit' => EditSystemUnit::route('/{record}/edit'),
         ];
     }
 }

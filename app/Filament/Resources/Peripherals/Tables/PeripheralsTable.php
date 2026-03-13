@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Peripherals\Tables;
 
+use App\Filament\Resources\Peripherals\PeripheralsResource;
 use App\Models\Peripherals;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +15,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
+use Filament\Support\Enums\Size;
 use Illuminate\Support\Facades\Log;
 
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -259,7 +262,20 @@ class PeripheralsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-                ])->buttonGroup()
+
+                    Action::make('maintenance')
+                        ->color('warning')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-wrench-screwdriver')
+                        ->tooltip('Maintenance history')
+                        ->url(fn(Peripherals $record): string => PeripheralsResource::getUrl('edit', [
+                            'record' => $record,
+                            'relation' => 'maintenance',
+                        ])),
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary')
 
             ], position: RecordActionsPosition::BeforeCells)
 

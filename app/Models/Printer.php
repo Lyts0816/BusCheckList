@@ -12,9 +12,14 @@ class Printer extends Model
         'department',
         'printer_host',
         'printer_model',
-        'printer_asset_code',
+        'asset_code',
         'printer_serial_number',
         'date_aquired',
         'description',
     ];
+
+    public function maintenanceLogs()
+    {
+        return $this->morphMany(AssetMaintenanceLog::class, 'maintainable');
+    }
 }

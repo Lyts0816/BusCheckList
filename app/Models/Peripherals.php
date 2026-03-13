@@ -25,10 +25,12 @@ class Peripherals extends Model
     {
         return $this->hasMany(AssignedComputer::class, 'mouse_id');
     }
-    public function assignedMonitors(){
+    public function assignedMonitors()
+    {
         return $this->hasMany(AssignedComputer::class, 'monitor_id');
     }
-    public function assignedUps(){
+    public function assignedUps()
+    {
         return $this->hasMany(AssignedComputer::class, 'ups_id');
     }
 
@@ -40,5 +42,10 @@ class Peripherals extends Model
             ->orWhere('monitor_id', $this->id)
             ->orWhere('ups_id', $this->id)
             ->get();
+    }
+
+    public function maintenanceLogs()
+    {
+        return $this->morphMany(AssetMaintenanceLog::class, 'maintainable');
     }
 }

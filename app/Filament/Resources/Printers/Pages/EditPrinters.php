@@ -11,6 +11,11 @@ class EditPrinters extends EditRecord
 {
     protected static string $resource = PrintersResource::class;
 
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

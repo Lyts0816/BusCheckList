@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Printers\Tables;
 
+use App\Filament\Resources\Printers\PrintersResource;
 use App\Models\Printer;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
+use Filament\Support\Enums\Size;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -65,7 +68,7 @@ class PrintersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                    
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -127,6 +130,7 @@ class PrintersTable
                     }),
             ])
             ->filtersFormMaxHeight('400px')
+
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()

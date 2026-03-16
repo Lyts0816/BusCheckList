@@ -6,7 +6,7 @@ use App\Models\DispatchSheet;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class DispatchSheets
+class DispatchSheetPolicy
 {
     /**
      * Determine whether the user can view any models.

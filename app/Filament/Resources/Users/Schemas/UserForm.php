@@ -22,6 +22,13 @@ class UserForm
                         'user' => 'User',
                         'operations' => 'Operations',
                         'admin_operations' => 'Admin Operations',
+
+                        'human_resources_department' => 'Human Resources Department',
+                        'operations_department' => 'Operations Department',
+                        'MIS_department' => 'MIS Department',
+                        'production_department' => 'Production Department',
+                        'accounting_department' => 'Accounting Department',
+                        'admin_leave' => 'Admin Leave'
                     ])
                     ->required(),
                 TextInput::make('email')

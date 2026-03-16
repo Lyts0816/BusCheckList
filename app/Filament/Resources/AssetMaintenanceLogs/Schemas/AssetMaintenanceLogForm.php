@@ -8,6 +8,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
+use App\Models\SystemUnit;
+use App\Models\Printer;
+use App\Models\Peripherals;
 
 class AssetMaintenanceLogForm
 {
@@ -24,9 +27,9 @@ class AssetMaintenanceLogForm
                         Select::make('maintainable_type')
                             ->label('Asset Type')
                             ->options([
-                                \App\Models\SystemUnit::class => 'System Unit',
-                                \App\Models\Printer::class => 'Printer',
-                                \App\Models\Peripherals::class => 'Peripheral',
+                                SystemUnit::class => 'System Unit',
+                                Printer::class => 'Printer',
+                                Peripherals::class => 'Peripheral',
                             ])
                             ->required()
                             ->reactive()
@@ -59,9 +62,9 @@ class AssetMaintenanceLogForm
                                 }
 
                                 $assetTypeMap = [
-                                    \App\Models\SystemUnit::class => 'system_unit',
-                                    \App\Models\Printer::class => 'printer',
-                                    \App\Models\Peripherals::class => 'peripheral',
+                                    SystemUnit::class => 'system_unit',
+                                    Printer::class => 'printer',
+                                    Peripherals::class => 'peripheral',
                                 ];
 
                                 return \App\Models\Component::query()
@@ -93,8 +96,6 @@ class AssetMaintenanceLogForm
 
                         TextInput::make('performed_by')
                             ->columnSpan(6),
-
-                        // DatePicker::make('next_maintenance'),
 
                         Textarea::make('issue_reported')
                             ->columnSpanFull(),

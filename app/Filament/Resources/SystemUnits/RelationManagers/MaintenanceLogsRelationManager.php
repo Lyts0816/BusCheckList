@@ -51,7 +51,7 @@ class MaintenanceLogsRelationManager extends RelationManager
                 ->numeric()
                 ->prefix('₱'),
 
-            Forms\Components\DatePicker::make('next_maintenance'),
+            // Forms\Components\DatePicker::make('next_maintenance'),
 
             Forms\Components\Textarea::make('remarks')
                 ->columnSpanFull(),

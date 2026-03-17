@@ -12,6 +12,7 @@ class LeaveLog extends Model
     protected $table = 'leave_logs';
 
     protected $fillable = [
+        'control_number',
         'employee_id',
         'company',
         'leave_type',

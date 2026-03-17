@@ -15,6 +15,11 @@ class LeaveLogsTable
     {
         return $table
             ->columns([
+                TextColumn::make('control_number')
+                    ->label('Control Number')
+                    ->searchable()
+                    ->sortable(),
+                    
                 TextColumn::make('employee.full_name')
                     ->label('Employee')
                     ->searchable()
@@ -53,14 +58,18 @@ class LeaveLogsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+
+            ])->defaultSort('id', direction: 'desc')
+
             ->filters([
                 //
             ])
+
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
+            
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

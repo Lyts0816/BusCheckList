@@ -40,25 +40,25 @@ class EmployeesTable
                     ->searchable()
                     ->toggleable(),
 
-                TextColumn::make('remaining_vl')
-                    ->label('Remaining VL')
-                    ->searchable()
-                    ->toggleable(),
+                // TextColumn::make('remaining_vl')
+                //     ->label('Remaining VL')
+                //     ->searchable()
+                //     ->toggleable(),
 
-                TextColumn::make('remaining_sl')
-                    ->label('Remaining SL')
-                    ->searchable()
-                    ->toggleable(),
+                // TextColumn::make('remaining_sl')
+                //     ->label('Remaining SL')
+                //     ->searchable()
+                //     ->toggleable(),
 
-                TextColumn::make('availed_vl')
-                    ->label('Availed VL')
-                    ->searchable()
-                    ->toggleable(),
+                // TextColumn::make('availed_vl')
+                //     ->label('Availed VL')
+                //     ->searchable()
+                //     ->toggleable(),
 
-                TextColumn::make('availed_sl')
-                    ->label('Availed SL')
-                    ->searchable()
-                    ->toggleable(),
+                // TextColumn::make('availed_sl')
+                //     ->label('Availed SL')
+                //     ->searchable()
+                //     ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->dateTime()

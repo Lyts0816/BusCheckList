@@ -28,7 +28,8 @@ class UserForm
                         'MIS_department' => 'MIS Department',
                         'production_department' => 'Production Department',
                         'accounting_department' => 'Accounting Department',
-                        'admin_leave' => 'Admin Leave'
+                        'admin_leave' => 'Admin Leave',
+                        'cash_department' => 'Cash Department',
                     ])
                     ->required(),
                 TextInput::make('email')

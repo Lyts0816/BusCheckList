@@ -10,6 +10,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 
 class LeaveLogForm
 {
@@ -23,7 +25,7 @@ class LeaveLogForm
             $allowedDepartments = $user
                 ? array_values(array_filter(
                     $user->departmentRoleAliases(),
-                    fn (string $department): bool => in_array($department, $departmentLabels, true),
+                    fn(string $department): bool => in_array($department, $departmentLabels, true),
                 ))
                 : [];
 
@@ -48,72 +50,124 @@ class LeaveLogForm
 
         return $schema
             ->components([
-                TextInput::make('control_number')
-                    ->label('Control Number')
-                    ->default($generateControlNumber)
-                    ->readOnly()
-                    ->dehydrated()
-                    ->unique(ignoreRecord: true)
-                    ->required()
-                    ->maxLength(255),
 
-                Select::make('employee_id')
-                    ->label('Employee')
-                    ->options(function () {
-                        $query = Employee::query()->orderBy('full_name');
-                        $user = Auth::user();
+                Grid::make()
+                    // ->gap(false)
+                    ->dense()
+                    ->schema([
 
-                        if ($user && ! ($user->isAdmin() || $user->isAdminOperations())) {
-                            $allowedDepartments = $user->departmentRoleAliases();
+                        Section::make()
+                            ->dense()
+                            ->gap(false)
+                            ->schema([
+                                TextInput::make('control_number')
+                                    ->columnSpan(1)
+                                    ->label('Control Number')
+                                    ->default($generateControlNumber)
+                                    ->readOnly()
+                                    ->dehydrated()
+                                    ->unique(ignoreRecord: true)
+                                    ->required()
+                                    ->maxLength(255),
 
-                            if (! empty($allowedDepartments)) {
-                                $query->whereIn('department', $allowedDepartments);
-                            }
-                        }
+                                DatePicker::make('date_filed')
+                                    ->label('Date')
+                                    ->default(now())
+                                    ->columnSpan(2)
+                                    ->required(),
 
-                        return $query->pluck('full_name', 'id');
-                    })
-                    ->searchable()
-                    ->required(),
+                                Select::make('leave_type')
+                                    ->columnSpan(2)
+                                    ->options([
+                                        'Sick Leave' => 'Sick Leave',
+                                        'Vacation Leave' => 'Vacation Leave',
+                                        'Emergency Leave' => 'Emergency Leave',
+                                        'Maternity Leave' => 'Maternity Leave',
+                                        'Paternity Leave' => 'Paternity Leave',
+                                        'Other' => 'Other',
+                                    ])
+                                    ->required(),
 
-                Select::make('leave_type')
-                    ->options([
-                        'sick' => 'Sick Leave',
-                        'vacation' => 'Vacation Leave',
-                        'emergency' => 'Emergency Leave',
-                        'maternity' => 'Maternity Leave',
-                        'paternity' => 'Paternity Leave',
-                        'other' => 'Other',
-                    ])
-                    ->required(),
+                                TextInput::make('company')
+                                    // ->required()
+                                    ->columnSpan(2)
+                                    ->default('Yellow Bus Line Inc.')
+                                    ->maxLength(255),
+                            ])->columnSpan(2),
 
-                TextInput::make('company')
-                    // ->required()
-                    ->default('Yellow Bus Line Inc.')
-                    ->maxLength(255),
 
-                DatePicker::make('from_date')
-                    ->required(),
+                        Section::make()
+                            ->dense()
+                            ->gap(false)
+                            ->schema([
+                                Select::make('employee_id')
+                                    ->columnSpanFull()
+                                    ->label('Employee')
+                                    ->options(function () {
+                                        $query = Employee::query()->orderBy('full_name');
+                                        $user = Auth::user();
 
-                DatePicker::make('to_date')
-                    ->required(),
+                                        if ($user && ! ($user->isAdmin() || $user->isAdminOperations())) {
+                                            $allowedDepartments = $user->departmentRoleAliases();
 
-                TextInput::make('relieved_by')
-                    ->required()
-                    ->maxLength(255),
+                                            if (! empty($allowedDepartments)) {
+                                                $query->whereIn('department', $allowedDepartments);
+                                            }
+                                        }
 
-                TextInput::make('conformed_by')
-                    ->required()
-                    ->maxLength(255),
+                                        return $query->pluck('full_name', 'id');
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                TextInput::make('relieved_by')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->maxLength(255),
 
-                TextInput::make('approved_by')
-                    ->maxLength(255),
+                                DatePicker::make('from_date')
+                                    ->columnSpanFull()
+                                    ->required(),
 
-                Textarea::make('reason')
-                    ->columnSpanFull(),
+                                DatePicker::make('to_date')
+                                    ->columnSpanFull()
+                                    ->required(),
+                            ])->columnSpan(3),
 
-                Textarea::make('remarks')
-                    ->columnSpanFull(),
+                        Section::make()
+                            ->dense()
+                            ->gap(false)
+                            ->schema([
+                                TextInput::make('conformed_by')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->maxLength(255),
+
+                                TextInput::make('conformed_by_position')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->maxLength(255),
+
+                                TextInput::make('approved_by')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->maxLength(255),
+
+                                TextInput::make('approved_by_position')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->maxLength(255),
+
+                            ])->columnSpan(3),
+
+
+
+                        Textarea::make('reason')
+                            ->required()
+                            ->columnSpanFull(),
+
+                        Textarea::make('remarks')
+                            ->columnSpanFull(),
+                    ])->columns(8)->columnSpanFull(),
             ]);
     }
 }

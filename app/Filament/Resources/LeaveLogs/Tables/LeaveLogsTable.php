@@ -66,8 +66,11 @@ class LeaveLogsTable
             ])
 
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->modalWidth('7xl'),
+
+                EditAction::make()
+                    ->modalWidth('7xl'),
             ])
             
             ->toolbarActions([

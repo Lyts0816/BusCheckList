@@ -14,7 +14,8 @@ class ListLeaveLogs extends ListRecords
     {
         return [
             CreateAction::make()
-             ->label('New Leave Record'),
+                ->modalWidth('7xl')
+                ->label('New Leave Record'),
         ];
     }
 }

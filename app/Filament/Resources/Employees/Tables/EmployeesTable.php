@@ -90,6 +90,7 @@ class EmployeesTable
                         ->tooltip('Edit record'),
 
                     Action::make('leave')
+                        ->label('Leave Records')
                         ->color('warning')
                         ->hiddenLabel()
                         ->icon('heroicon-o-calendar-days')

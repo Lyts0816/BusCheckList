@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PrinterExport;
 use App\Http\Controllers\SystemUnitExport;
 use App\Http\Controllers\PeripheralsExport;
+use App\Http\Controllers\LeaveLogExportController;
 use App\Http\Controllers\Auth\LogoutController;
 
 // Route::get('/', function () {
@@ -42,6 +43,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/export/peripherals', [PeripheralsExport::class, 'exportPeripherals'])
         ->name('export.peripherals');
+
+    Route::post('/export/leave-logs/excel', [LeaveLogExportController::class, 'exportExcel'])
+        ->name('export.leave-logs.excel');
+
+    Route::get('/export/leave-logs/print/{id}', [LeaveLogExportController::class, 'printPreview'])
+        ->name('export.leave-logs.print');
+
+    Route::get('/export/leave-logs/all-excel', [LeaveLogExportController::class, 'exportAllExcel'])
+        ->name('export.leave-logs.all-excel');
 
     Route::post('/logout', LogoutController::class)->name('logout');
 });

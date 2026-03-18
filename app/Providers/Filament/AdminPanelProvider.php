@@ -25,6 +25,7 @@ use App\Filament\Pages\ComputersDashboard;
 use App\Filament\Pages\OperationsDashboard;
 use App\Filament\Widgets\ActiveUsersWidget;
 use App\Filament\Pages\ActiveUserDashboard;
+use App\Filament\Pages\LeaveDashboard;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -67,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
                 ComputersDashboard::class,
                 OperationsDashboard::class,
                 ActiveUserDashboard::class,
+                LeaveDashboard::class,
                 
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

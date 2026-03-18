@@ -3,11 +3,15 @@
 namespace App\Filament\Resources\LeaveLogs\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\ActionGroup;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Support\Enums\Size;
 
 class LeaveLogsTable
 {
@@ -66,12 +70,25 @@ class LeaveLogsTable
             ])
 
             ->recordActions([
-                ViewAction::make()
-                    ->modalWidth('7xl'),
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->modalWidth('7xl'),
 
-                EditAction::make()
-                    ->modalWidth('7xl'),
-            ])
+                    EditAction::make()
+                        ->modalWidth('7xl'),
+
+                    Action::make('print')
+                        ->label('Print')
+                        ->color('info')
+                        ->icon('heroicon-o-printer')
+                        ->url(fn ($record) => route('export.leave-logs.print', ['id' => $record->id]))
+                        ->openUrlInNewTab(),
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary'),
+
+            ],position: RecordActionsPosition::BeforeCells)
             
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -17,37 +17,6 @@ class LeaveLogForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $departmentLabels = ['HR', 'Operations', 'MIS', 'Production', 'Accounting', 'Cash'];
-
-        $generateControlNumber = function () use ($departmentLabels): string {
-            $user = Auth::user();
-
-            $allowedDepartments = $user
-                ? array_values(array_filter(
-                    $user->departmentRoleAliases(),
-                    fn(string $department): bool => in_array($department, $departmentLabels, true),
-                ))
-                : [];
-
-            $department = $allowedDepartments[0] ?? 'HR';
-            $departmentCode = strtoupper((string) preg_replace('/[^A-Za-z0-9]/', '', $department));
-            $prefix = $departmentCode . now()->format('ym');
-
-            $maxSequence = LeaveLog::query()
-                ->where('control_number', 'like', $prefix . '%')
-                ->pluck('control_number')
-                ->map(function (string $controlNumber) use ($prefix): int {
-                    $sequencePart = substr($controlNumber, strlen($prefix));
-
-                    return ctype_digit($sequencePart) ? (int) $sequencePart : 0;
-                })
-                ->max() ?? 0;
-
-            $nextSequence = str_pad((string) ($maxSequence + 1), 2, '0', STR_PAD_LEFT);
-
-            return $prefix . $nextSequence;
-        };
-
         return $schema
             ->components([
 
@@ -61,9 +30,9 @@ class LeaveLogForm
                             ->gap(false)
                             ->schema([
                                 TextInput::make('control_number')
-                                    ->columnSpan(1)
+                                    ->columnSpan(2)
                                     ->label('Control Number')
-                                    ->default($generateControlNumber)
+                                    ->default(fn(): string => LeaveLog::generateNextControlNumber())
                                     ->readOnly()
                                     ->dehydrated()
                                     ->unique(ignoreRecord: true)

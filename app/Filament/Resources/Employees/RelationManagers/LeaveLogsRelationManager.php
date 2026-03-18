@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employees\RelationManagers;
 
+use App\Models\LeaveLog;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -20,14 +21,28 @@ class LeaveLogsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
+            Forms\Components\TextInput::make('control_number')
+                ->label('Control Number')
+                ->default(fn(): string => LeaveLog::generateNextControlNumber())
+                ->readOnly()
+                ->dehydrated()
+                ->unique(ignoreRecord: true)
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\DatePicker::make('date_filed')
+                ->label('Date Filed')
+                ->default(now())
+                ->required(),
+
             Forms\Components\Select::make('leave_type')
                 ->options([
-                    'sick' => 'Sick Leave',
-                    'vacation' => 'Vacation Leave',
-                    'emergency' => 'Emergency Leave',
-                    'maternity' => 'Maternity Leave',
-                    'paternity' => 'Paternity Leave',
-                    'other' => 'Other',
+                    'Sick Leave' => 'Sick Leave',
+                    'Vacation Leave' => 'Vacation Leave',
+                    'Emergency Leave' => 'Emergency Leave',
+                    'Maternity Leave' => 'Maternity Leave',
+                    'Paternity Leave' => 'Paternity Leave',
+                    'Other' => 'Other',
                 ])
                 ->required(),
 
@@ -49,7 +64,15 @@ class LeaveLogsRelationManager extends RelationManager
                 ->required()
                 ->maxLength(255),
 
+            Forms\Components\TextInput::make('conformed_by_position')
+                ->required()
+                ->maxLength(255),
+
             Forms\Components\TextInput::make('approved_by')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('approved_by_position')
                 ->maxLength(255),
 
             Forms\Components\Textarea::make('reason')
@@ -64,6 +87,15 @@ class LeaveLogsRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('control_number')
+                    ->label('Control Number')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('date_filed')
+                    ->label('Date Filed')
+                    ->date()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('from_date')
                     ->label('From')
                     ->date()
@@ -87,14 +119,22 @@ class LeaveLogsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('conformed_by')
                     ->label('Conformed By'),
 
+                Tables\Columns\TextColumn::make('conformed_by_position')
+                    ->label('Conformed By Position'),
+
                 Tables\Columns\TextColumn::make('approved_by')
                     ->label('Approved By'),
+
+                Tables\Columns\TextColumn::make('approved_by_position')
+                    ->label('Approved By Position'),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                ->modalWidth('7xl'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                ->modalWidth('7xl'),
                 DeleteAction::make(),
             ]);
     }

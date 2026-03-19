@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class DispatchSheetResource extends Resource
 {
@@ -24,6 +25,8 @@ class DispatchSheetResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $navigationLabel = 'Dispatch Main Forms';
+
+    protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
 
     public static function form(Schema $schema): Schema
     {

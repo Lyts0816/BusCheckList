@@ -10,6 +10,7 @@ use Filament\Schemas\Schema;
 use BackedEnum;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use UnitEnum;
 
 class OperationsDashboard extends BaseDashboard
 {
@@ -20,9 +21,11 @@ class OperationsDashboard extends BaseDashboard
     // ...
     protected static string $routePath = '/operations-dashboard';
 
-    protected static ?string $title = 'Ops. Dashboard';
+    protected static ?string $title = 'Dispatch Dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
+
+    protected static UnitEnum|string|null $navigationGroup = 'DISPATCH TRIPS';
 
     public static function canAccess(): bool
     {

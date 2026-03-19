@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Employee;
+use App\Models\User;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -24,7 +25,7 @@ class LeaveDashboard extends BaseDashboard
 
     protected static ?string $title = 'Leave Dashboard';
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
     protected static string|UnitEnum|null $navigationGroup = 'LEAVE MANAGEMENT';
 
@@ -32,7 +33,11 @@ class LeaveDashboard extends BaseDashboard
     {
         $user = Auth::user();
 
-        return (bool) ($user && $user->canViewleaveModule());
+        if (! $user instanceof User) {
+            return false;
+        }
+
+        return $user->canViewleaveModule() || $user->hasAdminLeaveModule();
     }
 
     public function filtersForm(Schema $schema): Schema

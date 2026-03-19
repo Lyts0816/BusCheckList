@@ -13,7 +13,7 @@ class LeaveLogPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->canViewleaveModule();
+        return $user->canViewleaveModule() || $user->hasAdminLeaveModule() || $user->hasSuperAdminLeaveModule();
     }
 
     /**
@@ -21,7 +21,7 @@ class LeaveLogPolicy
      */
     public function view(User $user, LeaveLog $leaveLog): bool
     {
-        return $user->canViewleaveModule();
+        return $user->canViewleaveModule() || $user->hasAdminLeaveModule() || $user->hasSuperAdminLeaveModule();
     }
 
     /**
@@ -29,7 +29,7 @@ class LeaveLogPolicy
      */
     public function create(User $user): bool
     {
-        return $user->canViewleaveModule();
+        return $user->canViewleaveModule() || $user->hasSuperAdminLeaveModule();
     }
 
     /**
@@ -37,7 +37,7 @@ class LeaveLogPolicy
      */
     public function update(User $user, LeaveLog $leaveLog): bool
     {
-        return $user->canViewleaveModule();
+        return $user->canViewleaveModule() || $user->hasSuperAdminLeaveModule();
     }
 
     /**

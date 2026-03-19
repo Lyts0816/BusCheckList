@@ -7,6 +7,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use BackedEnum;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use UnitEnum;
 
 class LogbookDashboard extends BaseDashboard
 {
@@ -18,6 +19,9 @@ class LogbookDashboard extends BaseDashboard
     protected static ?string $title = 'Logbook Dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
+
+    protected static UnitEnum|string|null $navigationGroup = 'LOGBOOKS';
+    
 
     public static function canAccess(): bool
     {

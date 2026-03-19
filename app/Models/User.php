@@ -120,14 +120,19 @@ class User extends Authenticatable
 
     public function canViewleaveModule(): bool
     {
-        return $this->isAdmin() || $this->isAdminLeave() || $this->isHrDepartment() || $this->isOperationsDepartment()
+        return $this->isAdmin() || $this->isHrDepartment() || $this->isOperationsDepartment()
          || $this->isMisDepartment() || $this->isProductionDepartment()
           || $this->isAccountingDepartment() || $this->isCashDepartment();
     }
 
     public function hasAdminLeaveModule(): bool
     {
-        return $this->isAdmin() || $this->isAdminLeave();
+        return $this->isAdminLeave();
+    }
+
+        public function hasSuperAdminLeaveModule(): bool
+    {
+        return $this->isAdmin();
     }
 
     public function canViewEmployeeModule(): bool

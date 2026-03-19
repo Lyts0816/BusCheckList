@@ -7,6 +7,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use BackedEnum;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use UnitEnum;
 
 class ComputersDashboard extends BaseDashboard
 {
@@ -16,6 +17,8 @@ class ComputersDashboard extends BaseDashboard
     protected static ?string $title = 'Computer Dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
+
+    protected static UnitEnum|string|null $navigationGroup = 'COMPUTER & PERIPHERALS';
 
     public static function canAccess(): bool
     {

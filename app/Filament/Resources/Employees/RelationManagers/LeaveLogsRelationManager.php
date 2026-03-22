@@ -3,13 +3,19 @@
 namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Models\LeaveLog;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Support\Enums\Size;
 use Filament\Tables;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 
 class LeaveLogsRelationManager extends RelationManager
@@ -21,64 +27,97 @@ class LeaveLogsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            Forms\Components\TextInput::make('control_number')
-                ->label('Control Number')
-                ->default(fn(): string => LeaveLog::generateNextControlNumber())
-                ->readOnly()
-                ->dehydrated()
-                ->unique(ignoreRecord: true)
-                ->required()
-                ->maxLength(255),
+            Grid::make()
+                ->dense()
+                ->schema([
+                    Section::make()
+                        ->dense()
+                        ->gap(false)
+                        ->schema([
+                            Forms\Components\TextInput::make('control_number')
+                                ->columnSpan(2)
+                                ->label('Control Number')
+                                ->default(fn(): string => LeaveLog::generateNextControlNumber())
+                                ->readOnly()
+                                ->dehydrated()
+                                ->unique(ignoreRecord: true)
+                                ->required()
+                                ->maxLength(255),
 
-            Forms\Components\DatePicker::make('date_filed')
-                ->label('Date Filed')
-                ->default(now())
-                ->required(),
+                            Forms\Components\DatePicker::make('date_filed')
+                                ->columnSpan(2)
+                                ->label('Date Filed')
+                                ->default(now())
+                                ->required(),
 
-            Forms\Components\Select::make('leave_type')
-                ->options([
-                    'Sick Leave' => 'Sick Leave',
-                    'Vacation Leave' => 'Vacation Leave',
-                    'Emergency Leave' => 'Emergency Leave',
-                    'Maternity Leave' => 'Maternity Leave',
-                    'Paternity Leave' => 'Paternity Leave',
-                    'Other' => 'Other',
+                            Forms\Components\Select::make('leave_type')
+                                ->columnSpan(2)
+                                ->options([
+                                    'Sick Leave' => 'Sick Leave',
+                                    'Vacation Leave' => 'Vacation Leave',
+                                    'Emergency Leave' => 'Emergency Leave',
+                                    'Maternity Leave' => 'Maternity Leave',
+                                    'Paternity Leave' => 'Paternity Leave',
+                                    'Other' => 'Other',
+                                ])
+                                ->required(),
+
+                            Forms\Components\TextInput::make('company')
+                                ->columnSpan(2)
+                                ->default('Yellow Bus Line Inc.')
+                                ->required()
+                                ->maxLength(255),
+                        ])->columnSpan(2),
+
+                    Section::make()
+                        ->dense()
+                        ->gap(false)
+                        ->schema([
+                            Forms\Components\TextInput::make('relieved_by')
+                                ->columnSpanFull()
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\DatePicker::make('from_date')
+                                ->columnSpanFull()
+                                ->required(),
+
+                            Forms\Components\DatePicker::make('to_date')
+                                ->columnSpanFull()
+                                ->required(),
+                        ])->columnSpan(3),
+
+                    Section::make()
+                        ->dense()
+                        ->gap(false)
+                        ->schema([
+                            Forms\Components\TextInput::make('conformed_by')
+                                ->columnSpanFull()
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\TextInput::make('conformed_by_position')
+                                ->columnSpanFull()
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\TextInput::make('approved_by')
+                                ->columnSpanFull()
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\TextInput::make('approved_by_position')
+                                ->columnSpanFull()
+                                ->maxLength(255),
+                        ])->columnSpan(3),
+
+                    Forms\Components\Textarea::make('reason')
+                        ->columnSpanFull(),
+
+                    Forms\Components\Textarea::make('remarks')
+                        ->columnSpanFull(),
                 ])
-                ->required(),
-
-            Forms\Components\TextInput::make('company')
-                ->required()
-                ->maxLength(255),
-
-            Forms\Components\DatePicker::make('from_date')
-                ->required(),
-
-            Forms\Components\DatePicker::make('to_date')
-                ->required(),
-
-            Forms\Components\TextInput::make('relieved_by')
-                ->required()
-                ->maxLength(255),
-
-            Forms\Components\TextInput::make('conformed_by')
-                ->required()
-                ->maxLength(255),
-
-            Forms\Components\TextInput::make('conformed_by_position')
-                ->required()
-                ->maxLength(255),
-
-            Forms\Components\TextInput::make('approved_by')
-                ->required()
-                ->maxLength(255),
-
-            Forms\Components\TextInput::make('approved_by_position')
-                ->maxLength(255),
-
-            Forms\Components\Textarea::make('reason')
-                ->columnSpanFull(),
-
-            Forms\Components\Textarea::make('remarks')
+                ->columns(8)
                 ->columnSpanFull(),
         ]);
     }
@@ -133,9 +172,23 @@ class LeaveLogsRelationManager extends RelationManager
                 ->modalWidth('7xl'),
             ])
             ->recordActions([
-                EditAction::make()
-                ->modalWidth('7xl'),
-                DeleteAction::make(),
-            ]);
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->modalWidth('7xl'),
+
+                    EditAction::make()
+                        ->modalWidth('7xl'),
+
+                    Action::make('print')
+                        ->label('Print')
+                        ->color('info')
+                        ->icon('heroicon-o-printer')
+                        ->url(fn ($record) => route('export.leave-logs.print', ['id' => $record->id]))
+                        ->openUrlInNewTab(),
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary'),
+            ], position: RecordActionsPosition::BeforeCells);
     }
 }

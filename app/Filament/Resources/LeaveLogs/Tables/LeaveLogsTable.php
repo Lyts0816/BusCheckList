@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\LeaveLogs\Tables;
 
+use App\Filament\Pages\LeaveDashboard;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
@@ -75,7 +77,8 @@ class LeaveLogsTable
                         ->modalWidth('7xl'),
 
                     EditAction::make()
-                        ->modalWidth('7xl'),
+                        ->modalWidth('7xl')
+                        ->visible(fn ($livewire): bool => ! $livewire instanceof LeaveDashboard),
 
                     Action::make('print')
                         ->label('Print')
@@ -92,7 +95,8 @@ class LeaveLogsTable
             
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn () => Auth::user()?->hasSuperAdminLeaveModule() ?? false),
                 ]),
             ]);
     }

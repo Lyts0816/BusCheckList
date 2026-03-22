@@ -45,7 +45,7 @@ class LeaveLogPolicy
      */
     public function delete(User $user, LeaveLog $leaveLog): bool
     {
-        return $user->hasAdminLeaveModule();
+        return $user->hasSuperAdminLeaveModule();
     }
 
     /**

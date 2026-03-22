@@ -17,6 +17,11 @@ use Filament\Support\Enums\Size;
 use Filament\Tables;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
+use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkActionGroup;
+use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Filters\SelectFilter;
 
 class LeaveLogsRelationManager extends RelationManager
 {
@@ -189,6 +194,38 @@ class LeaveLogsRelationManager extends RelationManager
                     ->size(Size::Small)
                     ->dropdownPlacement('bottom-start')
                     ->color('primary'),
-            ], position: RecordActionsPosition::BeforeCells);
+            ], position: RecordActionsPosition::BeforeCells)
+
+            ->filters([
+                SelectFilter::make('leave_type')
+                    ->label('Leave Type')
+                    ->options(fn (): array => LeaveLog::query()
+                        ->whereNotNull('leave_type')
+                        ->distinct()
+                        ->orderBy('leave_type')
+                        ->pluck('leave_type', 'leave_type')
+                        ->toArray()
+                    )
+                    ->searchable()
+                    ->multiple(),
+            ])
+            ->deferFilters(false)
+
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.leave-logs') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+
+                    DeleteBulkAction::make()
+                        ->visible(fn () => Auth::user()?->hasSuperAdminLeaveModule() ?? false),
+                ]),
+            ]);
     }
 }

@@ -2,15 +2,19 @@
 
 namespace App\Filament\Resources\LeaveLogs\Tables;
 
+use App\Exports\LeaveLogExporter;
 use App\Filament\Pages\LeaveDashboard;
+use App\Models\LeaveLog;
 use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkAction;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Support\Enums\Size;
@@ -25,7 +29,12 @@ class LeaveLogsTable
                     ->label('Control Number')
                     ->searchable()
                     ->sortable(),
-                    
+
+                TextColumn::make('date_filed')
+                    ->label('Date Filed')
+                    ->date()
+                    ->sortable(),
+                
                 TextColumn::make('employee.full_name')
                     ->label('Employee')
                     ->searchable()
@@ -33,6 +42,7 @@ class LeaveLogsTable
 
                 TextColumn::make('leave_type')
                     ->label('Leave Type')
+                    ->sortable()
                     ->badge(),
 
                 TextColumn::make('company')
@@ -68,8 +78,19 @@ class LeaveLogsTable
             ])->defaultSort('id', direction: 'desc')
 
             ->filters([
-                //
+                SelectFilter::make('leave_type')
+                    ->label('Leave Type')
+                    ->options(fn (): array => LeaveLog::query()
+                        ->whereNotNull('leave_type')
+                        ->distinct()
+                        ->orderBy('leave_type')
+                        ->pluck('leave_type', 'leave_type')
+                        ->toArray()
+                    )
+                    ->searchable()
+                    ->multiple(),
             ])
+            ->deferFilters(false)
 
             ->recordActions([
                 ActionGroup::make([
@@ -95,6 +116,16 @@ class LeaveLogsTable
             
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.leave-logs') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+
                     DeleteBulkAction::make()
                         ->visible(fn () => Auth::user()?->hasSuperAdminLeaveModule() ?? false),
                 ]),

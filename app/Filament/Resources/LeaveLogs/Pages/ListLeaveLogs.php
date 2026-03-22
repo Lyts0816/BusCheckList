@@ -25,4 +25,5 @@ class ListLeaveLogs extends ListRecords
                 ->openUrlInNewTab(),
         ];
     }
+
 }

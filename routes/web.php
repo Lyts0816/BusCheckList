@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/export/peripherals', [PeripheralsExport::class, 'exportPeripherals'])
         ->name('export.peripherals');
 
+    Route::get('/export/leave-logs', [LeaveLogExportController::class, 'exportExcel'])
+        ->name('export.leave-logs');
+
     Route::post('/export/leave-logs/excel', [LeaveLogExportController::class, 'exportExcel'])
         ->name('export.leave-logs.excel');
 

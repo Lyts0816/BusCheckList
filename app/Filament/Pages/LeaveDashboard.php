@@ -120,14 +120,15 @@ class LeaveDashboard extends BaseDashboard implements HasTable
 
     public function getTabs(): array
     {
-        $baseQuery = $this->getFilteredBaseQuery();
+        // Use unfiltered query for tabs so they always show all leave types
+        $unfilteredQuery = LeaveLogResource::getEloquentQuery();
 
         $tabs = [
             'all' => Tab::make('All')
-                ->badge(fn (): int => (clone $baseQuery)->count()),
+                ->badge(fn (): int => (clone $this->getFilteredBaseQuery())->count()),
         ];
 
-        $leaveTypes = (clone $baseQuery)
+        $leaveTypes = (clone $unfilteredQuery)
             ->whereNotNull('leave_type')
             ->select('leave_type')
             ->distinct()
@@ -138,7 +139,7 @@ class LeaveDashboard extends BaseDashboard implements HasTable
         foreach ($leaveTypes as $leaveType) {
             $tabs[(string) $leaveType] = Tab::make((string) $leaveType)
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('leave_type', $leaveType))
-                ->badge(fn (): int => (clone $baseQuery)->where('leave_type', $leaveType)->count());
+                ->badge(fn (): int => (clone $this->getFilteredBaseQuery())->where('leave_type', $leaveType)->count());
         }
 
         return $tabs;

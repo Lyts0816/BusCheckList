@@ -96,6 +96,7 @@ class LeaveLogsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
+                        ->visible(fn ($livewire): bool => ! $livewire instanceof LeaveDashboard)
                         ->modalWidth('7xl'),
 
                     EditAction::make()

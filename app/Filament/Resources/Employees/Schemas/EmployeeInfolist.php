@@ -28,35 +28,11 @@ class EmployeeInfolist
                         TextEntry::make('department')
                             ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
 
-                        TextEntry::make('remaining_vl')
-                            ->label('Remaining VL')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
-                        TextEntry::make('remaining_sl')
-                            ->label('Remaining SL')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
-                        TextEntry::make('availed_vl')
-                            ->label('Availed VL')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
-                        TextEntry::make('availed_sl')
-                            ->label('Availed SL')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
-                        TextEntry::make('availed_wo_pay')
-                            ->label('Availed W/O Pay')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
-                        TextEntry::make('availed_sss_sl')
-                            ->label('Availed SSS SL')
-                            ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
-
                         TextEntry::make('remarks')
                             ->columnSpanFull()
                             ->formatStateUsing(fn ($state) => filled($state) ? $state : '-'),
                     ])
-                    ->columns(3),
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -79,6 +79,7 @@ class LeaveLogsTable
 
             ->filters([
                 SelectFilter::make('leave_type')
+                    ->visible(fn ($livewire): bool => ! $livewire instanceof LeaveDashboard)
                     ->label('Leave Type')
                     ->options(fn (): array => LeaveLog::query()
                         ->whereNotNull('leave_type')

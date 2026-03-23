@@ -45,6 +45,21 @@ class LeaveTypeBreakdownChart extends ChartWidget
         return 'bar';
     }
 
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'stepSize' => 1,
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     private function applyDashboardFilters(Builder $query): Builder
     {
         $department = $this->pageFilters['department'] ?? null;

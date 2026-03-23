@@ -12,6 +12,8 @@ class LeaveTypeBreakdownChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected bool $isCollapsible = true;
+
     protected ?string $heading = 'Leave Type Breakdown';
 
     protected int|string|array $columnSpan = 'full';

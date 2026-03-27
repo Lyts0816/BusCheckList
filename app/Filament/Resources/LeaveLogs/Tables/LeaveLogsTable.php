@@ -109,6 +109,7 @@ class LeaveLogsTable
                         ->icon('heroicon-o-printer')
                         ->url(fn ($record) => route('export.leave-logs.print', ['id' => $record->id]))
                         ->openUrlInNewTab(),
+                        
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)
                     ->dropdownPlacement('bottom-start')

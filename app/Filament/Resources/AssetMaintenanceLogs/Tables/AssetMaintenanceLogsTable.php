@@ -15,18 +15,34 @@ class AssetMaintenanceLogsTable
     {
         return $table
             ->columns([
+
                 TextColumn::make('maintainable_type')
-            ->label('Asset Type'),
+                    ->label('Asset Type')
+                    ->formatStateUsing(function (?string $state): ?string {
+                        if (! $state) {
+                            return null;
+                        }
+
+                        $baseName = class_basename($state);
+
+                        return trim(preg_replace('/(?<!^)([A-Z])/', ' $1', $baseName));
+                    }),
 
                 TextColumn::make('maintainable_id')
-                    ->numeric()
+                    ->label('Asset')
+                    ->getStateUsing(fn ($record) => data_get($record, 'maintainable.asset_code')
+                        ?? data_get($record, 'maintainable.name')
+                        ?? $record->maintainable_id)
+                    ->searchable()
                     ->sortable(),
 
-                TextColumn::make('component_id')
-                    ->numeric()
+                TextColumn::make('component.name')
+                    ->label('Component')
+                    ->searchable()
                     ->sortable(),
 
-                TextColumn::make('maintenance_type'),
+                TextColumn::make('maintenance_type')
+                    ->badge(),
 
                 TextColumn::make('maintenance_date')
                     ->date()

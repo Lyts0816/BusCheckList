@@ -51,8 +51,8 @@ class AssetMaintenanceLogsTable
                 TextColumn::make('performed_by')
                     ->searchable(),
 
-                TextColumn::make('cost')
-                    ->money()
+                TextColumn::make('cost')                    
+                    ->money('php')
                     ->sortable(),
 
                 // TextColumn::make('next_maintenance')

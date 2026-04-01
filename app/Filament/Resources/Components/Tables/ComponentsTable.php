@@ -15,15 +15,26 @@ class ComponentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('asset_type'),
+                TextColumn::make('asset_type')
+                    ->formatStateUsing(fn (string $state) => match($state) {
+                        'system_unit' => 'System unit',
+                        'printer' => 'Printer',
+                        'peripheral' => 'Peripheral',
+                        default => $state,
+                    })
+                    ->searchable(),
+
                 TextColumn::make('name')
                     ->searchable(),
+
                 TextColumn::make('description')
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

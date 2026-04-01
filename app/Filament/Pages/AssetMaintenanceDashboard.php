@@ -11,6 +11,7 @@ use UnitEnum;
 class AssetMaintenanceDashboard extends BaseDashboard
 {
     protected bool $isCollapsible = true;
+    
     protected static bool $isLazy = false;
 
     protected static string $routePath = '/asset-maintenance-dashboard';
@@ -19,7 +20,7 @@ class AssetMaintenanceDashboard extends BaseDashboard
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench';
 
-    protected static UnitEnum|string|null $navigationGroup = 'ASSETS';
+    protected static UnitEnum|string|null $navigationGroup = 'MAINTENANCE LOGS';
 
     public static function canAccess(): bool
     {

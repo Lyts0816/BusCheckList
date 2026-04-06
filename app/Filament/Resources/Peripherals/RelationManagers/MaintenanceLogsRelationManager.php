@@ -27,31 +27,44 @@ class MaintenanceLogsRelationManager extends RelationManager
                     'upgrade' => 'Upgrade',
                     'replacement' => 'Replacement',
                 ])
-                ->required(),
+                ->required()
+                ->columnSpan(1),
+
+            Forms\Components\Select::make('component_id')
+                ->label('Component')
+                ->options(fn() => \App\Models\Component::query()
+                    ->where('asset_type', 'peripheral')
+                    ->pluck('name', 'id')
+                    ->toArray())
+                ->searchable()
+                ->preload()
+                ->required()
+                ->columnSpan(1),
 
             Forms\Components\DatePicker::make('maintenance_date')
-                ->required(),
+                ->required()
+                ->columnSpan(1),
 
             Forms\Components\TextInput::make('performed_by')
-                ->maxLength(255),
-
-            Forms\Components\Textarea::make('issue_reported')
-                ->label('Issue Reported')
-                ->columnSpanFull(),
-
-            Forms\Components\Textarea::make('action_taken')
-                ->label('Action Taken')
-                ->columnSpanFull(),
+                ->maxLength(255)
+                ->columnSpan(2),
 
             Forms\Components\TextInput::make('cost')
                 ->numeric()
-                ->prefix('PHP '),
+                ->prefix('₱')
+                ->columnSpan(1),
 
-            Forms\Components\DatePicker::make('next_maintenance'),
+            Forms\Components\Textarea::make('issue_reported')
+                ->columnSpanFull(),
+
+            Forms\Components\Textarea::make('action_taken')
+                ->columnSpanFull(),
+
+            // Forms\Components\DatePicker::make('next_maintenance'),
 
             Forms\Components\Textarea::make('remarks')
                 ->columnSpanFull(),
-        ]);
+        ])->columns(3);
     }
 
     public function table(Table $table): Table

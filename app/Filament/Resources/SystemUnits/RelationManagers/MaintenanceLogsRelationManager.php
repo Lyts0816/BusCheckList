@@ -20,12 +20,6 @@ class MaintenanceLogsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-
-            Forms\Components\Select::make('component_id')
-                ->relationship('component', 'name')
-                ->searchable()
-                ->label('Component'),
-
             Forms\Components\Select::make('maintenance_type')
                 ->options([
                     'preventive' => 'Preventive',
@@ -33,13 +27,32 @@ class MaintenanceLogsRelationManager extends RelationManager
                     'upgrade' => 'Upgrade',
                     'replacement' => 'Replacement',
                 ])
-                ->required(),
+                ->required()
+                ->columnSpan(1),
+
+            Forms\Components\Select::make('component_id')
+                ->label('Component')
+                ->options(fn() => \App\Models\Component::query()
+                    ->where('asset_type', 'system_unit')
+                    ->pluck('name', 'id')
+                    ->toArray())
+                ->searchable()
+                ->preload()
+                ->required()
+                ->columnSpan(1),
 
             Forms\Components\DatePicker::make('maintenance_date')
-                ->required(),
+                ->required()
+                ->columnSpan(1),
 
             Forms\Components\TextInput::make('performed_by')
-                ->maxLength(255),
+                ->maxLength(255)
+                ->columnSpan(2),
+
+            Forms\Components\TextInput::make('cost')
+                ->numeric()
+                ->prefix('₱')
+                ->columnSpan(1),
 
             Forms\Components\Textarea::make('issue_reported')
                 ->columnSpanFull(),
@@ -47,15 +60,11 @@ class MaintenanceLogsRelationManager extends RelationManager
             Forms\Components\Textarea::make('action_taken')
                 ->columnSpanFull(),
 
-            Forms\Components\TextInput::make('cost')
-                ->numeric()
-                ->prefix('₱'),
-
             // Forms\Components\DatePicker::make('next_maintenance'),
 
             Forms\Components\Textarea::make('remarks')
                 ->columnSpanFull(),
-        ]);
+        ])->columns(3);
     }
 
     public function table(Table $table): Table

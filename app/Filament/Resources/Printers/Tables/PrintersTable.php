@@ -45,7 +45,7 @@ class PrintersTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('printer_asset_code')
+                TextColumn::make('asset_code')
                     ->toggleable()
                     ->searchable()
                     ->sortable(),

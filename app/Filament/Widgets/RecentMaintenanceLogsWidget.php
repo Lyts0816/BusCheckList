@@ -40,12 +40,15 @@ class RecentMaintenanceLogsWidget extends BaseWidget
                         if ($record->maintainable_type === SystemUnit::class) {
                             $asset = SystemUnit::find($state);
                             return $asset ? $asset->asset_code : 'N/A';
+
                         } elseif ($record->maintainable_type === Printer::class) {
                             $asset = Printer::find($state);
                             return $asset ? $asset->asset_code : 'N/A';
+
                         } elseif ($record->maintainable_type === Peripherals::class) {
                             $asset = Peripherals::find($state);
-                            return $asset ? $asset->name : 'N/A';
+                            return $asset ? $asset->asset_code : 'N/A';
+
                         }
                         return 'N/A';
                     }),

@@ -38,7 +38,7 @@ class MostMaintainedAssetsChart extends ChartWidget
                 $labels[] = $asset ? $asset->asset_code : 'Unknown (Printer)';
             } elseif ($item->maintainable_type === Peripherals::class) {
                 $asset = Peripherals::find($item->maintainable_id);
-                $labels[] = $asset ? $asset->name : 'Unknown (Peripheral)';
+                $labels[] = $asset ? $asset->asset_code : 'Unknown (Peripheral)';
             }
         }
 

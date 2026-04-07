@@ -16,9 +16,11 @@ class LeaveTypeBreakdownChart extends ChartWidget
 
     protected ?string $heading = 'Leave Type Breakdown';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = '4';
 
     protected static bool $isLazy = false;
+
+    
 
     protected function getData(): array
     {

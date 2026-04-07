@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\AssetMaintenanceLogs\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Support\Enums\Size;
 
 class AssetMaintenanceLogsTable
 {
@@ -15,6 +19,10 @@ class AssetMaintenanceLogsTable
     {
         return $table
             ->columns([
+
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
 
                 TextColumn::make('maintainable_type')
                     ->label('Asset Type')
@@ -68,14 +76,27 @@ class AssetMaintenanceLogsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('id', direction: 'desc')
+
             ->filters([
                 //
             ])
+
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+                ActionGroup::make([
+
+                    ViewAction::make()
+                        ->modalWidth('7xl'),
+                        
+                    EditAction::make(),
+
+                ])->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->dropdownPlacement('bottom-start')
+                    ->color('primary'),
+                ],position: RecordActionsPosition::BeforeCells)
+     
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

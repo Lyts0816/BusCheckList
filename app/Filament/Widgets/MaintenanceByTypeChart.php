@@ -14,7 +14,22 @@ class MaintenanceByTypeChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = AssetMaintenanceLog::select('maintenance_type', DB::raw('COUNT(*) as count'))
+        $filters = session('asset_maintenance_filters', []);
+        $query = AssetMaintenanceLog::query();
+
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('maintenance_date', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('maintenance_date', '<=', $filters['end_date']);
+        }
+
+        if (!empty($filters['maintenance_type'])) {
+            $query->where('maintenance_type', $filters['maintenance_type']);
+        }
+
+        $data = $query->select('maintenance_type', DB::raw('COUNT(*) as count'))
             ->groupBy('maintenance_type')
             ->pluck('count', 'maintenance_type');
 
@@ -46,8 +61,23 @@ class MaintenanceByTypeChart extends ChartWidget
         ];
     }
 
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'stepSize' => 1,
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     protected function getType(): string
     {
-        return 'pie';
+        return 'bar';
     }
 }

@@ -12,12 +12,40 @@ class MaintenanceStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalLogs = AssetMaintenanceLog::count();
-        $thisMonthLogs = AssetMaintenanceLog::whereMonth('maintenance_date', now()->month)
+        // Get filters from session (shared from parent page)
+        $filters = session('asset_maintenance_filters', []);
+
+        // Build base query with filters
+        $baseQuery = AssetMaintenanceLog::query();
+
+        if (!empty($filters['start_date'])) {
+            $baseQuery->whereDate('maintenance_date', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $baseQuery->whereDate('maintenance_date', '<=', $filters['end_date']);
+        }
+
+        if (!empty($filters['maintenance_type'])) {
+            $baseQuery->where('maintenance_type', $filters['maintenance_type']);
+        }
+
+        $totalLogs = (clone $baseQuery)->count();
+        $thisMonthLogs = (clone $baseQuery)->whereMonth('maintenance_date', now()->month)
             ->whereYear('maintenance_date', now()->year)
             ->count();
-        $totalCost = AssetMaintenanceLog::sum('cost');
-        $averageCost = $totalLogs > 0 ? round($totalCost / $totalLogs, 2) : 0;
+
+        $thisMonthCost = (clone $baseQuery)->whereMonth('maintenance_date', now()->month)
+            ->whereYear('maintenance_date', now()->year)
+            ->sum('cost');
+
+        $lastMonthCost = (clone $baseQuery)->whereMonth('maintenance_date', now()->subMonth()->month)
+            ->whereYear('maintenance_date', now()->subMonth()->year)
+            ->sum('cost');
+
+        $costTrend = $lastMonthCost > 0 
+            ? round((($thisMonthCost - $lastMonthCost) / $lastMonthCost) * 100, 2) 
+            : 0;
 
         return [
             Stat::make('Total Maintenance Logs', $totalLogs)
@@ -30,15 +58,15 @@ class MaintenanceStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('success'),
 
-            Stat::make('Total Cost', '₱' . number_format($totalCost, 2))
-                ->description('All maintenance expenses')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('warning'),
+            Stat::make('This Month Cost', '₱' . number_format($thisMonthCost, 2))
+                ->description($costTrend >= 0 ? "+{$costTrend}% vs last month" : "{$costTrend}% vs last month")
+                ->descriptionIcon($costTrend >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+                ->color($costTrend >= 0 ? 'warning' : 'success'),
 
-            Stat::make('Average Cost', '₱' . number_format($averageCost, 2))
-                ->description('Per maintenance log')
-                ->descriptionIcon('heroicon-m-chart-bar')
-                ->color('primary'),
+            Stat::make('Last Month Cost', '₱' . number_format($lastMonthCost, 2))
+                ->description('Previous month spending')
+                ->descriptionIcon('heroicon-m-calendar')
+                ->color('info'),
         ];
     }
 }

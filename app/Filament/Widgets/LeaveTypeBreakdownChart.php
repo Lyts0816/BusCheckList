@@ -20,6 +20,8 @@ class LeaveTypeBreakdownChart extends ChartWidget
 
     protected static bool $isLazy = false;
 
+    protected ?string $maxHeight = '300px';
+
     
 
     protected function getData(): array

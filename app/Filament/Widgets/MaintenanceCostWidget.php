@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class MaintenanceCostWidget extends BaseWidget
 {
-    protected int|string|array $columnSpan = 12;
+    protected int|string|array $columnSpan = 6;
 
     protected function getStats(): array
     {
@@ -19,9 +19,6 @@ class MaintenanceCostWidget extends BaseWidget
 
         $lastMonthCost = AssetMaintenanceLog::whereMonth('maintenance_date', now()->subMonth()->month)
             ->whereYear('maintenance_date', now()->subMonth()->year)
-            ->sum('cost');
-
-        $thisYearCost = AssetMaintenanceLog::whereYear('maintenance_date', now()->year)
             ->sum('cost');
 
         $costTrend = $lastMonthCost > 0 
@@ -38,11 +35,6 @@ class MaintenanceCostWidget extends BaseWidget
                 ->description('Previous month spending')
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
-
-            Stat::make('This Year Cost', '₱' . number_format($thisYearCost, 2))
-                ->description('Year to date expenses')
-                ->descriptionIcon('heroicon-m-chart-bar')
-                ->color('primary'),
         ];
     }
 }

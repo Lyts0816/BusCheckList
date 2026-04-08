@@ -7,7 +7,6 @@ use App\Models\SystemUnit;
 use App\Models\Printer;
 use App\Models\Peripherals;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 class MaintenanceByAssetCategoryChart extends ChartWidget
 {
@@ -17,9 +16,24 @@ class MaintenanceByAssetCategoryChart extends ChartWidget
 
     protected function getData(): array
     {
-        $systemUnits = AssetMaintenanceLog::where('maintainable_type', SystemUnit::class)->count();
-        $printers = AssetMaintenanceLog::where('maintainable_type', Printer::class)->count();
-        $peripherals = AssetMaintenanceLog::where('maintainable_type', Peripherals::class)->count();
+        $filters = session('asset_maintenance_filters', []);
+        $baseQuery = AssetMaintenanceLog::query();
+
+        if (!empty($filters['start_date'])) {
+            $baseQuery->whereDate('maintenance_date', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $baseQuery->whereDate('maintenance_date', '<=', $filters['end_date']);
+        }
+
+        if (!empty($filters['maintenance_type'])) {
+            $baseQuery->where('maintenance_type', $filters['maintenance_type']);
+        }
+
+        $systemUnits = (clone $baseQuery)->where('maintainable_type', SystemUnit::class)->count();
+        $printers = (clone $baseQuery)->where('maintainable_type', Printer::class)->count();
+        $peripherals = (clone $baseQuery)->where('maintainable_type', Peripherals::class)->count();
 
         return [
             'datasets' => [
@@ -36,7 +50,7 @@ class MaintenanceByAssetCategoryChart extends ChartWidget
                         '#065f46',
                         '#b45309',
                     ],
-                    'borderWidth' => 2,
+                    // 'borderWidth' => 2,
                 ],
             ],
             'labels' => ['System Unit', 'Printer', 'Peripheral'],
@@ -47,4 +61,17 @@ class MaintenanceByAssetCategoryChart extends ChartWidget
     {
         return 'bar';
     }
+
+    // protected function getOptions(): array
+    // {
+    //     return [
+    //         'maintainAspectRatio' => false,
+    //         'responsive' => true,
+    //         'plugins' => [
+    //             'legend' => [
+    //                 'display' => true,
+    //             ],
+    //         ],
+    //     ];
+    // }
 }

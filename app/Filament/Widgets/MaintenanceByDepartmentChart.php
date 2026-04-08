@@ -14,7 +14,22 @@ class MaintenanceByDepartmentChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = AssetMaintenanceLog::select('performed_by', DB::raw('COUNT(*) as count'))
+        $filters = session('asset_maintenance_filters', []);
+        $query = AssetMaintenanceLog::query();
+
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('maintenance_date', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('maintenance_date', '<=', $filters['end_date']);
+        }
+
+        if (!empty($filters['maintenance_type'])) {
+            $query->where('maintenance_type', $filters['maintenance_type']);
+        }
+
+        $data = $query->select('performed_by', DB::raw('COUNT(*) as count'))
             ->whereNotNull('performed_by')
             ->groupBy('performed_by')
             ->orderByDesc('count')
@@ -31,7 +46,7 @@ class MaintenanceByDepartmentChart extends ChartWidget
                     'data' => $values->toArray(),
                     'backgroundColor' => '#10b981',
                     'borderColor' => '#065f46',
-                    'borderWidth' => 2,
+                    // 'borderWidth' => 2,
                 ],
             ],
             'labels' => $labels->toArray(),

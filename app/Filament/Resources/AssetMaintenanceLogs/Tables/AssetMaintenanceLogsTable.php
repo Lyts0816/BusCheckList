@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\AssetMaintenanceLogs\Tables;
 
-use Dom\Text;
+use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
+use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
@@ -86,9 +88,11 @@ class AssetMaintenanceLogsTable
                 ActionGroup::make([
 
                     ViewAction::make()
+                        ->schema(fn (Schema $schema): Schema => AssetMaintenanceLogInfolist::configure($schema))
                         ->modalWidth('7xl'),
                         
-                    EditAction::make(),
+                    EditAction::make()
+                        ->schema(fn (Schema $schema): Schema => AssetMaintenanceLogForm::configure($schema)),
 
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)

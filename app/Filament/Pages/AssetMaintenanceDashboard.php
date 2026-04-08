@@ -41,7 +41,7 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
 
     protected static ?string $title = 'Asset Maintenance Dashboard';
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
     protected static UnitEnum|string|null $navigationGroup = 'MAINTENANCE LOGS';
 

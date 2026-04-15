@@ -2,10 +2,7 @@
 
 namespace App\Filament\Resources\AssetMaintenanceLogs;
 
-use App\Filament\Resources\AssetMaintenanceLogs\Pages\CreateAssetMaintenanceLog;
-use App\Filament\Resources\AssetMaintenanceLogs\Pages\EditAssetMaintenanceLog;
 use App\Filament\Resources\AssetMaintenanceLogs\Pages\ListAssetMaintenanceLogs;
-use App\Filament\Resources\AssetMaintenanceLogs\Pages\ViewAssetMaintenanceLog;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
 use App\Filament\Resources\AssetMaintenanceLogs\Tables\AssetMaintenanceLogsTable;
@@ -14,7 +11,6 @@ use BackedEnum;
 use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class AssetMaintenanceLogResource extends Resource

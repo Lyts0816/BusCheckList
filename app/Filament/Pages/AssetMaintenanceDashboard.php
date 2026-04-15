@@ -50,9 +50,6 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
         $role = Auth::user()->role;
         return in_array($role, [
             User::ROLE_ADMIN,
-            User::ROLE_ADMIN_OPERATIONS,
-            User::ROLE_USER_MIS,
-            User::ROLE_OPERATIONS,
         ]);
     }
 

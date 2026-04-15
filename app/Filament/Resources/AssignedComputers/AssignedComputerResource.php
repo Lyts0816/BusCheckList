@@ -2,10 +2,7 @@
 
 namespace App\Filament\Resources\AssignedComputers;
 
-use App\Filament\Resources\AssignedComputers\Pages\CreateAssignedComputer;
-use App\Filament\Resources\AssignedComputers\Pages\EditAssignedComputer;
 use App\Filament\Resources\AssignedComputers\Pages\ListAssignedComputers;
-use App\Filament\Resources\AssignedComputers\Pages\ViewAssignedComputer;
 use App\Filament\Resources\AssignedComputers\Schemas\AssignedComputerForm;
 use App\Filament\Resources\AssignedComputers\Schemas\AssignedComputerInfolist;
 use App\Filament\Resources\AssignedComputers\Tables\AssignedComputersTable;
@@ -13,7 +10,6 @@ use App\Models\AssignedComputer;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 

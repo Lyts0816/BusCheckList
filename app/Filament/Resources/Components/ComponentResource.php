@@ -2,10 +2,7 @@
 
 namespace App\Filament\Resources\Components;
 
-use App\Filament\Resources\Components\Pages\CreateComponent;
-use App\Filament\Resources\Components\Pages\EditComponent;
 use App\Filament\Resources\Components\Pages\ListComponents;
-use App\Filament\Resources\Components\Pages\ViewComponent;
 use App\Filament\Resources\Components\Schemas\ComponentForm;
 use App\Filament\Resources\Components\Schemas\ComponentInfolist;
 use App\Filament\Resources\Components\Tables\ComponentsTable;
@@ -14,7 +11,6 @@ use BackedEnum;
 use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class ComponentResource extends Resource

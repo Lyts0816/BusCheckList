@@ -77,6 +77,7 @@ class AssetMaintenanceLogForm
 
                         Select::make('maintenance_type')
                             ->options([
+                                'preventive' => 'Preventive',
                                 'Cleaning' => 'Cleaning',
                                 'repair' => 'Repair',
                                 'upgrade' => 'Upgrade',

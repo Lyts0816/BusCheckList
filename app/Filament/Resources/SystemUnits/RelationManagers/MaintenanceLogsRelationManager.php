@@ -10,6 +10,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
+use Carbon\Carbon;
 
 class MaintenanceLogsRelationManager extends RelationManager
 {
@@ -76,6 +77,58 @@ class MaintenanceLogsRelationManager extends RelationManager
                     ->label('Date')
                     ->date()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('days_since_maintenance')
+                    ->label('Since Last Maintenance')
+                    ->getStateUsing(function ($record): ?string {
+                        if (! $record->maintenance_date) {
+                            return null;
+                        }
+
+                        $maintenanceDate = Carbon::parse($record->maintenance_date)->startOfDay();
+                        $today = now()->startOfDay();
+
+                        if ($maintenanceDate->greaterThan($today)) {
+                            return 'Scheduled in ' . $today->diffInDays($maintenanceDate) . ' days';
+                        }
+
+                        $totalDays = $maintenanceDate->diffInDays($today);
+                        $parts = $maintenanceDate->diff($today);
+
+                        $segments = [];
+
+                        if ($parts->y > 0) {
+                            $segments[] = $parts->y . ' year' . ($parts->y > 1 ? 's' : '');
+                        }
+
+                        if ($parts->m > 0) {
+                            $segments[] = $parts->m . ' month' . ($parts->m > 1 ? 's' : '');
+                        }
+
+                        if ($parts->d > 0 || empty($segments)) {
+                            $segments[] = $parts->d . ' day' . ($parts->d > 1 ? 's' : '');
+                        }
+
+                        return $totalDays . ' days (' . implode(', ', $segments) . ')';
+                    })
+                    ->badge()
+                    ->color(function ($record): string {
+                        if (! $record->maintenance_date) {
+                            return 'gray';
+                        }
+
+                        $days = Carbon::parse($record->maintenance_date)->startOfDay()->diffInDays(now()->startOfDay(), false);
+
+                        if ($days >= 365) {
+                            return 'danger';
+                        }
+
+                        if ($days >= 180) {
+                            return 'warning';
+                        }
+
+                        return 'success';
+                    }),
 
                 Tables\Columns\TextColumn::make('component.name')
                     ->label('Component'),

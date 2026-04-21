@@ -27,6 +27,7 @@ use App\Filament\Pages\OperationsDashboard;
 use App\Filament\Widgets\ActiveUsersWidget;
 use App\Filament\Pages\ActiveUserDashboard;
 use App\Filament\Pages\LeaveDashboard;
+use App\Filament\Pages\MaintenanceMonitoringDashboard;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -67,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 AssetMaintenanceDashboard::class,
+                MaintenanceMonitoringDashboard::class,
                 // Dashboard::class,
                 LogbookDashboard::class,
                 ComputersDashboard::class,

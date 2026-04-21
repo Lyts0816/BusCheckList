@@ -24,6 +24,7 @@ class MaintenanceLogsRelationManager extends RelationManager
             Forms\Components\Select::make('maintenance_type')
                 ->options([
                     'preventive' => 'Preventive',
+                    'cleaning' => 'Cleaning',
                     'repair' => 'Repair',
                     'upgrade' => 'Upgrade',
                     'replacement' => 'Replacement',

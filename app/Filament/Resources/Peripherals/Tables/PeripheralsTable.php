@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Peripherals\Tables;
 
 use App\Filament\Resources\Peripherals\PeripheralsResource;
 use App\Models\Peripherals;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -68,6 +69,86 @@ class PeripheralsTable
                 TextColumn::make('asset_code')
                     ->toggleable()
                     ->searchable(),
+
+                TextColumn::make('recent_maintenance_date')
+                    ->label('Recent Maintenance Date')
+                    ->toggleable()
+                    ->getStateUsing(function (Peripherals $record): string {
+                        $latestMaintenanceDate = $record->maintenanceLogs()
+                            ->whereNotNull('maintenance_date')
+                            ->max('maintenance_date');
+
+                        if (! $latestMaintenanceDate) {
+                            return 'No maintenance yet';
+                        }
+
+                        return Carbon::parse($latestMaintenanceDate)->format('M d, Y');
+                    })
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw(
+                            '(select max(maintenance_date) from asset_maintenance_logs where asset_maintenance_logs.maintainable_id = peripherals.id and asset_maintenance_logs.maintainable_type = ?) ' . ($direction === 'asc' ? 'asc' : 'desc'),
+                            [Peripherals::class]
+                        );
+                    }),
+
+                TextColumn::make('days_since_maintenance')
+                    ->label('Days Since Maintenance')
+                    ->toggleable()
+                    ->getStateUsing(function (Peripherals $record): string {
+                        $latestMaintenanceDate = $record->maintenanceLogs()
+                            ->whereNotNull('maintenance_date')
+                            ->max('maintenance_date');
+
+                        if (! $latestMaintenanceDate) {
+                            return 'No maintenance yet';
+                        }
+
+                        $maintenanceDate = Carbon::parse($latestMaintenanceDate)->startOfDay();
+                        $today = now()->startOfDay();
+
+                        if ($maintenanceDate->greaterThan($today)) {
+                            return 'Scheduled in ' . $today->diffInDays($maintenanceDate) . ' days';
+                        }
+
+                        $totalDays = $maintenanceDate->diffInDays($today);
+                        $parts = $maintenanceDate->diff($today);
+
+                        $segments = [];
+
+                        if ($parts->m > 0) {
+                            $segments[] = $parts->m . ' month' . ($parts->m > 1 ? 's' : '');
+                        }
+
+                        if ($parts->d > 0 || empty($segments)) {
+                            $segments[] = $parts->d . ' day' . ($parts->d > 1 ? 's' : '');
+                        }
+
+                        return $totalDays . ' days (' . implode(', ', $segments) . ')';
+                    })
+                    ->badge()
+                    ->color(function (Peripherals $record): string {
+                        $latestMaintenanceDate = $record->maintenanceLogs()
+                            ->whereNotNull('maintenance_date')
+                            ->max('maintenance_date');
+
+                        if (! $latestMaintenanceDate) {
+                            return 'gray';
+                        }
+
+                        $days = Carbon::parse($latestMaintenanceDate)
+                            ->startOfDay()
+                            ->diffInDays(now()->startOfDay(), false);
+
+                        if ($days >= 365) {
+                            return 'danger';
+                        }
+
+                        if ($days >= 180) {
+                            return 'warning';
+                        }
+
+                        return 'success';
+                    }),
 
                 TextColumn::make('serial_number')
                     ->toggleable()

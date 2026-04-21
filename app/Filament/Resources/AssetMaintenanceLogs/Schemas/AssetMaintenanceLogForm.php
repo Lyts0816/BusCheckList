@@ -23,8 +23,6 @@ class AssetMaintenanceLogForm
                     // ->gap(false)
                     ->dense()
                     ->schema([
-
-                        // This is to test the dynamic select options based on the selected asset type
                         Select::make('maintainable_type')
                             ->label('Asset Type')
                             ->options([

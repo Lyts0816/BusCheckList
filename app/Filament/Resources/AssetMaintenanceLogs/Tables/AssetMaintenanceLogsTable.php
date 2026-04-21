@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AssetMaintenanceLogs\Tables;
 
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -57,6 +58,58 @@ class AssetMaintenanceLogsTable
                 TextColumn::make('maintenance_date')
                     ->date()
                     ->sortable(),
+
+                TextColumn::make('days_since_maintenance')
+                    ->label('Since Last Maintenance')
+                    ->getStateUsing(function ($record): ?string {
+                        if (! $record->maintenance_date) {
+                            return null;
+                        }
+
+                        $maintenanceDate = Carbon::parse($record->maintenance_date)->startOfDay();
+                        $today = now()->startOfDay();
+
+                        if ($maintenanceDate->greaterThan($today)) {
+                            return 'Scheduled in ' . $today->diffInDays($maintenanceDate) . ' days';
+                        }
+
+                        $totalDays = $maintenanceDate->diffInDays($today);
+                        $parts = $maintenanceDate->diff($today);
+
+                        $segments = [];
+
+                        if ($parts->y > 0) {
+                            $segments[] = $parts->y . ' year' . ($parts->y > 1 ? 's' : '');
+                        }
+
+                        if ($parts->m > 0) {
+                            $segments[] = $parts->m . ' month' . ($parts->m > 1 ? 's' : '');
+                        }
+
+                        if ($parts->d > 0 || empty($segments)) {
+                            $segments[] = $parts->d . ' day' . ($parts->d > 1 ? 's' : '');
+                        }
+
+                        return $totalDays . ' days (' . implode(', ', $segments) . ')';
+                    })
+                    ->badge()
+                    ->color(function ($record): string {
+                        if (! $record->maintenance_date) {
+                            return 'gray';
+                        }
+
+                        $days = Carbon::parse($record->maintenance_date)->startOfDay()->diffInDays(now()->startOfDay(), false);
+
+                        if ($days >= 365) {
+                            return 'danger';
+                        }
+
+                        if ($days >= 180) {
+                            return 'warning';
+                        }
+
+                        return 'success';
+                    }),
 
                 TextColumn::make('performed_by')
                     ->searchable(),

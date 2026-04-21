@@ -94,10 +94,6 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-
-
-
-
     private function generateAssignedComputersCSVFormat($assignedComputers)
     {
 
@@ -546,14 +542,7 @@ class ExportController extends Controller
                 });
             }
 
-            // Apply sorting if provided
-            if ($request->has('sort') && !empty($request->sort)) {
-                $sortField = $request->sort;
-                $sortDirection = $request->get('direction', 'desc');
-                $query->orderBy($sortField, $sortDirection);
-            } else {
-                $query->orderBy('id', 'desc');
-            }
+           
         }
 
         // Get the filtered results
@@ -674,7 +663,6 @@ class ExportController extends Controller
 
     public function exportDispatchedTripsPDF(Request $request)
     {
-        // Start with base query - load all necessary relationships
         $query = DispatchedTrips::with([
             'dispatchSheet.route',
             'busNumber',
@@ -685,12 +673,12 @@ class ExportController extends Controller
             $query->where('dispatch_sheet_id', $request->dispatch_sheet_id);
         }
 
-        // Bulk export: if ids are provided, only export those
+        
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
             $query->whereIn('id', $ids);
         } else {
-            // Apply search filters if provided
+            
             if ($request->has('search') && !empty($request->search)) {
                 $searchTerm = $request->search;
                 $query->where(function ($q) use ($searchTerm) {
@@ -708,7 +696,7 @@ class ExportController extends Controller
                 });
             }
 
-            // Apply sorting if provided
+            
             if ($request->has('sort') && !empty($request->sort)) {
                 $sortField = $request->sort;
                 $sortDirection = $request->get('direction', 'desc');
@@ -718,16 +706,13 @@ class ExportController extends Controller
             }
         }
 
-        // Get the filtered results
         $dispatchedTrips = $query->get();
 
-        // Generate PDF
         $pdf = PDF::loadView('exports.dispatched-trips-pdf', [
             'trips' => $dispatchedTrips,
             'exportDate' => now()->format('F d, Y'),
         ]);
 
-        // Generate filename
         $filename = 'dispatched_trips_' . date('Y-m-d_H-i-s');
         if ($request->has('search') || $request->has('ids')) {
             $filename .= '_filtered';

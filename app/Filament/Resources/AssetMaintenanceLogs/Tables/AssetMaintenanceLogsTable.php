@@ -4,17 +4,25 @@ namespace App\Filament\Resources\AssetMaintenanceLogs\Tables;
 
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
+use App\Models\AssignedComputer;
+use App\Models\Peripherals;
+use App\Models\Printer;
+use App\Models\SystemUnit;
 use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Support\Enums\Size;
+use Illuminate\Database\Eloquent\Builder;
 
 class AssetMaintenanceLogsTable
 {
@@ -82,7 +90,83 @@ class AssetMaintenanceLogsTable
             ])->defaultSort('id', direction: 'desc')
 
             ->filters([
-                //
+                SelectFilter::make('department')
+                    ->label('Department')
+                    ->options(function (): array {
+                        $assignedComputerDepartments = AssignedComputer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->distinct()
+                            ->pluck('department')
+                            ->toArray();
+
+                        $printerDepartments = Printer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->distinct()
+                            ->pluck('department')
+                            ->toArray();
+
+                        $departments = array_values(array_unique(array_merge($assignedComputerDepartments, $printerDepartments)));
+                        sort($departments);
+
+                        return array_combine($departments, $departments);
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $department = $data['value'] ?? null;
+
+                        if (! $department) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $departmentQuery) use ($department): void {
+                            $departmentQuery
+                                ->whereHasMorph('maintainable', [SystemUnit::class], function (Builder $morphQuery) use ($department): void {
+                                    $morphQuery->whereHas('assignedComputer', function (Builder $assignedQuery) use ($department): void {
+                                        $assignedQuery->where('department', $department);
+                                    });
+                                })
+                                ->orWhereHasMorph('maintainable', [Peripherals::class], function (Builder $morphQuery) use ($department): void {
+                                    $morphQuery->where(function (Builder $peripheralQuery) use ($department): void {
+                                        $peripheralQuery
+                                            ->whereHas('assignedKeyboards', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
+                                            ->orWhereHas('assignedMice', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
+                                            ->orWhereHas('assignedMonitors', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
+                                            ->orWhereHas('assignedUps', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department));
+                                    });
+                                })
+                                ->orWhereHasMorph('maintainable', [Printer::class], fn (Builder $morphQuery): Builder => $morphQuery->where('department', $department));
+                        });
+                    }),
+            ])
+
+            ->headerActions([
+                Action::make('export_csv')
+                    ->label('Export all records')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        $exportUrl = route('export.asset-maintenance-logs');
+                        $exportParams = [];
+
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        if (! empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        return redirect($exportUrl);
+                    }),
             ])
 
             ->recordActions([
@@ -105,6 +189,15 @@ class AssetMaintenanceLogsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.asset-maintenance-logs') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
                 ]),
             ]);
     }

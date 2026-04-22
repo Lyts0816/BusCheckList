@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssetMaintenanceLog;
 use App\Models\AssignedComputer;
 use App\Models\Conductors;
 use App\Models\Drivers;
@@ -12,6 +13,107 @@ use Barryvdh\DomPDF\Facade\PDF;
 
 class ExportController extends Controller
 {
+    // ===================================================================
+    // ASSET MAINTENANCE LOGS EXPORT
+    // ===================================================================
+
+    public function exportAssetMaintenanceLogs(Request $request)
+    {
+        $query = AssetMaintenanceLog::query()->with(['component', 'maintainable']);
+
+        if ($request->has('ids') && ! empty($request->ids)) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        } else {
+            if ($request->has('search') && ! empty($request->search)) {
+                $searchTerm = $request->search;
+
+                $query->where(function ($q) use ($searchTerm): void {
+                    $q->where('maintenance_type', 'like', "%{$searchTerm}%")
+                        ->orWhere('performed_by', 'like', "%{$searchTerm}%")
+                        ->orWhere('issue_reported', 'like', "%{$searchTerm}%")
+                        ->orWhere('action_taken', 'like', "%{$searchTerm}%")
+                        ->orWhere('remarks', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('component', function ($cq) use ($searchTerm): void {
+                            $cq->where('name', 'like', "%{$searchTerm}%");
+                        });
+                });
+            }
+        }
+
+        $query->orderBy('id', 'desc');
+        $logs = $query->get();
+
+        $csv = $this->generateAssetMaintenanceLogsCsv($logs);
+
+        $filename = 'asset_maintenance_logs_' . date('Y-m-d_H-i-s');
+        if ($request->has('search')) {
+            $filename .= '_filtered';
+        }
+        if ($request->has('ids')) {
+            $filename .= '_selected';
+        }
+        $filename .= '.csv';
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    private function generateAssetMaintenanceLogsCsv($logs)
+    {
+        $title = 'ASSET MAINTENANCE LOGS - ' . now()->format('F d, Y');
+        $headers = [
+            'ID',
+            'Asset Type',
+            'Asset',
+            'Component',
+            'Maintenance Type',
+            'Maintenance Date',
+            'Performed By',
+            'Issue Reported',
+            'Action Taken',
+            'Cost',
+            'Remarks',
+            'Created At',
+            'Updated At',
+        ];
+
+        $csv  = "\xEF\xBB\xBF";
+        $csv .= '"' . $title . '"' . "\n\n";
+        $csv .= '"' . implode('","', $headers) . '"' . "\n";
+
+        foreach ($logs as $log) {
+            $assetType = class_basename((string) $log->maintainable_type);
+            $assetType = preg_replace('/(?<!^)([A-Z])/', ' $1', $assetType) ?: 'N/A';
+
+            $asset = data_get($log, 'maintainable.asset_code')
+                ?? data_get($log, 'maintainable.name')
+                ?? $log->maintainable_id
+                ?? 'N/A';
+
+            $row = [
+                $log->id,
+                $assetType,
+                $asset,
+                $log->component?->name ?? 'N/A',
+                $log->maintenance_type ?? 'N/A',
+                $log->maintenance_date ?? 'N/A',
+                $log->performed_by ?? 'N/A',
+                $log->issue_reported ?? 'N/A',
+                $log->action_taken ?? 'N/A',
+                $log->cost ?? 'N/A',
+                $log->remarks ?? 'N/A',
+                $log->created_at,
+                $log->updated_at,
+            ];
+
+            $csv .= '"' . implode('","', array_map([$this, 'escapeCsvValue'], $row)) . '"' . "\n";
+        }
+
+        return $csv;
+    }
+
     // ===================================================================
     // ASSIGNED COMPUTERS EXPORT
     // ===================================================================

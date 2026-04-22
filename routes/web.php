@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/export/drivers', [ExportController::class, 'exportDrivers'])
         ->name('export.drivers');
 
+    Route::get('/export/asset-maintenance-logs', [ExportController::class, 'exportAssetMaintenanceLogs'])
+        ->name('export.asset-maintenance-logs');
+
     Route::get('/export/printers', [PrinterExport::class, 'exportAssignedPrinters'])
         ->name('export.printers');
 

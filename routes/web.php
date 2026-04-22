@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PrinterExport;
 use App\Http\Controllers\SystemUnitExport;
 use App\Http\Controllers\PeripheralsExport;
+use App\Http\Controllers\MaintenanceMonitoringDashboardExport;
 use App\Http\Controllers\LeaveLogExportController;
 use App\Http\Controllers\Auth\LogoutController;
 
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/export/peripherals', [PeripheralsExport::class, 'exportPeripherals'])
         ->name('export.peripherals');
+
+    Route::get('/export/maintenance-monitoring-dashboard', [MaintenanceMonitoringDashboardExport::class, 'export'])
+        ->name('export.maintenance-monitoring-dashboard');
 
     Route::get('/export/leave-logs', [LeaveLogExportController::class, 'exportExcel'])
         ->name('export.leave-logs');

@@ -9,6 +9,9 @@ use App\Models\SystemUnit;
 use App\Models\User;
 use BackedEnum;
 use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -162,6 +165,51 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                             ->orderByRaw('CASE WHEN logs.maintenance_date IS NULL THEN 1 ELSE 0 END')
                             ->orderBy('logs.maintenance_date', $direction);
                     }),
+            ])
+            ->headerActions([
+                Action::make('export_csv')
+                    ->label('Export all records')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        $currentUrl = request()->fullUrl();
+                        $parsedUrl = parse_url($currentUrl);
+
+                        $queryParams = [];
+                        if (isset($parsedUrl['query'])) {
+                            parse_str($parsedUrl['query'], $queryParams);
+                        }
+
+                        $exportUrl = url('/export/maintenance-monitoring-dashboard');
+                        $exportParams = [];
+
+                        if (isset($queryParams['tableSearch'])) {
+                            $exportParams['search'] = $queryParams['tableSearch'];
+                        }
+
+                        if (isset($queryParams['tab'])) {
+                            $exportParams['tab'] = $queryParams['tab'];
+                        }
+
+                        if (! empty($exportParams)) {
+                            $exportUrl .= '?' . http_build_query($exportParams);
+                        }
+
+                        return redirect($exportUrl);
+                    }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = url('/export/maintenance-monitoring-dashboard') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+                ]),
             ])
             ->defaultSort('id', 'asc');
     }

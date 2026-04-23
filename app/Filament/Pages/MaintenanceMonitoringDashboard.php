@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\AssetMaintenanceLog;
+use App\Models\AssignedComputer;
 use App\Models\Peripherals;
 use App\Models\Printer;
 use App\Models\SystemUnit;
@@ -20,6 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +166,39 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                         return $query
                             ->orderByRaw('CASE WHEN logs.maintenance_date IS NULL THEN 1 ELSE 0 END')
                             ->orderBy('logs.maintenance_date', $direction);
+                    }),
+            ])
+            ->filters([
+                SelectFilter::make('department')
+                    ->label('Department')
+                    ->options(function (): array {
+                        $assignedComputerDepartments = AssignedComputer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->distinct()
+                            ->pluck('department')
+                            ->toArray();
+
+                        $printerDepartments = Printer::query()
+                            ->whereNotNull('department')
+                            ->where('department', '!=', '')
+                            ->distinct()
+                            ->pluck('department')
+                            ->toArray();
+
+                        $departments = array_values(array_unique(array_merge($assignedComputerDepartments, $printerDepartments)));
+                        sort($departments);
+
+                        return array_combine($departments, $departments);
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $department = $data['value'] ?? null;
+
+                        if (! $department) {
+                            return $query;
+                        }
+
+                        return $query->where('asset_maintenance_logs.department', $department);
                     }),
             ])
             ->headerActions([

@@ -18,12 +18,16 @@ class PrintersForm
                     ->required()
                     ->options([
                         'MIS' => 'MIS',
+                        'STOCK ROOM' => 'STOCK ROOM',
                         'HR' => 'HR',
                         'Operations' => 'Operations',
                         'Production' => 'Production',
                         'Accounting' => 'Accounting',
                         'Cash' => 'Cash',
                         'Clinic' => 'Clinic',
+                        'TERMINAL' => 'TERMINAL',
+                        'SATELITE OFFICE GENSAN' => 'SATELITE OFFICE GENSAN',
+
                     ]),
 
                 TextInput::make('printer_host')

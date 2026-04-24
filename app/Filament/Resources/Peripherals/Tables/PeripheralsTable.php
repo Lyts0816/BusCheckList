@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\BulkAction;
 use Filament\Support\Enums\Size;
 use Illuminate\Support\Facades\Log;
+use Filament\Tables\Enums\FiltersLayout;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -328,7 +329,7 @@ class PeripheralsTable
                         $year = $data['value'] ?? null;
                         return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_acquired', (int) $y));
                     }),
-            ])
+            ], layout: FiltersLayout::Modal)->filtersFormColumns(2)
             ->recordActions([
 
                 ActionGroup::make([

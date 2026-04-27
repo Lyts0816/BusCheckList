@@ -246,7 +246,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                         }),
                 ]),
             ])
-            ->defaultSort('id', 'asc');
+            ->defaultSort('maintenance_type', 'desc');
     }
 
     public function getTabs(): array

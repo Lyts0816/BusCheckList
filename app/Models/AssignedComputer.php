@@ -16,7 +16,7 @@ class AssignedComputer extends Model
         'ups_id',
         'assigned_to',
         'computer_name',
-        'department',
+        'department_id',
     ];
 
     public function systemUnit()
@@ -42,5 +42,26 @@ class AssignedComputer extends Model
     public function ups()
     {
         return $this->belongsTo(Peripherals::class, 'ups_id');
+    }
+
+    public function departmentRelation()
+    {
+        return $this->belongsTo(Departments::class, 'department', 'name');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Departments::class, 'department_id');
+    }
+
+    public function getDepartmentNameAttribute()
+    {
+        // If using foreign key, prefer related department name
+        if ($this->department_id) {
+            return $this->department?->name ?? $this->department ?? null;
+        }
+
+        // Fall back to legacy string column if present
+        return $this->department ?? null;
     }
 }

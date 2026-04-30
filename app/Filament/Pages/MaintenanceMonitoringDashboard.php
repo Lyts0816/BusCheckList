@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\AssetMaintenanceLog;
 use App\Models\AssignedComputer;
+use App\Models\Departments;
 use App\Models\Peripherals;
 use App\Models\Printer;
 use App\Models\SystemUnit;
@@ -172,30 +173,42 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        $assignedComputerDepartments = AssignedComputer::query()
-                            ->whereNotNull('department')
-                            ->where('department', '!=', '')
+                        // Get departments that have assigned computers
+                        $assignedComputerDepartmentIds = AssignedComputer::query()
+                            ->whereNotNull('department_id', 'and')
                             ->distinct()
-                            ->pluck('department')
+                            ->pluck('department_id')
                             ->toArray();
 
+                        $departmentOptions = Departments::query()
+                            ->whereIn('id', $assignedComputerDepartmentIds, 'and', false)
+                            ->pluck('name', 'id')
+                            ->toArray();
+
+                        // Add printer departments
                         $printerDepartments = Printer::query()
-                            ->whereNotNull('department')
+                            ->whereNotNull('department', 'and')
                             ->where('department', '!=', '')
                             ->distinct()
                             ->pluck('department')
                             ->toArray();
 
-                        $departments = array_values(array_unique(array_merge($assignedComputerDepartments, $printerDepartments)));
-                        sort($departments);
+                        $allDepartments = array_values(array_unique(array_merge($departmentOptions, $printerDepartments)));
+                        sort($allDepartments);
 
-                        return array_combine($departments, $departments);
+                        return array_combine($allDepartments, $allDepartments);
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $department = $data['value'] ?? null;
 
                         if (! $department) {
                             return $query;
+                        }
+
+                        // Check if it's a department ID or name
+                        $deptId = Departments::query()->where('name', $department)->value('id');
+                        if ($deptId) {
+                            return $query->where('asset_maintenance_logs.department', $deptId);
                         }
 
                         return $query->where('asset_maintenance_logs.department', $department);
@@ -371,12 +384,12 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
 
         return AssetMaintenanceLog::query()
             ->fromSub($assetsQuery, 'asset_maintenance_logs')
-            ->leftJoinSub($latestLogSubquery, 'latest', function ($join): void {
+            ->leftJoinSub($latestLogSubquery, 'latest', 'and', false, function ($join): void {
                 $join->on('asset_maintenance_logs.maintainable_type', '=', 'latest.maintainable_type')
                     ->on('asset_maintenance_logs.maintainable_id', '=', 'latest.maintainable_id');
             })
-            ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id')
-            ->leftJoin('components as c', 'c.id', '=', 'logs.component_id')
+            ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id', 'and', false)
+            ->leftJoin('components as c', 'c.id', '=', 'logs.component_id', 'and', false)
             ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name');
     }
 }

@@ -18,10 +18,11 @@ class SystemUnitExport extends Controller
             $ids = explode(',', $request->ids);
             // Add LEFT JOIN first, then filter by system_units.id
             $query->leftJoin('assigned_computers', 'system_units.id', '=', 'assigned_computers.system_unit_id')
-                  ->select('system_units.*')
-                  ->whereIn('system_units.id', $ids) // Specify table name to avoid ambiguity
-                  ->orderBy('assigned_computers.department', 'asc')
-                  ->orderBy('system_units.id', 'desc');
+                ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
+                ->select('system_units.*')
+                ->whereIn('system_units.id', $ids) // Specify table name to avoid ambiguity
+                ->orderBy('departments.name', 'asc')
+                ->orderBy('system_units.id', 'desc');
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -45,8 +46,9 @@ class SystemUnitExport extends Controller
 
             // Order by department (join with assigned_computers table)
             $query->leftJoin('assigned_computers', 'system_units.id', '=', 'assigned_computers.system_unit_id')
+                  ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
                   ->select('system_units.*')
-                  ->orderBy('assigned_computers.department', 'asc')
+                  ->orderBy('departments.name', 'asc')
                   ->orderBy('system_units.id', 'desc');
         }
 
@@ -113,10 +115,17 @@ class SystemUnitExport extends Controller
                 $yearsInService = "{$years} {$yearLabel}, {$months} {$monthLabel}";
             }
 
+            $department = 'N/A';
+            if ($unit->assignedComputer) {
+                $department = $unit->assignedComputer->department_id
+                    ? ($unit->assignedComputer->department()->first()?->name ?? $unit->assignedComputer->department)
+                    : ($unit->assignedComputer->department ?? 'N/A');
+            }
+
             $row = [
                 $unit->id,
                 $unit->assignedComputer?->assigned_to ?? 'Unassigned',
-                $unit->assignedComputer?->department ?? 'N/A',
+                $department,
                 $unit->asset_code ?? 'N/A',
                 $unit->serial_number ?? 'N/A',
                 $unit->model ?? 'N/A',

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AssignedComputers\Schemas;
 
+use App\Models\Departments;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -21,21 +22,12 @@ class AssignedComputerForm
                     ->label('Computer Name')
                     ->required(),
 
-                Select::make('department')
-                    ->required()
-                    ->options([
-                        'TERMINAL' => 'TERMINAL',
-                        'STOCK ROOM' => 'STOCK ROOM',
-                        'AUDIT' => 'AUDIT',
-                        'MIS' => 'MIS',
-                        'HR' => 'HR',
-                        'Operations' => 'Operations',
-                        'Production' => 'Production',
-                        'Accounting' => 'Accounting',
-                        'Cash' => 'Cash',
-                        'Clinic' => 'Clinic',
-                        'Not Yet Assigned' => 'Not Yet Assigned',
-                    ]),
+                Select::make('department_id')
+                    ->label('Department')
+                    ->relationship('department', 'name')
+                    ->preload()
+                    ->searchable()
+                    ->required(),
 
                 Select::make('system_unit_id')
                     ->label('System Unit')

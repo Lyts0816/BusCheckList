@@ -58,7 +58,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
                 null as item_type,
                 COALESCE(su.serial_number, su.asset_code, 'N/A') as serial_number,
                 COALESCE((select ac.assigned_to from assigned_computers ac where ac.system_unit_id = su.id limit 1), 'Unassigned') as assigned_to,
-                COALESCE((select ac.department from assigned_computers ac where ac.system_unit_id = su.id limit 1), 'N/A') as department",
+                COALESCE((select COALESCE(d.name, 'N/A') from assigned_computers ac left join departments d on ac.department_id = d.id where ac.system_unit_id = su.id limit 1), 'N/A') as department",
                 [SystemUnit::class],
             );
 
@@ -93,8 +93,9 @@ class MaintenanceMonitoringDashboardExport extends Controller
                     limit 1
                 ), 'Unassigned') as assigned_to,
                 COALESCE((
-                    select ac.department
+                    select COALESCE(d.name, 'N/A')
                     from assigned_computers ac
+                    left join departments d on ac.department_id = d.id
                     where ac.keyboard_id = p.id
                         or ac.mouse_id = p.id
                         or ac.monitor_id = p.id

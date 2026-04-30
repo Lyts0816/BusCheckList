@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use App\Models\AssignedComputer;
+use App\Models\Departments;
 
 class ListAssignedComputers extends ListRecords
 {
@@ -21,50 +22,84 @@ class ListAssignedComputers extends ListRecords
 
     public function getTabs(): array
     {
+        // Get all departments mapped by name
+        $deptMap = Departments::pluck('id', 'name')->toArray();
+
+        $allCount = AssignedComputer::query()->count('*');
+        $terminalId = $deptMap['TERMINAL'] ?? null;
+        $terminalCount = $terminalId ? AssignedComputer::query()->where('department_id', '=', $terminalId)->count('*') : 0;
+
+        $stockRoomId = $deptMap['STOCK ROOM'] ?? null;
+        $stockRoomCount = $stockRoomId ? AssignedComputer::query()->where('department_id', '=', $stockRoomId)->count('*') : 0;
+
+        $misId = $deptMap['MIS'] ?? null;
+        $misCount = $misId ? AssignedComputer::query()->where('department_id', '=', $misId)->count('*') : 0;
+
+        $auditId = $deptMap['AUDIT'] ?? null;
+        $auditCount = $auditId ? AssignedComputer::query()->where('department_id', '=', $auditId)->count('*') : 0;
+
+        $hrId = $deptMap['HR'] ?? null;
+        $hrCount = $hrId ? AssignedComputer::query()->where('department_id', '=', $hrId)->count('*') : 0;
+
+        $operationsId = $deptMap['Operations'] ?? null;
+        $operationsCount = $operationsId ? AssignedComputer::query()->where('department_id', '=', $operationsId)->count('*') : 0;
+
+        $productionId = $deptMap['Production'] ?? null;
+        $productionCount = $productionId ? AssignedComputer::query()->where('department_id', '=', $productionId)->count('*') : 0;
+
+        $accountingId = $deptMap['Accounting'] ?? null;
+        $accountingCount = $accountingId ? AssignedComputer::query()->where('department_id', '=', $accountingId)->count('*') : 0;
+
+        $cashId = $deptMap['Cash'] ?? null;
+        $cashCount = $cashId ? AssignedComputer::query()->where('department_id', '=', $cashId)->count('*') : 0;
+
+        $clinicId = $deptMap['Clinic'] ?? null;
+        $clinicCount = $clinicId ? AssignedComputer::query()->where('department_id', '=', $clinicId)->count('*') : 0;
+
         return [
             Tab::make('All')
                 ->label('All')
-                ->badge(fn () => AssignedComputer::count()),
+                ->badge($allCount),
 
             'TERMINAL' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'TERMINAL');})
-                ->badge(fn () => AssignedComputer::where('department', 'TERMINAL')->count()),
+                ->modifyQueryUsing(fn ($query) => $terminalId ? $query->where('department_id', '=', $terminalId) : $query)
+                ->badge($terminalCount),
 
             'STOCK ROOM' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'STOCK ROOM');})
-                ->badge(fn () => AssignedComputer::where('department', 'STOCK ROOM')->count()),
+                ->modifyQueryUsing(fn ($query) => $stockRoomId ? $query->where('department_id', '=', $stockRoomId) : $query)
+                ->badge($stockRoomCount),
 
             'MIS' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'MIS');})
-                ->badge(fn () => AssignedComputer::where('department', 'MIS')->count()),
+                ->modifyQueryUsing(fn ($query) => $misId ? $query->where('department_id', '=', $misId) : $query)
+                ->badge($misCount),
 
             'AUDIT' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'AUDIT');})
-                ->badge(fn () => AssignedComputer::where('department', 'AUDIT')->count()),
+                ->modifyQueryUsing(fn ($query) => $auditId ? $query->where('department_id', '=', $auditId) : $query)
+                ->badge($auditCount),
                 
             'HR' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'HR');})
-                ->badge(fn () => AssignedComputer::where('department', 'HR')->count()),
+                ->modifyQueryUsing(fn ($query) => $hrId ? $query->where('department_id', '=', $hrId) : $query)
+                ->badge($hrCount),
 
             'OPERATIONS' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'Operations');})
-                ->badge(fn () => AssignedComputer::where('department', 'Operations')->count()),
+                ->modifyQueryUsing(fn ($query) => $operationsId ? $query->where('department_id', '=', $operationsId) : $query)
+                ->badge($operationsCount),
 
             'PRODUCTION' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'Production');})
-                ->badge(fn () => AssignedComputer::where('department', 'Production')->count()),
+                ->modifyQueryUsing(fn ($query) => $productionId ? $query->where('department_id', '=', $productionId) : $query)
+                ->badge($productionCount),
 
             'ACCOUNTING' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'Accounting');})
-                ->badge(fn () => AssignedComputer::where('department', 'Accounting')->count()),
+                ->modifyQueryUsing(fn ($query) => $accountingId ? $query->where('department_id', '=', $accountingId) : $query)
+                ->badge($accountingCount),
 
             'CASH' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'Cash');})
-                ->badge(fn () => AssignedComputer::where('department', 'Cash')->count()),
+                ->modifyQueryUsing(fn ($query) => $cashId ? $query->where('department_id', '=', $cashId) : $query)
+                ->badge($cashCount),
 
             'CLINIC' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('department', 'Clinic');})
-                ->badge(fn () => AssignedComputer::where('department', 'Clinic')->count()),
+                ->modifyQueryUsing(fn ($query) => $clinicId ? $query->where('department_id', '=', $clinicId) : $query)
+                ->badge($clinicCount),
         ];
     }
 }

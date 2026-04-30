@@ -23,7 +23,7 @@ class ExportController extends Controller
 
         if ($request->has('ids') && ! empty($request->ids)) {
             $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             if ($request->has('search') && ! empty($request->search)) {
                 $searchTerm = $request->search;
@@ -132,7 +132,7 @@ class ExportController extends Controller
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -166,7 +166,20 @@ class ExportController extends Controller
 
             // Apply specific filters if provided
             if ($request->has('department') && !empty($request->department)) {
-                $query->where('department', $request->department);
+                $val = $request->department;
+
+                if (is_numeric($val)) {
+                    // Filter by foreign key id
+                    $query->where('department_id', (int) $val);
+                } else {
+                    // Filter by legacy string or department name via relationship
+                    $query->where(function ($q) use ($val) {
+                        $q->where('department', $val)
+                          ->orWhereHas('department', function ($dq) use ($val) {
+                              $dq->where('name', $val);
+                          });
+                    });
+                }
             }
 
             // Apply sorting if provided
@@ -252,10 +265,14 @@ class ExportController extends Controller
 
         // Add data rows (use provided collection, not a fresh query)
         foreach ($assignedComputers as $computer) {
+            $departmentName = $computer->department_id
+                ? ($computer->department()->first()?->name ?? $computer->department)
+                : ($computer->department ?? 'N/A');
+
             $row = [
                 $computer->id,
                 $computer->assigned_to,
-                $computer->department,
+                $departmentName,
                 $computer->system_unit_id,
                 $computer->systemUnit?->asset_code ?? 'N/A',
                 $this->preserveCsvText($computer->systemUnit?->serial_number),
@@ -314,7 +331,7 @@ class ExportController extends Controller
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -454,7 +471,7 @@ class ExportController extends Controller
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -534,7 +551,7 @@ class ExportController extends Controller
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -623,7 +640,7 @@ class ExportController extends Controller
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -778,7 +795,7 @@ class ExportController extends Controller
         
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
             
             if ($request->has('search') && !empty($request->search)) {

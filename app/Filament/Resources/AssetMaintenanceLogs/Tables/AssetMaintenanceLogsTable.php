@@ -5,6 +5,7 @@ namespace App\Filament\Resources\AssetMaintenanceLogs\Tables;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
 use App\Models\AssignedComputer;
+use App\Models\Departments;
 use App\Models\Peripherals;
 use App\Models\Printer;
 use App\Models\SystemUnit;
@@ -93,24 +94,30 @@ class AssetMaintenanceLogsTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        $assignedComputerDepartments = AssignedComputer::query()
-                            ->whereNotNull('department')
-                            ->where('department', '!=', '')
+                        // Get departments that have assigned computers
+                        $assignedComputerDepartmentIds = AssignedComputer::query()
+                            ->whereNotNull('department_id', 'and')
                             ->distinct()
-                            ->pluck('department')
+                            ->pluck('department_id')
                             ->toArray();
 
+                        $departmentOptions = Departments::query()
+                            ->whereIn('id', $assignedComputerDepartmentIds, 'and', false)
+                            ->pluck('name', 'id')
+                            ->toArray();
+
+                        // Add printer departments
                         $printerDepartments = Printer::query()
-                            ->whereNotNull('department')
+                            ->whereNotNull('department', 'and')
                             ->where('department', '!=', '')
                             ->distinct()
                             ->pluck('department')
                             ->toArray();
 
-                        $departments = array_values(array_unique(array_merge($assignedComputerDepartments, $printerDepartments)));
-                        sort($departments);
+                        $allDepartments = array_values(array_unique(array_merge($departmentOptions, $printerDepartments)));
+                        sort($allDepartments);
 
-                        return array_combine($departments, $departments);
+                        return array_combine($allDepartments, $allDepartments);
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $department = $data['value'] ?? null;
@@ -119,24 +126,7 @@ class AssetMaintenanceLogsTable
                             return $query;
                         }
 
-                        return $query->where(function (Builder $departmentQuery) use ($department): void {
-                            $departmentQuery
-                                ->whereHasMorph('maintainable', [SystemUnit::class], function (Builder $morphQuery) use ($department): void {
-                                    $morphQuery->whereHas('assignedComputer', function (Builder $assignedQuery) use ($department): void {
-                                        $assignedQuery->where('department', $department);
-                                    });
-                                })
-                                ->orWhereHasMorph('maintainable', [Peripherals::class], function (Builder $morphQuery) use ($department): void {
-                                    $morphQuery->where(function (Builder $peripheralQuery) use ($department): void {
-                                        $peripheralQuery
-                                            ->whereHas('assignedKeyboards', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
-                                            ->orWhereHas('assignedMice', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
-                                            ->orWhereHas('assignedMonitors', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department))
-                                            ->orWhereHas('assignedUps', fn (Builder $assignedQuery): Builder => $assignedQuery->where('department', $department));
-                                    });
-                                })
-                                ->orWhereHasMorph('maintainable', [Printer::class], fn (Builder $morphQuery): Builder => $morphQuery->where('department', $department));
-                        });
+                        return $query->where('department', $department);
                     }),
             ])
 

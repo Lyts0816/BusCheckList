@@ -75,7 +75,7 @@ class DispatchedTripsTable
                 SelectFilter::make('bus_number')
                     ->label('Bus Number')
                     ->options(fn() => BusNumber::query()
-                        ->orderBy('bus_number')
+                        ->orderBy('bus_number', 'asc')
                         ->pluck('bus_number', 'bus_number'))
                     ->searchable()
                     ->query(function ($query, array $data) {
@@ -90,7 +90,7 @@ class DispatchedTripsTable
                 SelectFilter::make('route_id')
                     ->label('Routes')
                     ->options(fn() => Routes::query()
-                        ->orderBy('from')
+                        ->orderBy('from', 'asc')
                         ->get()
                         ->mapWithKeys(fn($route) => [$route->id => $route->from . ' - ' . $route->to]))
                     ->searchable()

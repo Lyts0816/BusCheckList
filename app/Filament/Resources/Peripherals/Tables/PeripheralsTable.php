@@ -46,7 +46,7 @@ class PeripheralsTable
 
                         // Only return if there are assigned computers
                         if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                            return $assignedComputers->first()->assigned_to;
+                                return $assignedComputers->first()->assigned_to;
                         }
 
                         return 'Unassigned';
@@ -61,7 +61,7 @@ class PeripheralsTable
 
                         // Only return if there are assigned computers
                         if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                            return $assignedComputers->first()->department;
+                                return $assignedComputers->first()->department_name ?? $assignedComputers->first()->department ?? 'N/A';
                         }
 
                         return 'N/A';
@@ -208,7 +208,7 @@ class PeripheralsTable
                     ->options(function (): array {
                         // Get all unique assigned users from peripherals
                         $assigned = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('assigned_to')
+                            ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
                             ->where(function ($query) {
                                 $query->whereNotNull('keyboard_id')
@@ -217,7 +217,7 @@ class PeripheralsTable
                                     ->orWhereNotNull('ups_id');
                             })
                             ->distinct()
-                            ->orderBy('assigned_to')
+                            ->orderBy('assigned_to', 'asc')
                             ->pluck('assigned_to', 'assigned_to')
                             ->toArray();
 
@@ -250,7 +250,7 @@ class PeripheralsTable
                     ->options(function (): array {
                         // Get all unique departments from assigned computers with peripherals
                         $departments = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('department')
+                            ->whereNotNull('department', 'and')
                             ->where('department', '!=', '')
                             ->where(function ($query) {
                                 $query->whereNotNull('keyboard_id')
@@ -259,7 +259,7 @@ class PeripheralsTable
                                     ->orWhereNotNull('ups_id');
                             })
                             ->distinct()
-                            ->orderBy('department')
+                            ->orderBy('department', 'asc')
                             ->pluck('department', 'department')
                             ->toArray();
 
@@ -283,11 +283,11 @@ class PeripheralsTable
                     ->label('Model')
                     ->options(function () {
                         return Peripherals::query()
-                            ->whereNotNull('model')
+                            ->whereNotNull('model', 'and')
                             ->where('model', '!=', '')
                             ->select('model')
                             ->distinct()
-                            ->orderBy('model')
+                            ->orderBy('model', 'asc')
                             ->pluck('model', 'model')
                             ->filter(fn($label, $value) => $label !== null && $value !== null) // avoid nulls
                             ->toArray();

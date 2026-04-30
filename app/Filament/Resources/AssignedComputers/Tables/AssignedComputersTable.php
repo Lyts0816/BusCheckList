@@ -37,7 +37,7 @@ class AssignedComputersTable
                     ->label('Computer Name')
                     ->searchable(),
 
-                TextColumn::make('department')
+                TextColumn::make('department_name')
                     ->label('Department')
                     ->toggleable()
                     ->sortable(),

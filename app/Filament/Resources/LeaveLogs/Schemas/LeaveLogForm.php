@@ -73,14 +73,14 @@ class LeaveLogForm
                                     ->columnSpanFull()
                                     ->label('Employee')
                                     ->options(function () {
-                                        $query = Employee::query()->orderBy('full_name');
+                                        $query = Employee::query()->orderBy('full_name', 'asc');
                                         $user = Auth::user();
 
                                         if ($user && ! ($user->isAdmin() || $user->isAdminOperations())) {
                                             $allowedDepartments = $user->departmentRoleAliases();
 
                                             if (! empty($allowedDepartments)) {
-                                                $query->whereIn('department', $allowedDepartments);
+                                                $query->whereIn('department', $allowedDepartments, 'and', false);
                                             }
                                         }
 

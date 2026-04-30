@@ -34,7 +34,6 @@ class SystemUnitsTable
                     ->label('Assigned To')
                     ->searchable()
                     ->toggleable()
-                    // ->sortable()
                     ->getStateUsing(function (SystemUnit $record) {
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
                     }),
@@ -43,9 +42,8 @@ class SystemUnitsTable
                     ->label('Department')
                     ->searchable()
                     ->toggleable()
-                    // ->sortable()
                     ->getStateUsing(function (SystemUnit $record) {
-                        return $record->assignedComputer?->department ?? 'no-department';
+                        return $record->assignedComputer?->department_name ?? 'no-department';
                     }),
 
                 TextColumn::make('asset_code')
@@ -86,7 +84,6 @@ class SystemUnitsTable
 
                 TextColumn::make('date_aquired')
                     ->date()
-                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('years_in_service')
@@ -114,19 +111,6 @@ class SystemUnitsTable
 
                 TextColumn::make('OS')
                     ->label('OS')
-                    ->sortable()
-                    ->toggleable(),
-
-                TextColumn::make('windows_serial_number')
-                    ->sortable()
-                    ->toggleable(),
-
-                TextColumn::make('microsoft_serial_number')
-                    ->searchable()
-                    ->toggleable(),
-
-                TextColumn::make('ram')
-                    ->label('RAM')
                     ->sortable()
                     ->toggleable(),
 
@@ -162,29 +146,27 @@ class SystemUnitsTable
                     ->label('Duplicate IP Address')
                     ->query(function (Builder $query): Builder {
                         return $query
-                            ->whereNotNull('ip_address')
+                            ->whereNotNull('ip_address', 'and')
                             ->where('ip_address', '!=', '')
                             ->whereIn('ip_address', SystemUnit::query()
                                 ->select('ip_address')
-                                ->whereNotNull('ip_address')
+                                ->whereNotNull('ip_address', 'and')
                                 ->where('ip_address', '!=', '')
                                 ->groupBy('ip_address')
-                                ->havingRaw('COUNT(*) > 1'));
+                                ->havingRaw('COUNT(*) > 1', []));
                     }),
 
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
                     ->options(function (): array {
-                        // Get all unique assigned users
                         $assigned = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('assigned_to')
+                            ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
                             ->distinct()
-                            ->orderBy('assigned_to')
+                            ->orderBy('assigned_to', 'asc')
                             ->pluck('assigned_to', 'assigned_to')
                             ->toArray();
 
-                        // Add "Unassigned" option
                         return ['unassigned' => 'Unassigned'] + $assigned;
                     })
                     ->query(function (Builder $query, array $data): Builder {
@@ -206,16 +188,14 @@ class SystemUnitsTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        // Get all unique assigned users
                         $assigned = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('department')
+                            ->whereNotNull('department', 'and')
                             ->where('department', '!=', '')
                             ->distinct()
-                            ->orderBy('department')
+                            ->orderBy('department', 'asc')
                             ->pluck('department', 'department')
                             ->toArray();
 
-                        // Add "Unassigned" option
                         return ['unassigned' => 'Unassigned'] + $assigned;
                     })
                     ->query(function (Builder $query, array $data): Builder {
@@ -237,10 +217,10 @@ class SystemUnitsTable
                 SelectFilter::make('model')
                     ->label('Model')
                     ->options(fn() => SystemUnit::query()
-                        ->whereNotNull('model')
+                        ->whereNotNull('model', 'and')
                         ->where('model', '!=', '')
                         ->distinct()
-                        ->orderBy('model')
+                        ->orderBy('model', 'asc')
                         ->pluck('model', 'model')
                         ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                         ->toArray()),
@@ -248,10 +228,10 @@ class SystemUnitsTable
                 SelectFilter::make('OS')
                     ->label('OS')
                     ->options(fn() => SystemUnit::query()
-                        ->whereNotNull('OS')
+                        ->whereNotNull('OS', 'and')
                         ->where('OS', '!=', '')
                         ->distinct()
-                        ->orderBy('OS')
+                        ->orderBy('OS', 'asc')
                         ->pluck('OS', 'OS')
                         ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                         ->toArray()),
@@ -259,10 +239,10 @@ class SystemUnitsTable
                 SelectFilter::make('processor')
                     ->label('Processor')
                     ->options(fn() => SystemUnit::query()
-                        ->whereNotNull('processor')
+                        ->whereNotNull('processor', 'and')
                         ->where('processor', '!=', '')
                         ->distinct()
-                        ->orderBy('processor')
+                        ->orderBy('processor', 'asc')
                         ->pluck('processor', 'processor')
                         ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                         ->toArray()),
@@ -270,10 +250,10 @@ class SystemUnitsTable
                 SelectFilter::make('ram')
                     ->label('RAM')
                     ->options(fn() => SystemUnit::query()
-                        ->whereNotNull('ram')
+                        ->whereNotNull('ram', 'and')
                         ->where('ram', '!=', '')
                         ->distinct()
-                        ->orderBy('ram')
+                        ->orderBy('ram', 'asc')
                         ->pluck('ram', 'ram')
                         ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                         ->toArray()),
@@ -281,10 +261,10 @@ class SystemUnitsTable
                 SelectFilter::make('storage')
                     ->label('Storage')
                     ->options(fn() => SystemUnit::query()
-                        ->whereNotNull('storage')
+                        ->whereNotNull('storage', 'and')
                         ->where('storage', '!=', '')
                         ->distinct()
-                        ->orderBy('storage')
+                        ->orderBy('storage', 'asc')
                         ->pluck('storage', 'storage')
                         ->filter(fn($value, $key) => !is_null($key) && !is_null($value))
                         ->toArray()),
@@ -315,7 +295,7 @@ class SystemUnitsTable
                     ->options(function (): array {
                         return SystemUnit::query()
                             ->selectRaw('YEAR(date_aquired) as year')
-                            ->whereNotNull('date_aquired')
+                            ->whereNotNull('date_aquired', 'and')
                             ->distinct()
                             ->orderBy('year', 'desc')
                             ->pluck('year', 'year')
@@ -397,20 +377,8 @@ class SystemUnitsTable
 
             ->toolbarActions([
 
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    BulkAction::make('export_selected')
-                        ->label('Export Selected')
-                        ->icon('heroicon-o-document-arrow-down')
-                        ->color('success')
-                        ->action(function ($records) {
-                            $ids = $records->pluck('id')->toArray();
-                            $exportUrl = route('export.system-units') . '?ids=' . implode(',', $ids);
-                            return redirect($exportUrl);
-                        }),
-                ]),
-
-
-            ]);
+                BulkActionGroup::make([]),
+            ])
+            ;
     }
 }

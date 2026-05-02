@@ -27,7 +27,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Url;
+use Filament\Tables\Enums\FiltersLayout;
 use UnitEnum;
 
 class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
@@ -210,7 +210,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
 
                         return $query->where('asset_maintenance_logs.department', $department);
                     }),
-            ])
+            ], layout: FiltersLayout::Modal)->filtersFormColumns(2)
             ->headerActions([
                 Action::make('export_csv')
                     ->label('Export all records')
@@ -338,7 +338,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                 null as item_type,
                 COALESCE(pr.printer_serial_number, pr.asset_code, 'N/A') as serial_number,
                 'Unassigned' as assigned_to,
-                COALESCE(pr.department, 'N/A') as department",
+                COALESCE((select COALESCE(d.name, 'N/A') from departments d where d.id = pr.department_id limit 1), 'N/A') as department",
                 [Printer::class],
             );
 

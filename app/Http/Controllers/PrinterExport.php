@@ -4,26 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Printer;
+use Illuminate\Support\Collection;
 
 class PrinterExport extends Controller
 {
     public function exportAssignedPrinters(Request $request)
     {
         // Start with base query for printers
-        $query = Printer::query(); // Removed with() for department
+        $query = Printer::query()->with('department');
 
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = explode(',', $request->ids);
-            $query->whereIn('id', $ids);
+            $query->whereIn('id', $ids, 'and', false);
         } else {
+            if ($request->filled('department_id') || $request->filled('department')) {
+                $departmentId = $request->input('department_id', $request->input('department'));
+                $query->where('department_id', $departmentId);
+            }
+
             // Apply search filters if provided
             if ($request->has('search') && !empty($request->search)) {
                 $searchTerm = $request->search;
 
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('printer_host', 'like', "%{$searchTerm}%")
-                        ->orwhere('department', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('department', function ($dq) use ($searchTerm) {
+                            $dq->where('name', 'like', "%{$searchTerm}%");
+                        })
                         ->orWhere('printer_model', 'like', "%{$searchTerm}%")
                         ->orWhere('printer_asset_code', 'like', "%{$searchTerm}%")
                         ->orWhere('printer_serial_number', 'like', "%{$searchTerm}%")
@@ -59,7 +67,7 @@ class PrinterExport extends Controller
     }
 
     // FUNCTION FOR CSV
-    private function generatePrinterCSVFormat($printers)
+    private function generatePrinterCSVFormat(Collection $printers): string
     {
         $title = 'PRINTER INVENTORY - ' . now()->format('F d, Y');
         // Define CSV headers for printer export
@@ -85,7 +93,7 @@ class PrinterExport extends Controller
             $row = [
                 $printer->id,
                 $printer->printer_host ?? 'N/A',
-                $printer->department ?? 'N/A',
+                $printer->department?->name ?? 'N/A',
                 $printer->printer_model ?? 'N/A',
                 $printer->printer_asset_code ?? 'N/A',
                 $printer->printer_serial_number ?? 'N/A',
@@ -102,7 +110,7 @@ class PrinterExport extends Controller
         return $csv;
     }
 
-    private function escapeCsvValue($value)
+    private function escapeCsvValue(mixed $value): string
     {
         $value = trim((string) $value);
 

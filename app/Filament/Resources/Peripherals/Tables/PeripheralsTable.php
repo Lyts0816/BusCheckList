@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Peripherals\Tables;
 
 use App\Filament\Resources\Peripherals\PeripheralsResource;
+use App\Models\Departments;
 use App\Models\Peripherals;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -61,7 +62,7 @@ class PeripheralsTable
 
                         // Only return if there are assigned computers
                         if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                                return $assignedComputers->first()->department_name ?? $assignedComputers->first()->department ?? 'N/A';
+                            return $assignedComputers->first()->department_name ?? 'N/A';
                         }
 
                         return 'N/A';
@@ -248,19 +249,25 @@ class PeripheralsTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        // Get all unique departments from assigned computers with peripherals
-                        $departments = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('department', 'and')
-                            ->where('department', '!=', '')
-                            ->where(function ($query) {
-                                $query->whereNotNull('keyboard_id')
-                                    ->orWhereNotNull('mouse_id')
-                                    ->orWhereNotNull('monitor_id')
-                                    ->orWhereNotNull('ups_id');
+                        $departmentIds = \App\Models\AssignedComputer::query()
+                            ->where(function ($query): void {
+                                $query->whereNotNull('keyboard_id', 'and')
+                                    ->orWhereNotNull('mouse_id', 'and')
+                                    ->orWhereNotNull('monitor_id', 'and')
+                                    ->orWhereNotNull('ups_id', 'and');
                             })
+                            ->whereNotNull('department_id', 'and')
                             ->distinct()
-                            ->orderBy('department', 'asc')
-                            ->pluck('department', 'department')
+                            ->pluck('department_id')
+                            ->toArray();
+
+                        $departments = Departments::query()
+                            ->whereIn('id', $departmentIds, 'and', false)
+                            ->whereNotNull('name', 'and')
+                            ->where('name', '!=', '')
+                            ->distinct()
+                            ->orderBy('name', 'asc')
+                            ->pluck('name', 'name')
                             ->toArray();
 
                         return $departments;
@@ -270,10 +277,10 @@ class PeripheralsTable
 
                         if ($value) {
                             return $query->where(function (Builder $q) use ($value) {
-                                $q->whereHas('assignedKeyboards', fn($query) => $query->where('department', $value))
-                                    ->orWhereHas('assignedMice', fn($query) => $query->where('department', $value))
-                                    ->orWhereHas('assignedMonitors', fn($query) => $query->where('department', $value))
-                                    ->orWhereHas('assignedUps', fn($query) => $query->where('department', $value));
+                                $q->whereHas('assignedKeyboards', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
+                                    ->orWhereHas('assignedMice', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
+                                    ->orWhereHas('assignedMonitors', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
+                                    ->orWhereHas('assignedUps', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)));
                             });
                         }
 

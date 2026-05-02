@@ -24,10 +24,10 @@ class ListSystemUnits extends ListRecords
     {
         return [
 
-            'ALL' => Tab::make()
+            'ALL' => Tab::make('ALL')
                 ->label('All SYSTEM UNITS')
                 ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
-                ->badge(fn () => SystemUnit::count()),
+                ->badge(fn () => SystemUnit::count('*')),
         ];
             
     }

@@ -61,43 +61,43 @@ class ListAssignedComputers extends ListRecords
                 ->label('All')
                 ->badge($allCount),
 
-            'TERMINAL' => Tab::make()
+            'TERMINAL' => Tab::make('TERMINAL')
                 ->modifyQueryUsing(fn ($query) => $terminalId ? $query->where('department_id', '=', $terminalId) : $query)
                 ->badge($terminalCount),
 
-            'STOCK ROOM' => Tab::make()
+            'STOCK ROOM' => Tab::make('STOCK ROOM')
                 ->modifyQueryUsing(fn ($query) => $stockRoomId ? $query->where('department_id', '=', $stockRoomId) : $query)
                 ->badge($stockRoomCount),
 
-            'MIS' => Tab::make()
+            'MIS' => Tab::make('MIS')
                 ->modifyQueryUsing(fn ($query) => $misId ? $query->where('department_id', '=', $misId) : $query)
                 ->badge($misCount),
 
-            'AUDIT' => Tab::make()
+            'AUDIT' => Tab::make('AUDIT')
                 ->modifyQueryUsing(fn ($query) => $auditId ? $query->where('department_id', '=', $auditId) : $query)
                 ->badge($auditCount),
                 
-            'HR' => Tab::make()
+            'HR' => Tab::make('HR')
                 ->modifyQueryUsing(fn ($query) => $hrId ? $query->where('department_id', '=', $hrId) : $query)
                 ->badge($hrCount),
 
-            'OPERATIONS' => Tab::make()
+            'OPERATIONS' => Tab::make('OPERATIONS')
                 ->modifyQueryUsing(fn ($query) => $operationsId ? $query->where('department_id', '=', $operationsId) : $query)
                 ->badge($operationsCount),
 
-            'PRODUCTION' => Tab::make()
+            'PRODUCTION' => Tab::make('PRODUCTION')
                 ->modifyQueryUsing(fn ($query) => $productionId ? $query->where('department_id', '=', $productionId) : $query)
                 ->badge($productionCount),
 
-            'ACCOUNTING' => Tab::make()
+            'ACCOUNTING' => Tab::make('ACCOUNTING')
                 ->modifyQueryUsing(fn ($query) => $accountingId ? $query->where('department_id', '=', $accountingId) : $query)
                 ->badge($accountingCount),
 
-            'CASH' => Tab::make()
+            'CASH' => Tab::make('CASH')
                 ->modifyQueryUsing(fn ($query) => $cashId ? $query->where('department_id', '=', $cashId) : $query)
                 ->badge($cashCount),
 
-            'CLINIC' => Tab::make()
+            'CLINIC' => Tab::make('CLINIC')
                 ->modifyQueryUsing(fn ($query) => $clinicId ? $query->where('department_id', '=', $clinicId) : $query)
                 ->badge($clinicCount),
         ];

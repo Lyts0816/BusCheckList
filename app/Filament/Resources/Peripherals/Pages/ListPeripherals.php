@@ -26,25 +26,25 @@ class ListPeripherals extends ListRecords
     {
         return [
 
-            'ALL' => Tab::make()
+            'ALL' => Tab::make('ALL')
                 ->label('All PERIPHERALS')
                 ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
-                ->badge(fn () => Peripherals::count()),
-            'KEYBOARD' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', 'KEYBOARD');})
-                ->badge(fn () => Peripherals::where('item_type', 'Keyboard')->count()),
+                ->badge(fn () => Peripherals::count('*')),
+            'KEYBOARD' => Tab::make('KEYBOARD')
+                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'KEYBOARD', 'and');})
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Keyboard', 'and')->count('*')),
 
-            'MOUSE' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', 'MOUSE');})
-                ->badge(fn () => Peripherals::where('item_type', 'Mouse')->count()),
+            'MOUSE' => Tab::make('MOUSE')
+                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'MOUSE', 'and');})
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Mouse', 'and')->count('*')),
 
-            'MONITOR' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', 'MONITOR');})
-                ->badge(fn () => Peripherals::where('item_type', 'Monitor')->count()),
+            'MONITOR' => Tab::make('MONITOR')
+                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'MONITOR', 'and');})
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Monitor', 'and')->count('*')),
 
-            'UPS' => Tab::make()
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', 'UPS');})
-                ->badge(fn () => Peripherals::where('item_type', 'UPS')->count()),
+            'UPS' => Tab::make('UPS')
+                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'UPS', 'and');})
+                ->badge(fn () => Peripherals::where('item_type', '=', 'UPS', 'and')->count('*')),
         ];
     }
 }

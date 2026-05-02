@@ -37,10 +37,10 @@ class Peripherals extends Model
     // Corrected method to get all assigned computers for this peripheral
     public function getAssignedComputersAttribute()
     {
-        return AssignedComputer::where('keyboard_id', $this->id)
-            ->orWhere('mouse_id', $this->id)
-            ->orWhere('monitor_id', $this->id)
-            ->orWhere('ups_id', $this->id)
+        return AssignedComputer::where('keyboard_id', '=', $this->id, 'and')
+            ->orWhere('mouse_id', '=', $this->id)
+            ->orWhere('monitor_id', '=', $this->id)
+            ->orWhere('ups_id', '=', $this->id)
             ->get();
     }
 

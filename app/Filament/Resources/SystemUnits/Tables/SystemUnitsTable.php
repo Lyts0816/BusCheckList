@@ -38,12 +38,19 @@ class SystemUnitsTable
                         return $record->assignedComputer?->assigned_to ?? 'Unassigned';
                     }),
 
-                TextColumn::make('assignedComputer.department')
+                TextColumn::make('department')
                     ->label('Department')
-                    ->searchable()
                     ->toggleable()
+                    // ->searchable()
                     ->getStateUsing(function (SystemUnit $record) {
-                        return $record->assignedComputer?->department_name ?? 'no-department';
+                        $assignedComputers = $record->assignedComputers;
+
+                        // Only return if there are assigned computers
+                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
+                            return $assignedComputers->first()->department_name ?? 'N/A';
+                        }
+
+                        return 'N/A';
                     }),
 
                 TextColumn::make('asset_code')
@@ -188,15 +195,24 @@ class SystemUnitsTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        $assigned = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('department', 'and')
-                            ->where('department', '!=', '')
-                            ->distinct()
-                            ->orderBy('department', 'asc')
-                            ->pluck('department', 'department')
+                        // Prefer departments referenced by foreign key
+                        $deptIds = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('department_id', 'and')
+                            ->pluck('department_id')
+                            ->filter()
+                            ->unique()
                             ->toArray();
 
-                        return ['unassigned' => 'Unassigned'] + $assigned;
+                        $departments = [];
+                        if (! empty($deptIds)) {
+                            $departments = \App\Models\Departments::query()
+                                ->whereIn('id', $deptIds, 'and', false)
+                                ->orderBy('name', 'asc')
+                                ->pluck('name', 'id')
+                                ->toArray();
+                        }
+
+                        return ['unassigned' => 'Unassigned'] + $departments;
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
@@ -205,9 +221,17 @@ class SystemUnitsTable
                             return $query->whereDoesntHave('assignedComputer');
                         }
 
+                        if (is_numeric($value)) {
+                            return $query->whereHas('assignedComputer', function (Builder $q) use ($value) {
+                                $q->where('department_id', '=', (int) $value, 'and');
+                            });
+                        }
+
                         if ($value) {
                             return $query->whereHas('assignedComputer', function (Builder $q) use ($value) {
-                                $q->where('department', $value);
+                                $q->whereHas('department', function (Builder $dq) use ($value) {
+                                    $dq->where('name', '=', $value, 'and');
+                                });
                             });
                         }
 
@@ -376,8 +400,18 @@ class SystemUnitsTable
             ])
 
             ->toolbarActions([
-
-                BulkActionGroup::make([]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    BulkAction::make('export_selected')
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->toArray();
+                            $exportUrl = route('export.system-units') . '?ids=' . implode(',', $ids);
+                            return redirect($exportUrl);
+                        }),
+                ]),
             ])
             ;
     }

@@ -14,21 +14,12 @@ class PrintersForm
     {
         return $schema
             ->components([
-                Select::make('department')
-                    ->required()
-                    ->options([
-                        'MIS' => 'MIS',
-                        'STOCK ROOM' => 'STOCK ROOM',
-                        'HR' => 'HR',
-                        'Operations' => 'Operations',
-                        'Production' => 'Production',
-                        'Accounting' => 'Accounting',
-                        'Cash' => 'Cash',
-                        'Clinic' => 'Clinic',
-                        'TERMINAL' => 'TERMINAL',
-                        'SATELITE OFFICE GENSAN' => 'SATELITE OFFICE GENSAN',
-
-                    ]),
+               Select::make('department_id')
+                    ->label('Department')
+                    ->relationship('department', 'name')
+                    ->preload()
+                    ->searchable()
+                    ->required(),
 
                 TextInput::make('printer_host')
                     ->label('Printer Host')

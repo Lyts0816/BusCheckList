@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\AssetMaintenanceLog;
 use App\Models\AssignedComputer;
 use App\Models\Conductors;
+use App\Models\Departments;
 use App\Models\Drivers;
 use App\Models\DispatchedTrips;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Barryvdh\DomPDF\Facade\PDF;
+use Illuminate\Support\Collection;
 
 class ExportController extends Controller
 {
@@ -60,7 +62,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateAssetMaintenanceLogsCsv($logs)
+    private function generateAssetMaintenanceLogsCsv(Collection $logs): string
     {
         $title = 'ASSET MAINTENANCE LOGS - ' . now()->format('F d, Y');
         $headers = [
@@ -139,7 +141,9 @@ class ExportController extends Controller
                 $searchTerm = $request->search;
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('assigned_to', 'like', "%{$searchTerm}%")
-                        ->orWhere('department', 'like', "%{$searchTerm}%")
+                        ->orWhereHas('department', function ($dq) use ($searchTerm) {
+                            $dq->where('name', 'like', "%{$searchTerm}%");
+                        })
                         ->orWhereHas('systemUnit', function ($sq) use ($searchTerm) {
                             $sq->where('asset_code', 'like', "%{$searchTerm}%")
                                 ->orWhere('serial_number', 'like', "%{$searchTerm}%")
@@ -172,13 +176,11 @@ class ExportController extends Controller
                     // Filter by foreign key id
                     $query->where('department_id', (int) $val);
                 } else {
-                    // Filter by legacy string or department name via relationship
-                    $query->where(function ($q) use ($val) {
-                        $q->where('department', $val)
-                          ->orWhereHas('department', function ($dq) use ($val) {
-                              $dq->where('name', $val);
-                          });
-                    });
+                    // Filter by department ID or name via FK relationship
+                    $deptId = is_numeric($val) ? (int)$val : Departments::where('name', '=', $val, 'and')->value('id');
+                    if ($deptId) {
+                        $query->where('department_id', '=', $deptId, 'and');
+                    }
                 }
             }
 
@@ -209,7 +211,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateAssignedComputersCSVFormat($assignedComputers)
+    private function generateAssignedComputersCSVFormat(Collection $assignedComputers): string
     {
 
         $title = 'COMPUTER AND PERIPHERALS INVENTORY - ' . now()->format('F d, Y');
@@ -373,7 +375,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateBusDailyChecklistCSV($busDailyChecklists)
+    private function generateBusDailyChecklistCSV(Collection $busDailyChecklists): string
     {
         $title = 'BUS CHECKLIST REPORT - ' . now()->format('F d, Y');
         // CSV Headers
@@ -421,7 +423,7 @@ class ExportController extends Controller
     // CSV HELPER METHODS
     // ===================================================================
 
-    private function escapeCsvValue($value)
+    private function escapeCsvValue(mixed $value): string
     {
         // Handle null values
         if ($value === null) {
@@ -451,7 +453,7 @@ class ExportController extends Controller
         return str_replace('"', '""', $value);
     }
 
-    private function preserveCsvText($value)
+    private function preserveCsvText(mixed $value): string
     {
         if ($value === null || $value === '') {
             return 'N/A';
@@ -507,7 +509,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateConductorsCSV($conductors)
+    private function generateConductorsCSV(Collection $conductors): string
     {
         $title = 'CONDUCTORS LIST - ' . now()->format('F d, Y');
         $headers = [
@@ -587,7 +589,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateDriversCSV($drivers)
+    private function generateDriversCSV(Collection $drivers): string
     {
         $title = 'DRIVERS LIST - ' . now()->format('F d, Y');
         $headers = [
@@ -683,7 +685,7 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function generateDispatchedTripsCSV($dispatchedTrips)
+    private function generateDispatchedTripsCSV(Collection $dispatchedTrips): string
     {
         $title = 'DISPATCHED TRIPS REPORT - ' . now()->format('F d, Y');
         

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SystemUnit;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class SystemUnitExport extends Controller
 {
@@ -75,7 +76,7 @@ class SystemUnitExport extends Controller
     }
 
     // FUNCTION FOR CSV
-    private function generateSystemUnitCSVFormat($systemUnits)
+    private function generateSystemUnitCSVFormat(Collection $systemUnits): string
     {
         // Define CSV headers for system unit export
         $headers = [
@@ -150,7 +151,7 @@ class SystemUnitExport extends Controller
         return $csv;
     }
 
-    private function escapeCsvValue($value)
+    private function escapeCsvValue(mixed $value): string
     {
         $value = trim((string) $value);
 

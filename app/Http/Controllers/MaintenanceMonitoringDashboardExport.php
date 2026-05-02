@@ -8,6 +8,8 @@ use App\Models\SystemUnit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class MaintenanceMonitoringDashboardExport extends Controller
 {
@@ -124,7 +126,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
             ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name');
     }
 
-    protected function applyTabFilter($query, string $tab): void
+    protected function applyTabFilter(QueryBuilder $query, string $tab): void
     {
         match ($tab) {
             'SYSTEM UNITS' => $query->where('asset_maintenance_logs.maintainable_type', SystemUnit::class),
@@ -137,7 +139,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
         };
     }
 
-    protected function generateCsv($rows): string
+    protected function generateCsv(Collection $rows): string
     {
         $csv = "\xEF\xBB\xBF";
         $csv .= "ID,Assigned To,Department,Serial Number,Component,Maintenance Type,Recent Maintenance Date,Days Since Maintenance\n";
@@ -188,7 +190,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
         return $csv;
     }
 
-    protected function escapeCsvValue($value): string
+    protected function escapeCsvValue(mixed $value): string
     {
         $value = trim((string) $value);
 

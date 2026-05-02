@@ -69,10 +69,10 @@ class LeaveDashboard extends BaseDashboard implements HasTable
                 Select::make('department')
                     ->label('Department')
                     ->options(fn (): array => Employee::query()
-                        ->whereNotNull('department')
-                        ->where('department', '!=', '')
+                        ->whereNotNull('department', 'and')
+                        ->where('department', '!=', '', 'and')
                         ->distinct()
-                        ->orderBy('department')
+                        ->orderBy('department', 'asc')
                         ->pluck('department', 'department')
                         ->toArray())
                     ->searchable()
@@ -132,7 +132,7 @@ class LeaveDashboard extends BaseDashboard implements HasTable
             ->whereNotNull('leave_type')
             ->select('leave_type')
             ->distinct()
-            ->orderBy('leave_type')
+            ->orderBy('leave_type', 'asc')
             ->pluck('leave_type')
             ->filter();
 
@@ -150,7 +150,7 @@ class LeaveDashboard extends BaseDashboard implements HasTable
         $query = LeaveLogResource::getEloquentQuery();
 
         if (! $query instanceof Builder) {
-            return LeaveLog::query()->whereRaw('1 = 0');
+            return LeaveLog::query()->whereRaw('1 = 0', [], 'and');
         }
 
         $department = $this->filters['department'] ?? null;
@@ -159,7 +159,7 @@ class LeaveDashboard extends BaseDashboard implements HasTable
 
         if (! empty($department)) {
             $query->whereHas('employee', function (Builder $employeeQuery) use ($department): void {
-                $employeeQuery->where('department', $department);
+                $employeeQuery->where('department', '=', $department, 'and');
             });
         }
 

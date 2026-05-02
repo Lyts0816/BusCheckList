@@ -25,20 +25,20 @@ class ListAssetMaintenanceLogs extends ListRecords
     public function getTabs(): array
     {
         return [
-            'ALL' => Tab::make()
+            'ALL' => Tab::make('ALL')
                 ->label('All Maintenance Logs')
                 ->modifyQueryUsing(function ($query) {
                     $query->whereNotNull('id');
                 })
-                ->badge(fn () => AssetMaintenanceLog::count()),
+                ->badge(fn () => AssetMaintenanceLog::count('*')),
 
-            'SYSTEM UNITS' => Tab::make()
+            'SYSTEM UNITS' => Tab::make('SYSTEM UNITS')
                 ->modifyQueryUsing(function ($query) {
-                    $query->whereHasMorph('maintainable', [SystemUnit::class]);
+                    $query->whereHasMorph('maintainable', [SystemUnit::class], fn($q) => $q);
                 })
-                ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [SystemUnit::class])->count()),
+                ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [SystemUnit::class], fn($q) => $q)->count('*')),
 
-            'UPS' => Tab::make()
+            'UPS' => Tab::make('UPS')
                 ->modifyQueryUsing(function ($query) {
                     $query->whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                         $morphQuery->whereRaw('UPPER(item_type) = ?', ['UPS']);
@@ -46,9 +46,9 @@ class ListAssetMaintenanceLogs extends ListRecords
                 })
                 ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                     $morphQuery->whereRaw('UPPER(item_type) = ?', ['UPS']);
-                })->count()),
+                })->count('*')),
 
-            'MONITOR' => Tab::make()
+            'MONITOR' => Tab::make('MONITOR')
                 ->modifyQueryUsing(function ($query) {
                     $query->whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                         $morphQuery->whereRaw('UPPER(item_type) = ?', ['MONITOR']);
@@ -56,9 +56,9 @@ class ListAssetMaintenanceLogs extends ListRecords
                 })
                 ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                     $morphQuery->whereRaw('UPPER(item_type) = ?', ['MONITOR']);
-                })->count()),
+                })->count('*')),
 
-            'KEYBOARD' => Tab::make()
+            'KEYBOARD' => Tab::make('KEYBOARD')
                 ->modifyQueryUsing(function ($query) {
                     $query->whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                         $morphQuery->whereRaw('UPPER(item_type) = ?', ['KEYBOARD']);
@@ -66,9 +66,9 @@ class ListAssetMaintenanceLogs extends ListRecords
                 })
                 ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                     $morphQuery->whereRaw('UPPER(item_type) = ?', ['KEYBOARD']);
-                })->count()),
+                })->count('*')),
 
-            'MOUSE' => Tab::make()
+            'MOUSE' => Tab::make('MOUSE')
                 ->modifyQueryUsing(function ($query) {
                     $query->whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                         $morphQuery->whereRaw('UPPER(item_type) = ?', ['MOUSE']);
@@ -76,7 +76,7 @@ class ListAssetMaintenanceLogs extends ListRecords
                 })
                 ->badge(fn () => AssetMaintenanceLog::whereHasMorph('maintainable', [Peripherals::class], function ($morphQuery) {
                     $morphQuery->whereRaw('UPPER(item_type) = ?', ['MOUSE']);
-                })->count()),
+                })->count('*')),
         ];
     }
 }

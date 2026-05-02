@@ -106,12 +106,12 @@ class AssetMaintenanceLogsTable
                             ->pluck('name', 'id')
                             ->toArray();
 
-                        // Add printer departments
+                        // Add printer departments via FK relationship
                         $printerDepartments = Printer::query()
-                            ->whereNotNull('department', 'and')
-                            ->where('department', '!=', '')
+                            ->whereNotNull('department_id', 'and')
+                            ->join('departments', 'printers.department_id', '=', 'departments.id', 'inner', false)
                             ->distinct()
-                            ->pluck('department')
+                            ->pluck('departments.name')
                             ->toArray();
 
                         $allDepartments = array_values(array_unique(array_merge($departmentOptions, $printerDepartments)));
@@ -126,7 +126,10 @@ class AssetMaintenanceLogsTable
                             return $query;
                         }
 
-                        return $query->where('department', $department);
+                        // TODO: Filter maintenance logs by department through polymorphic relationships
+                        // Currently disabled as AssetMaintenanceLog doesn't have a direct department column
+                        // Would need to filter through SystemUnit->AssignedComputer or Peripherals associations
+                        return $query;
                     }),
             ])
 

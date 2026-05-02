@@ -9,7 +9,7 @@ class Printer extends Model
     protected $table = 'printers';
 
     protected $fillable = [
-        'department',
+        'department_id',
         'printer_host',
         'printer_model',
         'asset_code',
@@ -21,5 +21,10 @@ class Printer extends Model
     public function maintenanceLogs()
     {
         return $this->morphMany(AssetMaintenanceLog::class, 'maintainable');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Departments::class, 'department_id');
     }
 }

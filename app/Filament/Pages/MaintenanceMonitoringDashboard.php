@@ -34,9 +34,6 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
 {
     use HasTabs, InteractsWithTable;
 
-    #[Url(as: 'tab')]
-    public ?string $activeTab = null;
-
     protected static bool $isLazy = false;
 
     protected static string $routePath = '/maintenance-monitoring-dashboard';
@@ -185,12 +182,12 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                             ->pluck('name', 'id')
                             ->toArray();
 
-                        // Add printer departments
+                        // Add printer departments via FK relationship
                         $printerDepartments = Printer::query()
-                            ->whereNotNull('department', 'and')
-                            ->where('department', '!=', '')
+                            ->whereNotNull('department_id', 'and')
+                            ->join('departments', 'printers.department_id', '=', 'departments.id', 'inner', false)
                             ->distinct()
-                            ->pluck('department')
+                            ->pluck('departments.name')
                             ->toArray();
 
                         $allDepartments = array_values(array_unique(array_merge($departmentOptions, $printerDepartments)));
@@ -259,7 +256,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                         }),
                 ]),
             ])
-            ->defaultSort('maintenance_type', 'desc');
+            ->defaultSort('id', 'desc');
     }
 
     public function getTabs(): array
@@ -267,19 +264,19 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
         $baseQuery = $this->getBaseQuery();
 
         return [
-            'ALL' => Tab::make()
+            'ALL' => Tab::make('ALL')
                 ->label('ALL')
                 ->badge(fn (): int => (clone $baseQuery)->count()),
 
-            'SYSTEM UNITS' => Tab::make()
+            'SYSTEM UNITS' => Tab::make('SYSTEM UNITS')
                 ->badge(fn (): int => (clone $baseQuery)->where('asset_maintenance_logs.maintainable_type', SystemUnit::class)->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('asset_maintenance_logs.maintainable_type', SystemUnit::class)),
 
-            'PRINTERS' => Tab::make()
+            'PRINTERS' => Tab::make('PRINTERS')
                 ->badge(fn (): int => (clone $baseQuery)->where('asset_maintenance_logs.maintainable_type', Printer::class)->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('asset_maintenance_logs.maintainable_type', Printer::class)),
 
-            'UPS' => Tab::make()
+            'UPS' => Tab::make('UPS')
                 ->badge(fn (): int => (clone $baseQuery)
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'UPS')
@@ -288,7 +285,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'UPS')),
 
-            'MONITOR' => Tab::make()
+            'MONITOR' => Tab::make('MONITOR')
                 ->badge(fn (): int => (clone $baseQuery)
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'MONITOR')
@@ -297,7 +294,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'MONITOR')),
 
-            'KEYBOARD' => Tab::make()
+            'KEYBOARD' => Tab::make('KEYBOARD')
                 ->badge(fn (): int => (clone $baseQuery)
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'KEYBOARD')
@@ -306,7 +303,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'KEYBOARD')),
 
-            'MOUSE' => Tab::make()
+            'MOUSE' => Tab::make('MOUSE')
                 ->badge(fn (): int => (clone $baseQuery)
                     ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
                     ->where('asset_maintenance_logs.item_type', 'MOUSE')
@@ -328,7 +325,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                 null as item_type,
                 COALESCE(su.serial_number, su.asset_code, 'N/A') as serial_number,
                 COALESCE((select ac.assigned_to from assigned_computers ac where ac.system_unit_id = su.id limit 1), 'Unassigned') as assigned_to,
-                COALESCE((select ac.department from assigned_computers ac where ac.system_unit_id = su.id limit 1), 'N/A') as department",
+                COALESCE((select COALESCE(d.name, 'N/A') from assigned_computers ac left join departments d on d.id = ac.department_id where ac.system_unit_id = su.id limit 1), 'N/A') as department",
                 [SystemUnit::class],
             );
 
@@ -363,8 +360,9 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     limit 1
                 ), 'Unassigned') as assigned_to,
                 COALESCE((
-                    select ac.department
+                    select COALESCE(d.name, 'N/A')
                     from assigned_computers ac
+                    left join departments d on d.id = ac.department_id
                     where ac.keyboard_id = p.id
                         or ac.mouse_id = p.id
                         or ac.monitor_id = p.id
@@ -380,16 +378,20 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
 
         $latestLogSubquery = DB::table('asset_maintenance_logs as aml')
             ->selectRaw('aml.maintainable_type, aml.maintainable_id, MAX(aml.id) as latest_log_id')
-            ->groupBy('aml.maintainable_type', 'aml.maintainable_id');
+            ->groupByRaw('aml.maintainable_type, aml.maintainable_id');
 
         return AssetMaintenanceLog::query()
             ->fromSub($assetsQuery, 'asset_maintenance_logs')
-            ->leftJoinSub($latestLogSubquery, 'latest', 'and', false, function ($join): void {
-                $join->on('asset_maintenance_logs.maintainable_type', '=', 'latest.maintainable_type')
-                    ->on('asset_maintenance_logs.maintainable_id', '=', 'latest.maintainable_id');
-            })
-            ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id', 'and', false)
-            ->leftJoin('components as c', 'c.id', '=', 'logs.component_id', 'and', false)
-            ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name');
+            ->leftJoinSub(
+                $latestLogSubquery,
+                'latest',
+                'asset_maintenance_logs.maintainable_type',
+                '=',
+                'latest.maintainable_type'
+            )
+            ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id')
+            ->leftJoin('components as c', 'c.id', '=', 'logs.component_id')
+            ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name')
+            ->where('asset_maintenance_logs.maintainable_id', '=', DB::raw('latest.maintainable_id'));
     }
 }

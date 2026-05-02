@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Printers\Tables;
 
 use App\Filament\Resources\Printers\PrintersResource;
 use App\Models\Printer;
+use App\Models\Departments;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -15,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
 
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -30,8 +32,9 @@ class PrintersTable
                     ->label('ID')
                     ->sortable(),
 
-                TextColumn::make('department')
+                TextColumn::make('department.name')
                     ->toggleable()
+                    ->label('Department')
                     ->searchable()
                     ->sortable(),
 
@@ -75,17 +78,28 @@ class PrintersTable
                     ->toggleable(),
             ])
             ->searchPlaceholder('Search')
+
             ->defaultSort('id', direction: 'desc')
+
             ->filters([
+                SelectFilter::make('department_id')
+                    ->label('Department')
+                    ->options(
+                        fn() => Departments::query()
+                            ->orderBy('name', 'asc')
+                            ->pluck('name', 'id')
+                            ->toArray()
+                    ),
+
                 SelectFilter::make('printer_model')
                     ->label('Model')
                     ->options(
                         fn() => Printer::query()
-                            ->whereNotNull('printer_model')
+                            ->whereNotNull('printer_model', 'and')
                             ->where('printer_model', '!=', '')
                             ->select('printer_model')
                             ->distinct()
-                            ->orderBy('printer_model')
+                            ->orderBy('printer_model', 'asc')
                             ->pluck('printer_model', 'printer_model')
                             ->toArray()
                     ),
@@ -128,7 +142,7 @@ class PrintersTable
 
                         return $query->when($year, fn(Builder $q, $y) => $q->whereYear('date_aquired', (int) $y));
                     }),
-            ])
+            ], layout: FiltersLayout::Modal)->filtersFormColumns(2)
             ->filtersFormMaxHeight('400px')
 
             ->recordActions([
@@ -189,8 +203,8 @@ class PrintersTable
                         foreach ($queryParams as $key => $value) {
                             if (strpos($key, 'tableFilters') === 0 && !empty($value)) {
                                 // Parse Filament filter format
-                                if ($key === 'tableFilters[department][value]') {
-                                    $exportParams['department'] = $value;
+                                if ($key === 'tableFilters[department_id][value]') {
+                                    $exportParams['department_id'] = $value;
                                 }
                             }
                         }

@@ -30,9 +30,6 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
         InteractsWithTable::normalizeTableFilterValuesFromQueryString as normalizeTableFilterValuesFromQueryStringForTable;
     }
 
-    #[Url(as: 'tab')]
-    public ?string $activeTab = null;
-
     protected bool $isCollapsible = true;
 
     protected static bool $isLazy = false;
@@ -90,10 +87,10 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
                 Select::make('maintenance_type')
                     ->label('Maintenance Type')
                     ->options(fn (): array => AssetMaintenanceLog::query()
-                        ->whereNotNull('maintenance_type')
-                        ->where('maintenance_type', '!=', '')
+                        ->whereNotNull('maintenance_type', 'and')
+                        ->where('maintenance_type', '!=', '', 'and')
                         ->distinct()
-                        ->orderBy('maintenance_type')
+                        ->orderBy('maintenance_type', 'asc')
                         ->pluck('maintenance_type', 'maintenance_type')
                         ->toArray())
                     ->searchable()
@@ -142,10 +139,10 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
         ];
 
         $maintenanceTypes = (clone $unfilteredQuery)
-            ->whereNotNull('maintenance_type')
+            ->whereNotNull('maintenance_type', 'and')
             ->select('maintenance_type')
             ->distinct()
-            ->orderBy('maintenance_type')
+            ->orderBy('maintenance_type', 'asc')
             ->pluck('maintenance_type')
             ->filter();
 
@@ -163,7 +160,7 @@ class AssetMaintenanceDashboard extends BaseDashboard implements HasTable
         $query = AssetMaintenanceLogResource::getEloquentQuery();
 
         if (! $query instanceof Builder) {
-            return AssetMaintenanceLog::query()->whereRaw('1 = 0');
+            return AssetMaintenanceLog::query()->whereRaw('1 = 0', [], 'and');
         }
 
         $maintenanceType = $this->filters['maintenance_type'] ?? null;

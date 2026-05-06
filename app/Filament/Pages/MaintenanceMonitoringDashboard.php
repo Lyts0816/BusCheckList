@@ -72,7 +72,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                 TextColumn::make('display_id')
                     ->label('ID')
                     ->sortable(query: function (Builder $query, string $direction): Builder {
-                        return $query->orderBy('asset_maintenance_logs.id', $direction);
+                        return $query->orderBy('filtered_assets.id', $direction);
                     }),
 
                 TextColumn::make('assigned_to')
@@ -108,8 +108,8 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query
-                            ->orderByRaw('CASE WHEN logs.maintenance_date IS NULL THEN 1 ELSE 0 END')
-                            ->orderBy('logs.maintenance_date', $direction);
+                            ->orderByRaw('CASE WHEN filtered_assets.recent_maintenance_date IS NULL THEN 1 ELSE 0 END')
+                            ->orderBy('filtered_assets.recent_maintenance_date', $direction);
                     }),
 
                 TextColumn::make('days_since_maintenance')
@@ -162,38 +162,44 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query
-                            ->orderByRaw('CASE WHEN logs.maintenance_date IS NULL THEN 1 ELSE 0 END')
-                            ->orderBy('logs.maintenance_date', $direction);
+                            ->orderByRaw('CASE WHEN filtered_assets.recent_maintenance_date IS NULL THEN 1 ELSE 0 END')
+                            ->orderBy('filtered_assets.recent_maintenance_date', $direction);
                     }),
             ])
             ->filters([
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        // Get departments that have assigned computers
-                        $assignedComputerDepartmentIds = AssignedComputer::query()
+                        // Get all unique departments from the unions
+                        $departments = [];
+
+                        // From assigned computers
+                        $assignedComputerDepts = AssignedComputer::query()
                             ->whereNotNull('department_id', 'and')
-                            ->distinct()
-                            ->pluck('department_id')
-                            ->toArray();
+                            ->with('department')
+                            ->get()
+                            ->pluck('department.name')
+                            ->unique()
+                            ->sort();
 
-                        $departmentOptions = Departments::query()
-                            ->whereIn('id', $assignedComputerDepartmentIds, 'and', false)
-                            ->pluck('name', 'id')
-                            ->toArray();
-
-                        // Add printer departments via FK relationship
-                        $printerDepartments = Printer::query()
+                        // From printers
+                        $printerDepts = Printer::query()
                             ->whereNotNull('department_id', 'and')
-                            ->join('departments', 'printers.department_id', '=', 'departments.id', 'inner', false)
-                            ->distinct()
-                            ->pluck('departments.name')
-                            ->toArray();
+                            ->with('department')
+                            ->get()
+                            ->pluck('department.name')
+                            ->unique()
+                            ->sort();
 
-                        $allDepartments = array_values(array_unique(array_merge($departmentOptions, $printerDepartments)));
-                        sort($allDepartments);
+                        $allDepts = collect()
+                            ->merge($assignedComputerDepts)
+                            ->merge($printerDepts)
+                            ->unique()
+                            ->sort()
+                            ->values();
 
-                        return array_combine($allDepartments, $allDepartments);
+                        // Create options array with name as both key and value
+                        return $allDepts->mapWithKeys(fn ($dept) => [$dept => $dept])->toArray();
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $department = $data['value'] ?? null;
@@ -202,13 +208,8 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                             return $query;
                         }
 
-                        // Check if it's a department ID or name
-                        $deptId = Departments::query()->where('name', $department)->value('id');
-                        if ($deptId) {
-                            return $query->where('asset_maintenance_logs.department', $deptId);
-                        }
-
-                        return $query->where('asset_maintenance_logs.department', $department);
+                        // Filter on the department column from the filtered_assets subquery
+                        return $query->where('filtered_assets.department', $department);
                     }),
             ], layout: FiltersLayout::Modal)->filtersFormColumns(2)
             ->headerActions([
@@ -269,48 +270,48 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                 ->badge(fn (): int => (clone $baseQuery)->count()),
 
             'SYSTEM UNITS' => Tab::make('SYSTEM UNITS')
-                ->badge(fn (): int => (clone $baseQuery)->where('asset_maintenance_logs.maintainable_type', SystemUnit::class)->count())
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('asset_maintenance_logs.maintainable_type', SystemUnit::class)),
+                ->badge(fn (): int => (clone $baseQuery)->where('filtered_assets.maintainable_type', SystemUnit::class)->count())
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('filtered_assets.maintainable_type', SystemUnit::class)),
 
             'PRINTERS' => Tab::make('PRINTERS')
-                ->badge(fn (): int => (clone $baseQuery)->where('asset_maintenance_logs.maintainable_type', Printer::class)->count())
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('asset_maintenance_logs.maintainable_type', Printer::class)),
+                ->badge(fn (): int => (clone $baseQuery)->where('filtered_assets.maintainable_type', Printer::class)->count())
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('filtered_assets.maintainable_type', Printer::class)),
 
             'UPS' => Tab::make('UPS')
                 ->badge(fn (): int => (clone $baseQuery)
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'UPS')
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'UPS')
                     ->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'UPS')),
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'UPS')),
 
             'MONITOR' => Tab::make('MONITOR')
                 ->badge(fn (): int => (clone $baseQuery)
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'MONITOR')
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'MONITOR')
                     ->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'MONITOR')),
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'MONITOR')),
 
             'KEYBOARD' => Tab::make('KEYBOARD')
                 ->badge(fn (): int => (clone $baseQuery)
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'KEYBOARD')
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'KEYBOARD')
                     ->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'KEYBOARD')),
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'KEYBOARD')),
 
             'MOUSE' => Tab::make('MOUSE')
                 ->badge(fn (): int => (clone $baseQuery)
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'MOUSE')
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'MOUSE')
                     ->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query
-                    ->where('asset_maintenance_logs.maintainable_type', Peripherals::class)
-                    ->where('asset_maintenance_logs.item_type', 'MOUSE')),
+                    ->where('filtered_assets.maintainable_type', Peripherals::class)
+                    ->where('filtered_assets.item_type', 'MOUSE')),
         ];
     }
 
@@ -380,7 +381,8 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
             ->selectRaw('aml.maintainable_type, aml.maintainable_id, MAX(aml.id) as latest_log_id')
             ->groupByRaw('aml.maintainable_type, aml.maintainable_id');
 
-        return AssetMaintenanceLog::query()
+        // Wrap the entire complex query in a subquery to make filtering work properly
+        $baseSubquery = AssetMaintenanceLog::query()
             ->fromSub($assetsQuery, 'asset_maintenance_logs')
             ->leftJoinSub(
                 $latestLogSubquery,
@@ -393,5 +395,10 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
             ->leftJoin('components as c', 'c.id', '=', 'logs.component_id')
             ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name')
             ->where('asset_maintenance_logs.maintainable_id', '=', DB::raw('latest.maintainable_id'));
+
+        // Return a fresh query from the subquery to allow filters to be applied properly
+        return AssetMaintenanceLog::query()
+            ->fromSub($baseSubquery, 'filtered_assets')
+            ->selectRaw('filtered_assets.*');
     }
 }

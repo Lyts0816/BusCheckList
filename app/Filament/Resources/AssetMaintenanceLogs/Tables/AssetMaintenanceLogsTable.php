@@ -126,10 +126,60 @@ class AssetMaintenanceLogsTable
                             return $query;
                         }
 
-                        // TODO: Filter maintenance logs by department through polymorphic relationships
-                        // Currently disabled as AssetMaintenanceLog doesn't have a direct department column
-                        // Would need to filter through SystemUnit->AssignedComputer or Peripherals associations
-                        return $query;
+                        // Get the department ID from the name
+                        $departmentId = Departments::query()->where('name', $department)->value('id');
+
+                        if (! $departmentId) {
+                            return $query;
+                        }
+
+                        // Filter through polymorphic relationships
+                        return $query->where(function (Builder $q) use ($departmentId) {
+                            // SystemUnits through AssignedComputer
+                            $q->orWhere(function (Builder $subQuery) use ($departmentId) {
+                                $subQuery->where('maintainable_type', SystemUnit::class)
+                                    ->whereIn('maintainable_id', 
+                                        AssignedComputer::query()
+                                            ->where('department_id', $departmentId)
+                                            ->where('system_unit_id', '!=', null)
+                                            ->pluck('system_unit_id'),
+                                        'and',
+                                        false
+                                    );
+                            });
+
+                            // Printers by direct department
+                            $q->orWhere(function (Builder $subQuery) use ($departmentId) {
+                                $subQuery->where('maintainable_type', Printer::class)
+                                    ->whereIn('maintainable_id',
+                                        Printer::query()
+                                            ->where('department_id', $departmentId)
+                                            ->pluck('id'),
+                                        'and',
+                                        false
+                                    );
+                            });
+
+                            // Peripherals through AssignedComputer
+                            $q->orWhere(function (Builder $subQuery) use ($departmentId) {
+                                $peripheralIds = AssignedComputer::query()
+                                    ->where('department_id', $departmentId)
+                                    ->whereRaw('(keyboard_id IS NOT NULL OR mouse_id IS NOT NULL OR monitor_id IS NOT NULL OR ups_id IS NOT NULL)', [], 'and')
+                                    ->get()
+                                    ->flatMap(function ($ac) {
+                                        return array_filter([$ac->keyboard_id, $ac->mouse_id, $ac->monitor_id, $ac->ups_id]);
+                                    })
+                                    ->unique()
+                                    ->values();
+
+                                if ($peripheralIds->isNotEmpty()) {
+                                    $subQuery->where('maintainable_type', Peripherals::class)
+                                        ->whereIn('maintainable_id', $peripheralIds->toArray(), 'and', false);
+                                } else {
+                                    $subQuery->whereRaw('1 = 0', [], 'and');
+                                }
+                            });
+                        });
                     }),
             ])
 

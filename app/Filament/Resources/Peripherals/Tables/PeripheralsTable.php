@@ -70,6 +70,7 @@ class PeripheralsTable
 
                 TextColumn::make('asset_code')
                     ->toggleable()
+                    ->sortable()
                     ->searchable(),
 
                 TextColumn::make('recent_maintenance_date')
@@ -154,10 +155,12 @@ class PeripheralsTable
 
                 TextColumn::make('serial_number')
                     ->toggleable()
+                    ->sortable()
                     ->searchable(),
 
                 TextColumn::make('model')
                     ->toggleable()
+                    ->sortable()
                     ->searchable(),
 
                 TextColumn::make('date_acquired')

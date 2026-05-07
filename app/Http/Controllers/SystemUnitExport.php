@@ -81,6 +81,7 @@ class SystemUnitExport extends Controller
         // Define CSV headers for system unit export
         $headers = [
             'ID',
+            'Asset Type',
             'Assigned To',
             'Department',
             'Asset Code',
@@ -125,6 +126,7 @@ class SystemUnitExport extends Controller
 
             $row = [
                 $unit->id,
+                $unit->asset_type ?? 'N/A',
                 $unit->assignedComputer?->assigned_to ?? 'Unassigned',
                 $department,
                 $unit->asset_code ?? 'N/A',

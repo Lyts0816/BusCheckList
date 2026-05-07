@@ -10,6 +10,7 @@ class SystemUnit extends Model
 
     protected $fillable = [
         'asset_code',
+        'asset_type',
         'serial_number',
         'model',
         'date_aquired',

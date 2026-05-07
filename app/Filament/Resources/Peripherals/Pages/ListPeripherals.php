@@ -28,23 +28,43 @@ class ListPeripherals extends ListRecords
 
             'ALL' => Tab::make('ALL')
                 ->label('All PERIPHERALS')
-                ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
+                ->modifyQueryUsing(fn ($query) => $query->whereNotNull('id', 'and'))
                 ->badge(fn () => Peripherals::count('*')),
             'KEYBOARD' => Tab::make('KEYBOARD')
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'KEYBOARD', 'and');})
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Keyboard', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'Keyboard', 'and')->count('*')),
 
             'MOUSE' => Tab::make('MOUSE')
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'MOUSE', 'and');})
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Mouse', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'Mouse', 'and')->count('*')),
 
             'MONITOR' => Tab::make('MONITOR')
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'MONITOR', 'and');})
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Monitor', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'Monitor', 'and')->count('*')),
 
             'UPS' => Tab::make('UPS')
-                ->modifyQueryUsing(function ($query) {$query->where('item_type', '=', 'UPS', 'and');})
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'UPS', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'UPS', 'and')->count('*')),
+
+            'HEADSET' => Tab::make('HEADSET')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Headset', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Headset', 'and')->count('*')),
+
+            'WEBCAM' => Tab::make('WEBCAM')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Webcam', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Webcam', 'and')->count('*')),
+
+            'CHARGE ADAPTER' => Tab::make('CHARGE ADAPTER')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Charge Adapter', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Charge Adapter', 'and')->count('*')),
+
+            'DOCKING STATION' => Tab::make('DOCKING STATION')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Docking Station', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Docking Station', 'and')->count('*')),
+
+            'OTHER' => Tab::make('OTHER')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Other', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'Other', 'and')->count('*')),
         ];
     }
 }

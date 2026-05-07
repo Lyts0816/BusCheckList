@@ -15,7 +15,14 @@ class Peripherals extends Model
         'model',
         'date_acquired',
         'description',
+        'assigned_to',
+        'department_id',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Departments::class, 'department_id');
+    }
 
     public function assignedKeyboards()
     {

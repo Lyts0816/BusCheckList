@@ -15,25 +15,25 @@ class PeripheralsExport extends Controller
         // Aggregate department per peripheral per role (one row per peripheral_id)
         $subKeyboard = DB::table('assigned_computers')
             ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
-            ->selectRaw('keyboard_id as peripheral_id, MAX(departments.name) as dept')
+            ->selectRaw('keyboard_id as peripheral_id, MAX(departments.name) as dept, MAX(assigned_computers.assigned_to) as assigned_to')
             ->whereNotNull('keyboard_id')
             ->groupBy('keyboard_id');
 
         $subMouse = DB::table('assigned_computers')
             ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
-            ->selectRaw('mouse_id as peripheral_id, MAX(departments.name) as dept')
+            ->selectRaw('mouse_id as peripheral_id, MAX(departments.name) as dept, MAX(assigned_computers.assigned_to) as assigned_to')
             ->whereNotNull('mouse_id')
             ->groupBy('mouse_id');
 
         $subMonitor = DB::table('assigned_computers')
             ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
-            ->selectRaw('monitor_id as peripheral_id, MAX(departments.name) as dept')
+            ->selectRaw('monitor_id as peripheral_id, MAX(departments.name) as dept, MAX(assigned_computers.assigned_to) as assigned_to')
             ->whereNotNull('monitor_id')
             ->groupBy('monitor_id');
 
         $subUps = DB::table('assigned_computers')
             ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
-            ->selectRaw('ups_id as peripheral_id, MAX(departments.name) as dept')
+            ->selectRaw('ups_id as peripheral_id, MAX(departments.name) as dept, MAX(assigned_computers.assigned_to) as assigned_to')
             ->whereNotNull('ups_id')
             ->groupBy('ups_id');
 
@@ -43,8 +43,10 @@ class PeripheralsExport extends Controller
             ->leftJoinSub($subMouse, 'ac_m', 'peripherals.id', '=', 'ac_m.peripheral_id')
             ->leftJoinSub($subMonitor, 'ac_mon', 'peripherals.id', '=', 'ac_mon.peripheral_id')
             ->leftJoinSub($subUps, 'ac_u', 'peripherals.id', '=', 'ac_u.peripheral_id')
+            ->leftJoin('departments as p_dept', 'peripherals.department_id', '=', 'p_dept.id')
             ->select('peripherals.*')
-            ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept) as department_sort');
+            ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept, p_dept.name) as department_sort')
+            ->selectRaw('COALESCE(ac_k.assigned_to, ac_m.assigned_to, ac_mon.assigned_to, ac_u.assigned_to, peripherals.assigned_to) as assigned_to_sort');
 
         // BULK (selected IDs) vs FULL (all)
         if ($request->has('ids') && !empty($request->ids)) {
@@ -59,7 +61,9 @@ class PeripheralsExport extends Controller
                       ->orWhere('serial_number', 'like', "%{$s}%")
                       ->orWhere('model', 'like', "%{$s}%")
                       ->orWhere('date_acquired', 'like', "%{$s}%")
-                      ->orWhere('description', 'like', "%{$s}%");
+                                            ->orWhere('description', 'like', "%{$s}%")
+                                            ->orWhere('peripherals.assigned_to', 'like', "%{$s}%")
+                                            ->orWhere('p_dept.name', 'like', "%{$s}%");
                 });
             }
             if ($request->filled('sort')) {
@@ -75,6 +79,8 @@ class PeripheralsExport extends Controller
         // Order: non-null departments first (A-Z), then nulls, then newest id
         $query->orderByRaw('department_sort IS NULL ASC', [])
               ->orderBy('department_sort', 'asc')
+              ->orderByRaw('assigned_to_sort IS NULL ASC', [])
+              ->orderBy('assigned_to_sort', 'asc')
               ->orderBy('peripherals.id', 'desc');
 
         $peripherals = $query->get();
@@ -112,10 +118,11 @@ class PeripheralsExport extends Controller
     private function generatePeripheralsCSVFormat(Collection $peripherals): string
     {
         $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
-        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Department,Created At,Updated At\n";
+        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Created At,Updated At\n";
 
         foreach ($peripherals as $peripheral) {
             $department = $peripheral->department_sort ?? '';
+            $assignedTo = $peripheral->assigned_to_sort ?? '';
             $csv .= '"' . $this->escapeCsvValue($peripheral->id) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->item_type) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->asset_code) . '",';
@@ -123,6 +130,7 @@ class PeripheralsExport extends Controller
             $csv .= '"' . $this->escapeCsvValue($peripheral->model) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->date_acquired) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->description) . '",';
+            $csv .= '"' . $this->escapeCsvValue($assignedTo) . '",';
             $csv .= '"' . $this->escapeCsvValue($department) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->created_at) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->updated_at) . '"';

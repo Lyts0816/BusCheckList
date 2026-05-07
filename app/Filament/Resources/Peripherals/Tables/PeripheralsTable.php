@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Peripherals\Tables;
 
 use App\Filament\Resources\Peripherals\PeripheralsResource;
+use App\Models\AssignedComputer;
 use App\Models\Departments;
 use App\Models\Peripherals;
 use Carbon\Carbon;
@@ -11,6 +12,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Table;
@@ -50,6 +53,10 @@ class PeripheralsTable
                                 return $assignedComputers->first()->assigned_to;
                         }
 
+                        if (! empty($record->assigned_to)) {
+                            return $record->assigned_to;
+                        }
+
                         return 'Unassigned';
                     }),
 
@@ -63,6 +70,10 @@ class PeripheralsTable
                         // Only return if there are assigned computers
                         if ($assignedComputers && $assignedComputers->isNotEmpty()) {
                             return $assignedComputers->first()->department_name ?? 'N/A';
+                        }
+
+                        if ($record->department_id) {
+                            return $record->department?->name ?? 'N/A';
                         }
 
                         return 'N/A';
@@ -210,8 +221,7 @@ class PeripheralsTable
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
                     ->options(function (): array {
-                        // Get all unique assigned users from peripherals
-                        $assigned = \App\Models\AssignedComputer::query()
+                        $fromAssignments = AssignedComputer::query()
                             ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
                             ->where(function ($query) {
@@ -225,6 +235,16 @@ class PeripheralsTable
                             ->pluck('assigned_to', 'assigned_to')
                             ->toArray();
 
+                        $fromPeripherals = Peripherals::query()
+                            ->whereNotNull('assigned_to', 'and')
+                            ->where('assigned_to', '!=', '')
+                            ->distinct()
+                            ->orderBy('assigned_to', 'asc')
+                            ->pluck('assigned_to', 'assigned_to')
+                            ->toArray();
+
+                        $assigned = $fromAssignments + $fromPeripherals;
+
                         // Add "Unassigned" option
                         return ['unassigned' => 'Unassigned'] + $assigned;
                     })
@@ -235,7 +255,11 @@ class PeripheralsTable
                             return $query->whereDoesntHave('assignedKeyboards')
                                 ->whereDoesntHave('assignedMice')
                                 ->whereDoesntHave('assignedMonitors')
-                                ->whereDoesntHave('assignedUps');
+                                ->whereDoesntHave('assignedUps')
+                                ->where(function (Builder $q) {
+                                    $q->whereNull('assigned_to')
+                                        ->orWhere('assigned_to', '');
+                                });
                         }
 
                         if ($value) {
@@ -243,7 +267,8 @@ class PeripheralsTable
                                 $q->whereHas('assignedKeyboards', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMice', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMonitors', fn($query) => $query->where('assigned_to', $value))
-                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value));
+                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value))
+                                    ->orWhere('assigned_to', '=', $value);
                             });
                         }
 
@@ -252,7 +277,7 @@ class PeripheralsTable
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {
-                        $departmentIds = \App\Models\AssignedComputer::query()
+                        $fromAssignments = AssignedComputer::query()
                             ->where(function ($query): void {
                                 $query->whereNotNull('keyboard_id', 'and')
                                     ->orWhereNotNull('mouse_id', 'and')
@@ -263,6 +288,14 @@ class PeripheralsTable
                             ->distinct()
                             ->pluck('department_id')
                             ->toArray();
+
+                        $fromPeripherals = Peripherals::query()
+                            ->whereNotNull('department_id', 'and')
+                            ->distinct()
+                            ->pluck('department_id')
+                            ->toArray();
+
+                        $departmentIds = array_unique(array_merge($fromAssignments, $fromPeripherals));
 
                         $departments = Departments::query()
                             ->whereIn('id', $departmentIds, 'and', false)
@@ -283,7 +316,8 @@ class PeripheralsTable
                                 $q->whereHas('assignedKeyboards', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
                                     ->orWhereHas('assignedMice', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
                                     ->orWhereHas('assignedMonitors', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
-                                    ->orWhereHas('assignedUps', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)));
+                                    ->orWhereHas('assignedUps', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
+                                    ->orWhereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value));
                             });
                         }
 
@@ -354,6 +388,36 @@ class PeripheralsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
+
+                    Action::make('assign')
+                        ->label('Assign')
+                        ->color('success')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-user-plus')
+                        ->tooltip('Assign to user and department')
+                        ->form([
+                            TextInput::make('assigned_to')
+                                ->label('Assigned To')
+                                ->required(),
+                            Select::make('department_id')
+                                ->label('Department')
+                                ->options(fn () => Departments::pluck('name', 'id')->toArray())
+                                ->searchable()
+                                ->required(),
+                        ])
+                        ->fillForm(function (Peripherals $record): array {
+                            $assignment = $record->assignedComputers->first();
+
+                            return [
+                                'assigned_to' => $assignment?->assigned_to ?: $record->assigned_to,
+                                'department_id' => $assignment?->department_id ?: $record->department_id,
+                            ];
+                        })
+                        ->action(function (Peripherals $record, array $data): void {
+                            $record->assigned_to = $data['assigned_to'];
+                            $record->department_id = (int) $data['department_id'];
+                            $record->save();
+                        }),
 
                     Action::make('maintenance')
                         ->color('warning')

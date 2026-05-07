@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\SystemUnits\Tables;
 
+use App\Models\AssignedComputer;
+use App\Models\Departments;
 use App\Models\SystemUnit;
 use Filament\Actions\BulkActionGroup;
 use App\Filament\Resources\SystemUnits\SystemUnitResource;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
@@ -28,6 +32,17 @@ class SystemUnitsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->toggleable(),
+                
+                TextColumn::make('asset_type')
+                    ->label('Asset Type')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (string $state): string => match (strtolower($state)) {
+                        'system unit' => 'success',
+                        'laptop' => 'info',
+                        default => 'gray',
+                    })
                     ->toggleable(),
 
                 TextColumn::make('assignedComputer.assigned_to')
@@ -346,6 +361,59 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
+
+                    Action::make('assign')
+                        ->label('Assign')
+                        ->color('success')
+                        ->hiddenLabel()
+                        ->icon('heroicon-o-user-plus')
+                        ->tooltip('Assign to user and department')
+                        ->form([
+                            TextInput::make('assigned_to')
+                                ->label('Assigned To')
+                                ->required(),
+                            Select::make('department_id')
+                                ->label('Department')
+                                ->options(fn () => Departments::pluck('name', 'id')->toArray())
+                                ->searchable()
+                                ->required(),
+                            TextInput::make('computer_name')
+                                ->label('Computer Name')
+                                ->default(fn (SystemUnit $record) => $record->asset_code ?: ($record->serial_number ?: 'Computer'))
+                                ->required(),
+                        ])
+                        ->fillForm(function (SystemUnit $record): array {
+                            $existing = AssignedComputer::where('system_unit_id', '=', $record->id, 'and')->first();
+
+                            return [
+                                'assigned_to' => $existing?->assigned_to,
+                                'department_id' => $existing?->department_id,
+                                'computer_name' => $existing?->computer_name ?: ($record->asset_code ?: ($record->serial_number ?: 'Computer')),
+                            ];
+                        })
+                        ->action(function (SystemUnit $record, array $data): void {
+                            $existing = AssignedComputer::where('system_unit_id', '=', $record->id, 'and')->first();
+
+                            if ($existing) {
+                                $existing->assigned_to = $data['assigned_to'];
+                                $existing->department_id = (int) $data['department_id'];
+                                $existing->computer_name = $data['computer_name'];
+                                $existing->save();
+
+                                return;
+                            }
+
+                            AssignedComputer::create([
+                                'system_unit_id' => $record->id,
+                                'keyboard_id' => null,
+                                'mouse_id' => null,
+                                'monitor_id' => null,
+                                'ups_id' => null,
+                                'assigned_to' => $data['assigned_to'],
+                                'computer_name' => $data['computer_name'],
+                                'department_id' => (int) $data['department_id'],
+                            ]);
+                        }),
 
                     Action::make('maintenance')
                         ->color('warning')

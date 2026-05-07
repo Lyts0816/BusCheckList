@@ -14,17 +14,30 @@ class SystemUnitForm
         return $schema
             ->components([
 
-                TextInput::make('asset_code'),
+                TextInput::make('asset_code')
+                    ->columnSpan(2),
 
                 TextInput::make('serial_number')
+                    ->columnSpan(2)
                     ->unique(ignoreRecord: true),
 
-                TextInput::make('model'),
+                Select::make('asset_type')
+                    ->columnSpan(2)
+                    ->label('Asset Type')
+                    ->options([
+                        'System Unit' => 'System Unit',
+                        'Laptop' => 'Laptop',
+                    ]),
+
+                TextInput::make('model')
+                    ->columnSpan(2),
 
                 DatePicker::make('date_aquired')
+                    ->columnSpan(2)
                     ->helperText('Leave blank if date aquired date is not available'),
 
                 Select::make('OS')
+                    ->columnSpan(2)
                     ->label('Operating System')
                     ->options([
                         'Windows 11 Pro' => 'Windows 11 Pro',
@@ -37,11 +50,14 @@ class SystemUnitForm
                         'Cant find OS' => 'Cant find OS',
                     ]),
 
-                TextInput::make('windows_serial_number'),
+                TextInput::make('windows_serial_number')
+                    ->columnSpan(4),
 
-                TextInput::make('microsoft_serial_number'),
+                TextInput::make('microsoft_serial_number')
+                    ->columnSpan(4),
 
                 TextInput::make('ram')
+                    ->columnSpan(2)
                     ->label('RAM')
                     ->datalist([
                         '2GB',
@@ -55,9 +71,11 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('storage')
+                    ->columnSpan(2)
                     ->label('Storage'),
 
                 Select::make('processor')
+                    ->columnSpan(3)
                     ->label('Processor')
                     ->options([
                         'Intel Core i3' => 'Intel Core i3',
@@ -78,9 +96,11 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('ip_address')
-                    ->label('IP Address'),
+                    ->label('IP Address')
+                    ->columnSpan(3),
 
-                TextInput::make('description'),
-            ]);
+                TextInput::make('description')
+                    ->columnSpanFull(),
+            ])->columns(10);
     }
 }

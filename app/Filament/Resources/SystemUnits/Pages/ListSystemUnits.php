@@ -16,7 +16,8 @@ class ListSystemUnits extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+            ->modalWidth('7xl'),
         ];
     }
 
@@ -25,9 +26,17 @@ class ListSystemUnits extends ListRecords
         return [
 
             'ALL' => Tab::make('ALL')
-                ->label('All SYSTEM UNITS')
-                ->modifyQueryUsing(function ($query) {$query->whereNotNull('id');})
+                ->label('All')
+                ->modifyQueryUsing(function ($query) {$query->whereNotNull('id', 'and');})
                 ->badge(fn () => SystemUnit::count('*')),
+
+            'SYSTEM UNIT' => Tab::make('SYSTEM UNIT')
+                ->modifyQueryUsing(function ($query) {$query->where('asset_type', '=', 'System Unit', 'and');})
+                ->badge(fn () => SystemUnit::where('asset_type', '=', 'System Unit', 'and')->count('*')),
+
+            'LAPTOP' => Tab::make('LAPTOP')
+                ->modifyQueryUsing(function ($query) {$query->where('asset_type', '=', 'Laptop', 'and');})
+                ->badge(fn () => SystemUnit::where('asset_type', '=', 'Laptop', 'and')->count('*')),
         ];
             
     }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Peripherals;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class PeripheralsExport extends Controller
 {
@@ -13,38 +14,42 @@ class PeripheralsExport extends Controller
     {
         // Aggregate department per peripheral per role (one row per peripheral_id)
         $subKeyboard = DB::table('assigned_computers')
-            ->selectRaw('keyboard_id as peripheral_id, MAX(department) as dept')
+            ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
+            ->selectRaw('keyboard_id as peripheral_id, MAX(departments.name) as dept')
             ->whereNotNull('keyboard_id')
             ->groupBy('keyboard_id');
 
         $subMouse = DB::table('assigned_computers')
-            ->selectRaw('mouse_id as peripheral_id, MAX(department) as dept')
+            ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
+            ->selectRaw('mouse_id as peripheral_id, MAX(departments.name) as dept')
             ->whereNotNull('mouse_id')
             ->groupBy('mouse_id');
 
         $subMonitor = DB::table('assigned_computers')
-            ->selectRaw('monitor_id as peripheral_id, MAX(department) as dept')
+            ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
+            ->selectRaw('monitor_id as peripheral_id, MAX(departments.name) as dept')
             ->whereNotNull('monitor_id')
             ->groupBy('monitor_id');
 
         $subUps = DB::table('assigned_computers')
-            ->selectRaw('ups_id as peripheral_id, MAX(department) as dept')
+            ->leftJoin('departments', 'assigned_computers.department_id', '=', 'departments.id')
+            ->selectRaw('ups_id as peripheral_id, MAX(departments.name) as dept')
             ->whereNotNull('ups_id')
             ->groupBy('ups_id');
 
         // Base query
         $query = Peripherals::query()
-            ->leftJoinSub($subKeyboard, 'ac_k', fn ($j) => $j->on('peripherals.id', '=', 'ac_k.peripheral_id'))
-            ->leftJoinSub($subMouse, 'ac_m', fn ($j) => $j->on('peripherals.id', '=', 'ac_m.peripheral_id'))
-            ->leftJoinSub($subMonitor, 'ac_mon', fn ($j) => $j->on('peripherals.id', '=', 'ac_mon.peripheral_id'))
-            ->leftJoinSub($subUps, 'ac_u', fn ($j) => $j->on('peripherals.id', '=', 'ac_u.peripheral_id'))
+            ->leftJoinSub($subKeyboard, 'ac_k', 'peripherals.id', '=', 'ac_k.peripheral_id')
+            ->leftJoinSub($subMouse, 'ac_m', 'peripherals.id', '=', 'ac_m.peripheral_id')
+            ->leftJoinSub($subMonitor, 'ac_mon', 'peripherals.id', '=', 'ac_mon.peripheral_id')
+            ->leftJoinSub($subUps, 'ac_u', 'peripherals.id', '=', 'ac_u.peripheral_id')
             ->select('peripherals.*')
             ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept) as department_sort');
 
         // BULK (selected IDs) vs FULL (all)
         if ($request->has('ids') && !empty($request->ids)) {
             $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
-            $query->whereIn('peripherals.id', $ids);
+            $query->whereIn('peripherals.id', $ids, 'and', false);
         } else {
             if ($request->filled('search')) {
                 $s = $request->string('search');
@@ -68,7 +73,7 @@ class PeripheralsExport extends Controller
         }
 
         // Order: non-null departments first (A-Z), then nulls, then newest id
-        $query->orderByRaw('department_sort IS NULL ASC')
+        $query->orderByRaw('department_sort IS NULL ASC', [])
               ->orderBy('department_sort', 'asc')
               ->orderBy('peripherals.id', 'desc');
 
@@ -89,7 +94,7 @@ class PeripheralsExport extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    private function escapeCsvValue($value)
+    private function escapeCsvValue(mixed $value): string
     {
         $value = trim((string) $value);
 
@@ -104,7 +109,7 @@ class PeripheralsExport extends Controller
         return str_replace('"', '""', $value);
     }
 
-    private function generatePeripheralsCSVFormat($peripherals)
+    private function generatePeripheralsCSVFormat(Collection $peripherals): string
     {
         $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
         $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Department,Created At,Updated At\n";

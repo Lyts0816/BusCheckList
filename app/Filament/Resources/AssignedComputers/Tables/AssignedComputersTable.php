@@ -4,15 +4,18 @@ namespace App\Filament\Resources\AssignedComputers\Tables;
 
 use App\Models\AssignedComputer;
 use Dom\Text;
+use App\Models\Departments;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Actions\BulkAction;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\FiltersLayout;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -84,8 +87,11 @@ class AssignedComputersTable
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([
-                //
-            ])
+                SelectFilter::make('department_id')
+                    ->label('Department')
+                    ->searchable()
+                    ->options(fn () => Departments::pluck('name', 'id')->toArray()),
+            ], layout: FiltersLayout::Modal)
             ->recordActions([
 
                 ActionGroup::make([

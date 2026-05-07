@@ -19,6 +19,11 @@ class PeripheralsForm
                         'Mouse' => 'Mouse',
                         'Monitor' => 'Monitor',
                         'UPS' => 'UPS',
+                        'Headset' => 'Headset',
+                        'Webcam' => 'Webcam',
+                        'Charge Adapter' => 'Charge Adapter',
+                        'Docking Station' => 'Docking Station',
+                        'Other' => 'Other',
                     ])
                     ->required(),
                 TextInput::make('asset_code'),

@@ -21,8 +21,12 @@ class PeripheralsForm
                         'UPS' => 'UPS',
                         'Headset' => 'Headset',
                         'Webcam' => 'Webcam',
-                        'Charge Adapter' => 'Charge Adapter',
+                        'Charger' => 'Charger',
                         'Docking Station' => 'Docking Station',
+                        'Microphone/Speaker' => 'Microphone/Speaker',
+                        'Router' => 'Router',
+                        'Switch' => 'Switch',
+                        'Projector' => 'Projector',
                         'Other' => 'Other',
                     ])
                     ->required(),

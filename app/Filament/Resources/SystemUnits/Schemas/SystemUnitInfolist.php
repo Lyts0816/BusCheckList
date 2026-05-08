@@ -28,7 +28,7 @@ class SystemUnitInfolist
                             ->formatStateUsing(fn ($state) => filled($state) ? $state : 'Unassigned')
                             ->columnSpan(1),
 
-                        TextEntry::make('assignedComputer.department')
+                        TextEntry::make('assignedComputer.department_name')
                             ->size(TextSize::ExtraSmall)
                             ->label('Department')
                             ->formatStateUsing(fn ($state) => filled($state) ? $state : 'No Department')

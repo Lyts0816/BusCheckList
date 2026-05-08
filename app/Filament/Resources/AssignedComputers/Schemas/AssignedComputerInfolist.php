@@ -19,7 +19,9 @@ class AssignedComputerInfolist
                     ->schema([
 
                         TextEntry::make('assigned_to'),
-                        TextEntry::make('department'),
+                        TextEntry::make('department_name')
+                            ->label('Department')
+                            ->formatStateUsing(fn ($state) => filled($state) ? $state : 'No Department'),
                         TextEntry::make('computer_name')
 
                     ])

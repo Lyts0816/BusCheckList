@@ -22,9 +22,15 @@ class SystemUnit extends Model
         'processor',
         'ip_address',
         'description',
+        'assigned_to',
+        'department_id',
     ];
 
-    // Add this relationship
+    public function department()
+    {
+        return $this->belongsTo(Departments::class, 'department_id');
+    }
+
     public function assignedComputer()
     {
         return $this->hasOne(AssignedComputer::class, 'system_unit_id');

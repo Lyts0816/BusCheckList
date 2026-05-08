@@ -47,10 +47,21 @@ class SystemUnitsTable
 
                 TextColumn::make('assignedComputer.assigned_to')
                     ->label('Assigned To')
-                    ->searchable()
                     ->toggleable()
+                    // ->searchable()
                     ->getStateUsing(function (SystemUnit $record) {
-                        return $record->assignedComputer?->assigned_to ?? 'Unassigned';
+                        $assignedComputer = $record->assignedComputer;
+
+                        // Only return if there is an assigned computer
+                        if ($assignedComputer) {
+                                return $assignedComputer->assigned_to;
+                        }
+
+                        if (! empty($record->assigned_to)) {
+                            return $record->assigned_to;
+                        }
+
+                        return 'Unassigned';
                     }),
 
                 TextColumn::make('department')
@@ -58,11 +69,15 @@ class SystemUnitsTable
                     ->toggleable()
                     // ->searchable()
                     ->getStateUsing(function (SystemUnit $record) {
-                        $assignedComputers = $record->assignedComputers;
+                        $assignedComputer = $record->assignedComputer;
 
-                        // Only return if there are assigned computers
-                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                            return $assignedComputers->first()->department_name ?? 'N/A';
+                        // Only return if there is an assigned computer
+                        if ($assignedComputer) {
+                            return $assignedComputer->department_name ?? 'N/A';
+                        }
+
+                        if ($record->department_id) {
+                            return $record->department?->name ?? 'N/A';
                         }
 
                         return 'N/A';
@@ -368,6 +383,7 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-user-plus')
                         ->tooltip('Assign to user and department')
+                        ->visible(fn(SystemUnit $record) => !$record->assignedComputer)
                         ->form([
                             TextInput::make('assigned_to')
                                 ->label('Assigned To')

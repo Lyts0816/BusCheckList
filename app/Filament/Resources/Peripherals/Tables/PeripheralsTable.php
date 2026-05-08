@@ -395,6 +395,7 @@ class PeripheralsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-user-plus')
                         ->tooltip('Assign to user and department')
+                        ->visible(fn(Peripherals $record) => $record->assignedComputers->isEmpty())
                         ->form([
                             TextInput::make('assigned_to')
                                 ->label('Assigned To')

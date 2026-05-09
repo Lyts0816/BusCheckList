@@ -15,6 +15,7 @@ class SystemUnitForm
             ->components([
 
                 TextInput::make('asset_code')
+                    ->unique(ignoreRecord: true)
                     ->columnSpan(2),
 
                 TextInput::make('serial_number')

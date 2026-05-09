@@ -11,19 +11,25 @@ class PrintersInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('department')
+                TextEntry::make('department.name')
                     ->label('Department'),
+
                 TextEntry::make('printer_host')
                     ->label('ID'),
+
                 TextEntry::make('printer_model')
                     ->label('Printer Model'),
+
                 TextEntry::make('printer_asset_code')
                     ->label('Printer Asset Code'),
+
                 TextEntry::make('printer_serial_number')
                     ->label('Printer Serial Number'),
+
                 TextEntry::make('date_aquired')
                     ->label('Date Acquired')
                     ->date(),
+
                 TextEntry::make('description')
                     ->label('Description'),
             ]);

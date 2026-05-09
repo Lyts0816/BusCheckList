@@ -12,16 +12,17 @@ class PeripheralsInfolist
         return $schema
             ->components([
                 TextEntry::make('item_type'),
+
                 TextEntry::make('asset_code'),
+
                 TextEntry::make('serial_number'),
+
                 TextEntry::make('model'),
+
                 TextEntry::make('date_acquired')
                     ->date(),
+                    
                 TextEntry::make('description'),
-                TextEntry::make('created_at')
-                    ->dateTime(),
-                TextEntry::make('updated_at')
-                    ->dateTime(),
             ]);
     }
 }

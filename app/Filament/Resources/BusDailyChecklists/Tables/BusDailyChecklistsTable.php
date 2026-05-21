@@ -20,6 +20,7 @@ use Filament\Actions\BulkAction;
 use function PHPSTORM_META\map;
 use function Symfony\Component\String\b;
 
+
 class BusDailyChecklistsTable
 {
     public static function configure(Table $table): Table

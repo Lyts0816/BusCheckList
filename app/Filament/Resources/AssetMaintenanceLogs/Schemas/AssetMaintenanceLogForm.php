@@ -95,6 +95,7 @@ class AssetMaintenanceLogForm
                             ->columnSpan(2),
 
                         TextInput::make('performed_by')
+                            ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                             ->columnSpan(6),
 
                         Textarea::make('issue_reported')

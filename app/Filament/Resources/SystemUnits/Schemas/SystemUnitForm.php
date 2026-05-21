@@ -16,10 +16,12 @@ class SystemUnitForm
 
                 TextInput::make('asset_code')
                     ->unique(ignoreRecord: true)
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->columnSpan(2),
 
                 TextInput::make('serial_number')
                     ->columnSpan(2)
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->unique(ignoreRecord: true),
 
                 Select::make('asset_type')
@@ -31,7 +33,8 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('model')
-                    ->columnSpan(2),
+                    ->columnSpan(2)
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
                 DatePicker::make('date_aquired')
                     ->columnSpan(2)
@@ -52,14 +55,17 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('windows_serial_number')
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->columnSpan(4),
 
                 TextInput::make('microsoft_serial_number')
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->columnSpan(4),
 
                 TextInput::make('ram')
                     ->columnSpan(2)
                     ->label('RAM')
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->datalist([
                         '2GB',
                         '4GB',
@@ -73,11 +79,13 @@ class SystemUnitForm
 
                 TextInput::make('storage')
                     ->columnSpan(2)
-                    ->label('Storage'),
+                    ->label('Storage')
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
                 Select::make('processor')
                     ->columnSpan(3)
                     ->label('Processor')
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->options([
                         'Intel Core i3' => 'Intel Core i3',
                         'Intel Core i5' => 'Intel Core i5',

@@ -20,10 +20,10 @@ class OfficeSuppliesTable
                     ->label('Item Name')
                     ->sortable(),
 
-                TextColumn::make('brand')
-                    ->toggleable()
-                    ->label('Brand')
-                    ->sortable(),
+                // TextColumn::make('brand')
+                //     ->toggleable()
+                //     ->label('Brand')
+                //     ->sortable(),
 
                 TextColumn::make('category')
                     ->toggleable()

@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Utilities\Get;
+
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use App\Models\SystemUnit;
@@ -77,8 +78,8 @@ class AssetMaintenanceLogForm
                                 ];
 
                                 return \App\Models\Component::query()
-                                    ->where('asset_type', $assetTypeMap[$type])
-                                    ->orderBy('name')
+                                        ->where('asset_type', '=', $assetTypeMap[$type])
+                                        ->orderBy('name', 'asc')
                                     ->get()
                                     ->mapWithKeys(function ($component) {
                                         $label = $component->name ?: 'Component #' . $component->id;

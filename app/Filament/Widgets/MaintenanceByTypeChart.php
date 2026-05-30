@@ -18,18 +18,18 @@ class MaintenanceByTypeChart extends ChartWidget
         $query = AssetMaintenanceLog::query();
 
         if (!empty($filters['start_date'])) {
-            $query->whereDate('maintenance_date', '>=', $filters['start_date']);
+            $query->whereDate('maintenance_date', '>=', $filters['start_date'], 'and');
         }
 
         if (!empty($filters['end_date'])) {
-            $query->whereDate('maintenance_date', '<=', $filters['end_date']);
+            $query->whereDate('maintenance_date', '<=', $filters['end_date'], 'and');
         }
 
         if (!empty($filters['maintenance_type'])) {
             $query->where('maintenance_type', $filters['maintenance_type']);
         }
 
-        $data = $query->select('maintenance_type', DB::raw('COUNT(*) as count'))
+        $data = $query->selectRaw('maintenance_type, COUNT(*) as count')
             ->groupBy('maintenance_type')
             ->pluck('count', 'maintenance_type');
 

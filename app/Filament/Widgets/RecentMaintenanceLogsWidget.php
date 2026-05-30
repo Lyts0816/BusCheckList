@@ -38,15 +38,15 @@ class RecentMaintenanceLogsWidget extends BaseWidget
                     ->label('Asset Code')
                     ->formatStateUsing(function ($state, AssetMaintenanceLog $record) {
                         if ($record->maintainable_type === SystemUnit::class) {
-                            $asset = SystemUnit::find($state);
+                            $asset = SystemUnit::find($state, ['*']);
                             return $asset ? $asset->asset_code : 'N/A';
 
                         } elseif ($record->maintainable_type === Printer::class) {
-                            $asset = Printer::find($state);
+                            $asset = Printer::find($state, ['*']);
                             return $asset ? $asset->asset_code : 'N/A';
 
                         } elseif ($record->maintainable_type === Peripherals::class) {
-                            $asset = Peripherals::find($state);
+                            $asset = Peripherals::find($state, ['*']);
                             return $asset ? $asset->asset_code : 'N/A';
 
                         }

@@ -95,7 +95,7 @@ class LeaveTypeBreakdownChart extends ChartWidget
         $user = Auth::user();
 
         if (! $user) {
-            return $query->whereRaw('1 = 0');
+            return $query->whereRaw('1 = 0', [], 'and');
         }
 
         if ($user->isAdmin() || $user->isAdminLeave()) {
@@ -105,7 +105,7 @@ class LeaveTypeBreakdownChart extends ChartWidget
         $allowedDepartments = $user->departmentRoleAliases();
 
         if (empty($allowedDepartments)) {
-            return $query->whereRaw('1 = 0');
+            return $query->whereRaw('1 = 0', [], 'and');
         }
 
         $query = $query->whereHas('employee', function (Builder $employeeQuery) use ($allowedDepartments): void {

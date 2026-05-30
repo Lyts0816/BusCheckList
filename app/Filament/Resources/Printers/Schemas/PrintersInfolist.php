@@ -20,7 +20,7 @@ class PrintersInfolist
                 TextEntry::make('printer_model')
                     ->label('Printer Model'),
 
-                TextEntry::make('printer_asset_code')
+                TextEntry::make('asset_code')
                     ->label('Printer Asset Code'),
 
                 TextEntry::make('printer_serial_number')

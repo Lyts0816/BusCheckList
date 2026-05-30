@@ -23,18 +23,18 @@ class MostMaintainedAssetsChart extends ChartWidget
         $query = AssetMaintenanceLog::query();
 
         if (!empty($filters['start_date'])) {
-            $query->whereDate('maintenance_date', '>=', $filters['start_date']);
+            $query->whereDate('maintenance_date', '>=', $filters['start_date'], 'and');
         }
 
         if (!empty($filters['end_date'])) {
-            $query->whereDate('maintenance_date', '<=', $filters['end_date']);
+            $query->whereDate('maintenance_date', '<=', $filters['end_date'], 'and');
         }
 
         if (!empty($filters['maintenance_type'])) {
             $query->where('maintenance_type', $filters['maintenance_type']);
         }
 
-        $data = $query->select('maintainable_type', 'maintainable_id', DB::raw('COUNT(*) as count'))
+        $data = $query->selectRaw('maintainable_type, maintainable_id, COUNT(*) as count')
             ->groupBy('maintainable_type', 'maintainable_id')
             ->orderByDesc('count')
             ->limit(10)
@@ -48,13 +48,13 @@ class MostMaintainedAssetsChart extends ChartWidget
             $values[] = $count;
 
             if ($item->maintainable_type === SystemUnit::class) {
-                $asset = SystemUnit::find($item->maintainable_id);
+                $asset = SystemUnit::find($item->maintainable_id, ['*']);
                 $labels[] = $asset ? $asset->asset_code : 'Unknown (SU)';
             } elseif ($item->maintainable_type === Printer::class) {
-                $asset = Printer::find($item->maintainable_id);
+                $asset = Printer::find($item->maintainable_id, ['*']);
                 $labels[] = $asset ? $asset->asset_code : 'Unknown (Printer)';
             } elseif ($item->maintainable_type === Peripherals::class) {
-                $asset = Peripherals::find($item->maintainable_id);
+                $asset = Peripherals::find($item->maintainable_id, ['*']);
                 $labels[] = $asset ? $asset->asset_code : 'Unknown (Peripheral)';
             }
         }

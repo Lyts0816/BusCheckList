@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class MaintenanceByDepartmentChart extends ChartWidget
 {
-    protected ?string $heading = 'Maintenance by Performer';
+    protected ?string $heading = 'Most Replaced Items';
     protected string $color = 'warning';
     protected int|string|array $columnSpan = 4;
 
@@ -18,31 +18,36 @@ class MaintenanceByDepartmentChart extends ChartWidget
         $query = AssetMaintenanceLog::query();
 
         if (!empty($filters['start_date'])) {
-            $query->whereDate('maintenance_date', '>=', $filters['start_date']);
+            $query->whereDate('maintenance_date', '>=', $filters['start_date'], 'and');
         }
 
         if (!empty($filters['end_date'])) {
-            $query->whereDate('maintenance_date', '<=', $filters['end_date']);
+            $query->whereDate('maintenance_date', '<=', $filters['end_date'], 'and');
         }
 
         if (!empty($filters['maintenance_type'])) {
             $query->where('maintenance_type', $filters['maintenance_type']);
         }
 
-        $data = $query->select('performed_by', DB::raw('COUNT(*) as count'))
-            ->whereNotNull('performed_by')
-            ->groupBy('performed_by')
+        $data = $query->leftJoin('office_supplies as os', 'os.id', '=', 'asset_maintenance_logs.office_supply_id')
+            ->selectRaw("CASE
+                WHEN os.id IS NULL THEN 'N/A'
+                WHEN os.brand IS NOT NULL AND os.brand != '' THEN CONCAT(os.name, ' (', os.brand, ')')
+                ELSE os.name
+            END as replacement_item, COUNT(*) as count")
+            ->whereNotNull('asset_maintenance_logs.office_supply_id', 'and')
+            ->groupBy('asset_maintenance_logs.office_supply_id', 'os.name', 'os.brand')
             ->orderByDesc('count')
             ->limit(10)
-            ->pluck('count', 'performed_by');
+            ->pluck('count', 'replacement_item');
 
         $labels = $data->keys()->values();
-        $values = $data->values();
+        $values = $data->values()->map(fn ($count) => (int) $count);
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Maintenance Count',
+                    'label' => 'Replacement Count',
                     'data' => $values->toArray(),
                     'backgroundColor' => '#10b981',
                     'borderColor' => '#065f46',
@@ -56,5 +61,20 @@ class MaintenanceByDepartmentChart extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'stepSize' => 1,
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
     }
 }

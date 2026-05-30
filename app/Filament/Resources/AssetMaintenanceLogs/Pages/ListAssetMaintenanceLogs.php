@@ -18,7 +18,8 @@ class ListAssetMaintenanceLogs extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Create Maintenance Log'),
+                ->label('Create Maintenance Log')
+                ->modalWidth('7xl'),
         ];
     }
 

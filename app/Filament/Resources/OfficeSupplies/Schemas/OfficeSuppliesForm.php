@@ -13,7 +13,6 @@ class OfficeSuppliesForm
     {
         return $schema
             ->components([
-                
                 TextInput::make('name')
                     ->label('Item Name')
                     ->required()
@@ -25,6 +24,14 @@ class OfficeSuppliesForm
                         'unique' => 'Item name already exists.',
                         'regex' => 'The item name may only contain letters and spaces.',
                     ]),
+
+                // TextInput::make('brand')
+                //     ->label('Brand')
+                //     ->required()
+                //     ->maxLength(100)
+                //     ->validationMessages([
+                //         'required' => 'Brand is required',
+                //     ]),
                     
 
                 Select::make('category')

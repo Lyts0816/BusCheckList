@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Grid;
 use App\Models\SystemUnit;
 use App\Models\Printer;
 use App\Models\Peripherals;
+use App\Models\OfficeSupplies;
 
 class AssetMaintenanceLogForm
 {
@@ -82,6 +83,27 @@ class AssetMaintenanceLogForm
                                 'replacement' => 'Replacement',
                             ])
                             ->required()
+                            ->live()
+                            ->columnSpan(2),
+
+                        Select::make('office_supply_id')
+                            ->label('Replacement Item')
+                            ->options(function () {
+                                return OfficeSupplies::query()
+                                    ->orderBy('name', 'asc')
+                                    ->get()
+                                    ->mapWithKeys(function ($supply) {
+                                        $label = $supply->brand
+                                            ? $supply->name . ' (' . $supply->brand . ')'
+                                            : $supply->name;
+
+                                        return [$supply->id => $label];
+                                    })
+                                    ->all();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn(callable $get): bool => $get('maintenance_type') === 'replacement')
                             ->columnSpan(2),
 
                         DatePicker::make('maintenance_date')
@@ -95,7 +117,7 @@ class AssetMaintenanceLogForm
                             ->columnSpan(2),
 
                         TextInput::make('performed_by')
-                            ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                            ->dehydrateStateUsing(fn($state) => strtoupper($state))
                             ->columnSpan(6),
 
                         Textarea::make('issue_reported')

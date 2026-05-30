@@ -61,6 +61,19 @@ class AssetMaintenanceLogsTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('officeSupply.name')
+                    ->label('Replacement Item')
+                    ->getStateUsing(function ($record) {
+                        if (! $record->officeSupply) {
+                            return null;
+                        }
+
+                        return $record->officeSupply->brand
+                            ? $record->officeSupply->name . ' (' . $record->officeSupply->brand . ')'
+                            : $record->officeSupply->name;
+                    })
+                    ->searchable(),
+
                 TextColumn::make('maintenance_type')
                     ->badge(),
 

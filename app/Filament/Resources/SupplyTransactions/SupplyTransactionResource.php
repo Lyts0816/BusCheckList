@@ -21,11 +21,13 @@ class SupplyTransactionResource extends Resource
 {
     protected static ?string $model = SupplyTransaction::class;
 
-    protected static UnitEnum|string|null $navigationGroup = 'OFFICE SUPPLIES INVENTORY';
+    protected static UnitEnum|string|null $navigationGroup = 'SUPPLIES INVENTORY';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $recordTitleAttribute = 'Office Supply Transaction';
+    protected static ?string $recordTitleAttribute = 'Supply Transactions';
+
+    protected static ?string $navigationLabel = 'Supply Transactions';
 
     public static function form(Schema $schema): Schema
     {

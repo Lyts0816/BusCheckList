@@ -36,6 +36,18 @@ class AssetMaintenanceLogInfolist
                     ->columnSpan(1)
                     ->numeric(),
 
+                TextEntry::make('officeSupply.name')
+                    ->label('Replacement Item')
+                    ->getStateUsing(function ($record) {
+                        if (! $record->officeSupply) {
+                            return null;
+                        }
+
+                        return $record->officeSupply->brand
+                            ? $record->officeSupply->name . ' (' . $record->officeSupply->brand . ')'
+                            : $record->officeSupply->name;
+                    }),
+
                 TextEntry::make('maintenance_type')
                     ->columnSpan(1)
                     ->badge(),

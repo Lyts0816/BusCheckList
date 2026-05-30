@@ -24,6 +24,7 @@ use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
 
+
 class SystemUnitsTable
 {
     public static function configure(Table $table): Table
@@ -176,6 +177,7 @@ class SystemUnitsTable
                     ->toggleable(),
             ])
             ->defaultSort('id', direction: 'desc')
+            
 
             ->filters([
 

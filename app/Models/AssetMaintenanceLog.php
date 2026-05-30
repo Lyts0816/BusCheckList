@@ -10,6 +10,7 @@ class AssetMaintenanceLog extends Model
         'maintainable_type',
         'maintainable_id',
         'component_id',
+        'office_supply_id',
         'maintenance_type',
         'maintenance_date',
         'performed_by',
@@ -28,5 +29,10 @@ class AssetMaintenanceLog extends Model
     public function component()
     {
         return $this->belongsTo(Component::class);
+    }
+
+    public function officeSupply()
+    {
+        return $this->belongsTo(OfficeSupplies::class);
     }
 }

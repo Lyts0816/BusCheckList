@@ -22,11 +22,17 @@ class OfficeSuppliesResource extends Resource
 {
     protected static ?string $model = OfficeSupplies::class;
 
-    protected static UnitEnum|string|null $navigationGroup = 'OFFICE SUPPLIES INVENTORY';
+    protected static ?string $modelLabel = 'Supply';
+
+    protected static ?string $pluralModelLabel = 'Supplies Inventory';
+
+    protected static UnitEnum|string|null $navigationGroup = 'SUPPLIES INVENTORY';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $recordTitleAttribute = 'Office Supplies';
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $navigationLabel = 'Supplies Inventory';
 
     public static function form(Schema $schema): Schema
     {

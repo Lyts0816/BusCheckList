@@ -85,6 +85,19 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
                     ->label('Serial Number')
                     ->searchable(),
 
+                TextColumn::make('officeSupply.name')
+                    ->label('Replacement Item')
+                    ->getStateUsing(function ($record) {
+                        if (! $record->officeSupply) {
+                            return 'N/A';
+                        }
+
+                        return $record->officeSupply->brand
+                            ? $record->officeSupply->name . ' (' . $record->officeSupply->brand . ')'
+                            : $record->officeSupply->name;
+                    })
+                    ->searchable(),
+
                 TextColumn::make('component_name')
                     ->label('Component')
                     ->formatStateUsing(fn ($state): string => $state ?: 'N/A')
@@ -393,7 +406,7 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
             )
             ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id')
             ->leftJoin('components as c', 'c.id', '=', 'logs.component_id')
-            ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name')
+            ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.office_supply_id, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name')
             ->where('asset_maintenance_logs.maintainable_id', '=', DB::raw('latest.maintainable_id'));
 
         // Return a fresh query from the subquery to allow filters to be applied properly

@@ -6,6 +6,7 @@ use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogForm;
 use App\Filament\Resources\AssetMaintenanceLogs\Schemas\AssetMaintenanceLogInfolist;
 use App\Models\AssignedComputer;
 use App\Models\Departments;
+use App\Models\OfficeSupplies;
 use App\Models\Peripherals;
 use App\Models\Printer;
 use App\Models\SystemUnit;
@@ -104,6 +105,25 @@ class AssetMaintenanceLogsTable
             ])->defaultSort('id', direction: 'desc')
 
             ->filters([
+                SelectFilter::make('office_supply_id')
+                    ->label('Replacement Item')
+                    ->searchable()
+                    ->options(function (): array {
+                        return OfficeSupplies::query()
+                            ->orderBy('name', 'asc')
+                            ->get()
+                            ->mapWithKeys(function ($supply) {
+                                $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                                $label = $supply->brand
+                                    ? $baseName . ' (' . $supply->brand . ')'
+                                    : $baseName;
+
+                                return [$supply->id => $label];
+                            })
+                            ->toArray();
+                    }),
+
                 SelectFilter::make('department')
                     ->label('Department')
                     ->options(function (): array {

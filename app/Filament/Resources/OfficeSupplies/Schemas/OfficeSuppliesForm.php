@@ -38,11 +38,13 @@ class OfficeSuppliesForm
                     ->label('Category')
                     ->required()
                     ->options([
-                        'Writing Supplies' => 'Writing Supplies',
-                        'Paper Supplies' => 'Paper Supplies',
-                        'Filing & Organization Supplies' => 'Filing & Organization Supplies',
-                        'Cutting & Fastening Tools' => 'Cutting & Fastening Tools',
-                        'Printer & Technical Supplies' => 'Printer & Technical Supplies',
+                        'Batteries' => 'Batteries',
+                        'RAM' => 'RAM',
+                        'SSD' => 'SSD',
+                        'HDD' => 'HDD',
+                        'External Storage' => 'External Storage',
+                        'Cables' => 'Cables',
+                        'Other' => 'Other',
                     ])
                     ->validationMessages([
                         'required' => 'Category is required',

@@ -73,7 +73,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
                 null as item_type,
                 COALESCE(pr.printer_serial_number, pr.asset_code, 'N/A') as serial_number,
                 'Unassigned' as assigned_to,
-                COALESCE(pr.department, 'N/A') as department",
+                COALESCE((select COALESCE(d.name, 'N/A') from departments d where d.id = pr.department_id limit 1), 'N/A') as department",
                 [Printer::class],
             );
 
@@ -123,7 +123,8 @@ class MaintenanceMonitoringDashboardExport extends Controller
             })
             ->leftJoin('asset_maintenance_logs as logs', 'logs.id', '=', 'latest.latest_log_id')
             ->leftJoin('components as c', 'c.id', '=', 'logs.component_id')
-            ->selectRaw('asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name');
+            ->leftJoin('office_supplies as os', 'os.id', '=', 'logs.office_supply_id')
+            ->selectRaw("asset_maintenance_logs.id, asset_maintenance_logs.display_id, asset_maintenance_logs.maintainable_type, asset_maintenance_logs.maintainable_id, asset_maintenance_logs.item_type, asset_maintenance_logs.serial_number, asset_maintenance_logs.assigned_to, asset_maintenance_logs.department, logs.maintenance_type, logs.maintenance_date as recent_maintenance_date, c.name as component_name, CASE WHEN os.id IS NULL THEN 'N/A' WHEN os.brand IS NOT NULL AND os.brand != '' THEN CONCAT(os.name, ' (', os.brand, ')') ELSE os.name END as replacement_item");
     }
 
     protected function applyTabFilter(QueryBuilder $query, string $tab): void
@@ -142,7 +143,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
     protected function generateCsv(Collection $rows): string
     {
         $csv = "\xEF\xBB\xBF";
-        $csv .= "ID,Assigned To,Department,Serial Number,Component,Maintenance Type,Recent Maintenance Date,Days Since Maintenance\n";
+        $csv .= "ID,Assigned To,Department,Serial Number,Replacement Item,Component,Maintenance Type,Recent Maintenance Date,Days Since Maintenance\n";
 
         foreach ($rows as $row) {
             $recentDate = $row->recent_maintenance_date
@@ -178,6 +179,7 @@ class MaintenanceMonitoringDashboardExport extends Controller
                 $row->assigned_to ?? 'Unassigned',
                 $row->department ?? 'N/A',
                 $row->serial_number ?? 'N/A',
+                $row->replacement_item ?? 'N/A',
                 $row->component_name ?? 'N/A',
                 $row->maintenance_type ?? 'No maintenance yet',
                 $recentDate,

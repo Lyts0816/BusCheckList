@@ -21,7 +21,7 @@ class ExportController extends Controller
 
     public function exportAssetMaintenanceLogs(Request $request)
     {
-        $query = AssetMaintenanceLog::query()->with(['component', 'maintainable']);
+        $query = AssetMaintenanceLog::query()->with(['component', 'maintainable', 'officeSupply']);
 
         if ($request->has('ids') && ! empty($request->ids)) {
             $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
@@ -70,6 +70,7 @@ class ExportController extends Controller
             'Asset Type',
             'Asset',
             'Component',
+            'Replacement Item',
             'Maintenance Type',
             'Maintenance Date',
             'Performed By',
@@ -94,11 +95,19 @@ class ExportController extends Controller
                 ?? $log->maintainable_id
                 ?? 'N/A';
 
+            $replacement = 'N/A';
+            if ($log->officeSupply) {
+                $replacement = $log->officeSupply->brand
+                    ? $log->officeSupply->name . ' (' . $log->officeSupply->brand . ')'
+                    : $log->officeSupply->name;
+            }
+
             $row = [
                 $log->id,
                 $assetType,
                 $asset,
                 $log->component?->name ?? 'N/A',
+                $replacement,
                 $log->maintenance_type ?? 'N/A',
                 $log->maintenance_date ?? 'N/A',
                 $log->performed_by ?? 'N/A',

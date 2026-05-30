@@ -50,8 +50,19 @@ class AssetMaintenanceLogForm
                                 return $type::query()
                                     ->orderBy('asset_code')
                                     ->get()
-                                    ->mapWithKeys(function ($asset) {
-                                        $label = $asset->asset_code ?: 'Asset #' . $asset->id;
+                                    ->mapWithKeys(function ($asset) use ($type) {
+                                        $baseLabel = $asset->asset_code ?: 'Asset #' . $asset->id;
+
+                                        $serial = null;
+                                        if ($type === \App\Models\SystemUnit::class) {
+                                            $serial = $asset->serial_number ?? null;
+                                        } elseif ($type === \App\Models\Printer::class) {
+                                            $serial = $asset->printer_serial_number ?? null;
+                                        } elseif ($type === \App\Models\Peripherals::class) {
+                                            $serial = $asset->serial_number ?? null;
+                                        }
+
+                                        $label = $serial ? $baseLabel . ' — ' . $serial : $baseLabel;
 
                                         return [$asset->id => $label];
                                     })

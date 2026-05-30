@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Carbon\Carbon;
+use App\Models\OfficeSupplies;
 
 class MaintenanceLogsRelationManager extends RelationManager
 {
@@ -30,6 +31,7 @@ class MaintenanceLogsRelationManager extends RelationManager
                     'replacement' => 'Replacement',
                 ])
                 ->required()
+                ->live()
                 ->columnSpan(1),
 
             Forms\Components\Select::make('component_id')
@@ -42,6 +44,28 @@ class MaintenanceLogsRelationManager extends RelationManager
                 ->preload()
                 ->required()
                 ->columnSpan(1),
+                
+            Forms\Components\Select::make('office_supply_id')
+                ->label('Replacement Item')
+                ->options(function (): array {
+                    return OfficeSupplies::query()
+                        ->orderBy('name')
+                        ->get()
+                        ->mapWithKeys(function ($supply) {
+                            $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                            $label = $supply->brand
+                                ? $baseName . ' (' . $supply->brand . ')'
+                                : $baseName;
+
+                            return [$supply->id => $label];
+                        })
+                        ->toArray();
+                })
+                ->searchable()
+                ->preload()
+                ->visible(fn(callable $get): bool => $get('maintenance_type') === 'replacement')
+                ->columnSpan(1),
 
             Forms\Components\DatePicker::make('maintenance_date')
                 ->required()
@@ -49,7 +73,7 @@ class MaintenanceLogsRelationManager extends RelationManager
 
             Forms\Components\TextInput::make('performed_by')
                 ->maxLength(255)
-                ->columnSpan(2),
+                ->columnSpan(1),
 
             Forms\Components\TextInput::make('cost')
                 ->numeric()
@@ -133,6 +157,18 @@ class MaintenanceLogsRelationManager extends RelationManager
 
                 Tables\Columns\TextColumn::make('component.name')
                     ->label('Component'),
+
+                Tables\Columns\TextColumn::make('officeSupply.name')
+                    ->label('Replacement Item')
+                    ->getStateUsing(function ($record) {
+                        if (! $record->officeSupply) {
+                            return 'N/A';
+                        }
+
+                        return $record->officeSupply->brand
+                            ? $record->officeSupply->name . ' (' . $record->officeSupply->brand . ')'
+                            : $record->officeSupply->name;
+                    }),
 
                 Tables\Columns\TextColumn::make('maintenance_type')
                     ->badge(),

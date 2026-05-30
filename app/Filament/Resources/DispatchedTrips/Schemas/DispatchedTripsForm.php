@@ -84,7 +84,7 @@ class DispatchedTripsForm
                                     ->preload()
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set) use ($setBusDetails) {
-                                        $sheet = DispatchSheet::find($state);
+                                        $sheet = DispatchSheet::query()->whereKey($state)->first();
                                         $set('bus_number_id', $sheet?->bus_number_id);
                                         $setBusDetails($sheet?->bus_number_id, $set);
                                     })

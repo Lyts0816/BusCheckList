@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use App\Models\SystemUnit;
@@ -37,7 +38,7 @@ class AssetMaintenanceLogForm
 
                         Select::make('maintainable_id')
                             ->label('Asset')
-                            ->options(function (callable $get) {
+                            ->options(function (Get $get): array {
 
                                 $type = $get('maintainable_type');
 
@@ -45,7 +46,15 @@ class AssetMaintenanceLogForm
                                     return [];
                                 }
 
-                                return $type::pluck('asset_code', 'id');
+                                return $type::query()
+                                    ->orderBy('asset_code')
+                                    ->get()
+                                    ->mapWithKeys(function ($asset) {
+                                        $label = $asset->asset_code ?: 'Asset #' . $asset->id;
+
+                                        return [$asset->id => $label];
+                                    })
+                                    ->all();
                             })
                             ->searchable()
                             ->required()
@@ -53,7 +62,7 @@ class AssetMaintenanceLogForm
 
                         Select::make('component_id')
                             ->label('Component')
-                            ->options(function (callable $get) {
+                            ->options(function (Get $get): array {
 
                                 $type = $get('maintainable_type');
 
@@ -69,7 +78,14 @@ class AssetMaintenanceLogForm
 
                                 return \App\Models\Component::query()
                                     ->where('asset_type', $assetTypeMap[$type])
-                                    ->pluck('name', 'id');
+                                    ->orderBy('name')
+                                    ->get()
+                                    ->mapWithKeys(function ($component) {
+                                        $label = $component->name ?: 'Component #' . $component->id;
+
+                                        return [$component->id => $label];
+                                    })
+                                    ->all();
                             })
                             ->searchable()
                             ->columnSpan(2),
@@ -93,9 +109,11 @@ class AssetMaintenanceLogForm
                                     ->orderBy('name', 'asc')
                                     ->get()
                                     ->mapWithKeys(function ($supply) {
+                                        $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
                                         $label = $supply->brand
-                                            ? $supply->name . ' (' . $supply->brand . ')'
-                                            : $supply->name;
+                                            ? $baseName . ' (' . $supply->brand . ')'
+                                            : $baseName;
 
                                         return [$supply->id => $label];
                                     })
@@ -121,15 +139,15 @@ class AssetMaintenanceLogForm
                             ->columnSpan(6),
 
                         Textarea::make('issue_reported')
-                            ->columnSpanFull(),
+                            ->columnSpan('full'),
 
                         Textarea::make('action_taken')
-                            ->columnSpanFull(),
+                            ->columnSpan('full'),
 
                         Textarea::make('remarks')
-                            ->columnSpanFull(),
+                            ->columnSpan('full'),
 
-                    ])->columns(6)->columnSpanFull()
+                    ])->columns(6)->columnSpan('full')
 
             ]);
     }

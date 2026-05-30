@@ -42,7 +42,7 @@ class DispatchSheetForm
                         ->afterStateUpdated(function ($state, callable $set, $get, $record) {
                             // Only set snapshot if record is new
                             if (!$record?->exists) {
-                                $route = Routes::find($state);
+                                $route = Routes::query()->whereKey($state)->first();
                                 $set('origin', $route?->from);
                                 $set('destination', $route?->to);
                                 $set('route_snapshot_distance', $route?->distance);

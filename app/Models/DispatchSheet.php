@@ -40,7 +40,7 @@ class DispatchSheet extends Model
     {
         static::creating(function ($dispatch) {
             if ($dispatch->route_id) {
-                $route = Routes::find($dispatch->route_id);
+                $route = Routes::query()->whereKey($dispatch->route_id)->first();
                 if ($route) {
                     $dispatch->origin = $route->from;
                     $dispatch->destination = $route->to;

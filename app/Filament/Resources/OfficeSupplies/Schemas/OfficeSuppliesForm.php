@@ -17,6 +17,7 @@ class OfficeSuppliesForm
                     ->label('Item Name')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->rule('regex:/^[A-Za-z\s]+$/')
                     ->validationMessages([
                         'required' => 'Item name is required',

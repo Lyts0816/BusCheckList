@@ -66,7 +66,7 @@ class AssetMaintenanceLogsTable
                     ->label('Replacement Item')
                     ->getStateUsing(function ($record) {
                         if (! $record->officeSupply) {
-                            return null;
+                            return 'N/A';
                         }
 
                         return $record->officeSupply->brand

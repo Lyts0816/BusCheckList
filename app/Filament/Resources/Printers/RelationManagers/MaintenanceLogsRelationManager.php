@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Carbon\Carbon;
 
@@ -17,6 +18,9 @@ class MaintenanceLogsRelationManager extends RelationManager
     protected static string $relationship = 'maintenanceLogs';
 
     protected static ?string $title = 'Maintenance History';
+
+    // Custom plural label for the relation manager's summary heading
+    protected static ?string $pluralModelLabel = 'Printer maintenance logs';
 
     public function form(Schema $schema): Schema
     {
@@ -141,6 +145,14 @@ class MaintenanceLogsRelationManager extends RelationManager
 
                 Tables\Columns\TextColumn::make('cost')
                     ->money('PHP')
+                    ->summarize(
+                        Sum::make()
+                        ->label('Total')
+                        ->money('PHP')
+                        ->query(function ($query) {
+                            return $query->cloneWithout(['orders', 'limit', 'offset']);
+                        })
+                    )
                     ->sortable(),
             ])
             ->headerActions([

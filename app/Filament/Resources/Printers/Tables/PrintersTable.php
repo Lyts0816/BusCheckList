@@ -28,7 +28,7 @@ class PrintersTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('ID')
                     ->sortable(),
 
@@ -65,17 +65,17 @@ class PrintersTable
                     ->sortable(),
 
                 TextColumn::make('description')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->searchPlaceholder('Search')
 

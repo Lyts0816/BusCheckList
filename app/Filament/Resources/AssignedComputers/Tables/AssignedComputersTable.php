@@ -26,7 +26,7 @@ class AssignedComputersTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('ID')
                     ->sortable(),
                     
@@ -78,12 +78,12 @@ class AssignedComputersTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
             ->filters([

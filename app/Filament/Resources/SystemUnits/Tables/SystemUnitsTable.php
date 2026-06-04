@@ -33,7 +33,7 @@ class SystemUnitsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('asset_type')
                     ->label('Asset Type')
@@ -164,17 +164,17 @@ class SystemUnitsTable
 
                 TextColumn::make('description')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
             

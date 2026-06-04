@@ -34,6 +34,7 @@ class AssetMaintenanceLogsTable
             ->columns([
 
                 TextColumn::make('id')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('ID')
                     ->sortable(),
 
@@ -88,10 +89,6 @@ class AssetMaintenanceLogsTable
                 TextColumn::make('cost')                    
                     ->money('php')
                     ->sortable(),
-
-                // TextColumn::make('next_maintenance')
-                //     ->date()
-                //     ->sortable(),
 
                 TextColumn::make('created_at')
                     ->dateTime()

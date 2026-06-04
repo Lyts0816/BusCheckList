@@ -86,6 +86,8 @@ class AssignedComputersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
+            ->reorderableColumns()
+
             ->filters([
                 SelectFilter::make('department_id')
                     ->label('Department')

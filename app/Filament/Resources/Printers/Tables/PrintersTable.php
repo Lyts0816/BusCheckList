@@ -76,7 +76,7 @@ class PrintersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->reorderableColumns()
             ->searchPlaceholder('Search')
 
             ->defaultSort('id', direction: 'desc')

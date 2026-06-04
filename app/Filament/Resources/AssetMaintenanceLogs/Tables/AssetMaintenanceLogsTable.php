@@ -99,7 +99,9 @@ class AssetMaintenanceLogsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])->defaultSort('id', direction: 'desc')
+            ])
+            ->defaultSort('id', direction: 'desc')
+            ->reorderableColumns()
 
             ->filters([
                 SelectFilter::make('office_supply_id')

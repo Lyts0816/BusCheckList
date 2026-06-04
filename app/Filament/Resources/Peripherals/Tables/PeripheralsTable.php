@@ -217,6 +217,7 @@ class PeripheralsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
+            ->reorderableColumns()
 
             ->filters([
                 SelectFilter::make('assigned_to')

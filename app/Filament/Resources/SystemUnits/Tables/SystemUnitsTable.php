@@ -177,6 +177,7 @@ class SystemUnitsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
+            ->reorderableColumns()
             
 
             ->filters([

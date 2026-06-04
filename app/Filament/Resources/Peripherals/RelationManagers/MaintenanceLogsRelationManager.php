@@ -31,6 +31,7 @@ class MaintenanceLogsRelationManager extends RelationManager
                     'replacement' => 'Replacement',
                 ])
                 ->required()
+                ->live()
                 ->columnSpan(1),
 
             Forms\Components\Select::make('component_id')
@@ -48,7 +49,7 @@ class MaintenanceLogsRelationManager extends RelationManager
                 ->label('Replacement Item')
                 ->options(function (): array {
                     return OfficeSupplies::query()
-                        ->orderBy('name')
+                        ->orderBy('name', 'asc')
                         ->get()
                         ->mapWithKeys(function ($supply) {
                             $baseName = $supply->name ?: 'Supply #' . $supply->id;

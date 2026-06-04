@@ -35,6 +35,16 @@ class SystemUnitsTable
                     ->label('ID')
                     ->toggleable(isToggledHiddenByDefault: true),
                 
+                TextColumn::make('maintenance_logs_count')
+                    ->toggleable()
+                    ->sortable()
+                    ->alignCenter()
+                    ->grow(false)
+                    ->label('Maintenance logs')
+                    ->badge()
+                    ->counts('maintenanceLogs')
+                    ->colors(['primary']),
+                
                 TextColumn::make('asset_type')
                     ->label('Asset Type')
                     ->sortable()

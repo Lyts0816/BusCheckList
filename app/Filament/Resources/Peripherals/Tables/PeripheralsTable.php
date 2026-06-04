@@ -37,6 +37,16 @@ class PeripheralsTable
                     ->label('ID')
                     ->toggleable(isToggledHiddenByDefault: true),
 
+                TextColumn::make('maintenance_logs_count')
+                    ->toggleable()
+                    ->sortable()
+                    ->alignCenter()
+                    ->grow(false)
+                    ->label('Maintenance logs')
+                    ->badge()
+                    ->counts('maintenanceLogs')
+                    ->colors(['primary']),
+
                 TextColumn::make('item_type')
                     ->searchable()
                     ->toggleable(),
@@ -50,7 +60,7 @@ class PeripheralsTable
 
                         // Only return if there are assigned computers
                         if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                                return $assignedComputers->first()->assigned_to;
+                            return $assignedComputers->first()->assigned_to;
                         }
 
                         if (! empty($record->assigned_to)) {
@@ -404,7 +414,7 @@ class PeripheralsTable
                                 ->required(),
                             Select::make('department_id')
                                 ->label('Department')
-                                ->options(fn () => Departments::pluck('name', 'id')->toArray())
+                                ->options(fn() => Departments::pluck('name', 'id')->toArray())
                                 ->searchable()
                                 ->required(),
                         ])

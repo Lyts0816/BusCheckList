@@ -18,6 +18,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
+use Filament\Tables\Filters\Filter;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -31,6 +32,16 @@ class PrintersTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('ID')
                     ->sortable(),
+
+                TextColumn::make('maintenance_logs_count')
+                    ->toggleable()
+                    ->sortable()
+                    ->alignCenter()
+                    ->grow(false)
+                    ->label('Maintenance logs')
+                    ->badge()
+                    ->counts('maintenanceLogs')
+                    ->colors(['primary']),
 
                 TextColumn::make('department.name')
                     ->toggleable()
@@ -67,6 +78,8 @@ class PrintersTable
                 TextColumn::make('description')
                     ->toggleable(isToggledHiddenByDefault: true),
 
+
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -82,6 +95,12 @@ class PrintersTable
             ->defaultSort('id', direction: 'desc')
 
             ->filters([
+
+                Filter::make('has_maintenance')
+                    ->label('Has Maintenance')
+                    ->toggle()
+                    ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+
                 SelectFilter::make('department_id')
                     ->label('Department')
                     ->options(
@@ -173,7 +192,7 @@ class PrintersTable
                     ->dropdownPlacement('bottom-start')
                     ->color('primary')
             ], position: RecordActionsPosition::BeforeCells)
-            
+
             ->headerActions([
                 \Filament\Actions\Action::make('export_csv')
                     ->label('Export all record')

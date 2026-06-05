@@ -23,6 +23,7 @@ use Filament\Actions\BulkAction;
 use Filament\Support\Enums\Size;
 use Illuminate\Support\Facades\Log;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -230,6 +231,12 @@ class PeripheralsTable
             ->reorderableColumns()
 
             ->filters([
+
+                Filter::make('has_maintenance')
+                    ->label('Has Maintenance')
+                    // ->toggle()
+                    ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+                    
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
                     ->options(function (): array {

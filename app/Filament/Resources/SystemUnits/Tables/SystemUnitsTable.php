@@ -191,6 +191,10 @@ class SystemUnitsTable
             
 
             ->filters([
+                Filter::make('has_maintenance')
+                    ->label('Has Maintenance')
+                    // ->toggle()
+                    ->query(fn($query) => $query->whereHas('maintenanceLogs')),
 
                 Filter::make('duplicate_ip_address')
                     ->label('Duplicate IP Address')

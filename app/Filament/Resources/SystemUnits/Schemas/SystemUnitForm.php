@@ -17,10 +17,12 @@ class SystemUnitForm
                 TextInput::make('asset_code')
                     ->unique(ignoreRecord: true)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->columnSpan(2),
+                    ->columnSpan(2)
+                    ->maxLength(50),
 
                 TextInput::make('serial_number')
                     ->columnSpan(2)
+                    ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->unique(ignoreRecord: true),
 
@@ -33,6 +35,7 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('model')
+                    ->maxLength(50)
                     ->columnSpan(2)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
@@ -56,14 +59,17 @@ class SystemUnitForm
 
                 TextInput::make('windows_serial_number')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->columnSpan(4),
+                    ->columnSpan(4)
+                    ->maxLength(50),
 
                 TextInput::make('microsoft_serial_number')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->columnSpan(4),
+                    ->columnSpan(4)
+                    ->maxLength(50),
 
                 TextInput::make('ram')
                     ->columnSpan(2)
+                    ->maxLength(20)
                     ->label('RAM')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->datalist([
@@ -79,6 +85,7 @@ class SystemUnitForm
 
                 TextInput::make('storage')
                     ->columnSpan(2)
+                    ->maxLength(20)
                     ->label('Storage')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
@@ -105,10 +112,12 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('ip_address')
+                    ->maxLength(20)
                     ->label('IP Address')
                     ->columnSpan(3),
 
                 TextInput::make('description')
+                    ->maxLength(255)
                     ->columnSpanFull(),
             ])->columns(10);
     }

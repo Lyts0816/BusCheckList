@@ -23,16 +23,19 @@ class PrintersForm
 
                 TextInput::make('printer_host')
                     ->label('Printer Host')
+                    ->maxLength(30)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->unique(ignoreRecord: true),
 
                 TextInput::make('asset_code')
                     ->label('Asset Code')
+                    ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->nullable(),
 
                 TextInput::make('printer_serial_number')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->maxLength(50)
                     ->required()
                     ->helperText('If printer does not have a serial number, please input (NOSN + asset code, if no asset code, please input (NOSN + department name). Example: NOSN-MIS)')
                     ->label('Printer Serial Number')
@@ -40,13 +43,15 @@ class PrintersForm
 
                 TextInput::make('printer_model')
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->maxLength(50)
                     ->nullable(),
 
                 DatePicker::make('date_aquired')
                     ->label('Date Acquired')
                     ->nullable(),
                     
-                TextInput::make('description'),
+                TextInput::make('description')
+                    ->maxLength(255),
             ]);
     }
 }

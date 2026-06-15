@@ -32,21 +32,25 @@ class PeripheralsForm
                     ->required(),
                     
                 TextInput::make('asset_code')
+                    ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
                 TextInput::make('serial_number')
+                    ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
                     ->required()
                     ->unique(ignoreRecord: true),
 
                 TextInput::make('model')
+                    ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
                 DatePicker::make('date_acquired')
                     ->default('N/A')
                     ->helperText('Leave blank if date aquired date is not available'),
 
-                TextInput::make('description'),
+                TextInput::make('description')
+                    ->maxLength(255),
             ]);
     }
 }

@@ -1,13 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\LeaveLogExportController;
+use App\Http\Controllers\MaintenanceMonitoringDashboardExport;
+use App\Http\Controllers\PeripheralsExport;
 use App\Http\Controllers\PrinterExport;
 use App\Http\Controllers\SystemUnitExport;
-use App\Http\Controllers\PeripheralsExport;
-use App\Http\Controllers\MaintenanceMonitoringDashboardExport;
-use App\Http\Controllers\LeaveLogExportController;
-use App\Http\Controllers\Auth\LogoutController;
+use App\Models\Shipment;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -17,7 +19,7 @@ Route::redirect('/', '/admin/login');
 
 // Export routes (protected by auth middleware)
 Route::middleware('auth')->group(function () {
-    
+
     Route::get('/export/assigned-computers', [ExportController::class, 'exportAssignedComputers'])
         ->name('export.assigned-computers');
 
@@ -64,4 +66,18 @@ Route::middleware('auth')->group(function () {
         ->name('export.leave-logs.all-excel');
 
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    Route::get('/shipments/{shipment}/print', function (Shipment $shipment) {
+
+        $pdf = Pdf::loadView('pdf.shipment-label', [
+            'shipment' => $shipment,
+        ]);
+
+        // 3x4 inches label size (approx)
+        $pdf->setPaper([0, 0, 216, 288], 'portrait');
+
+        return $pdf->stream('shipment-label.pdf');
+
+    })->name('shipments.print');
+
 });

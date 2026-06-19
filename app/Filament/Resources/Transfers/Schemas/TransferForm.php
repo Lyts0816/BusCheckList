@@ -17,7 +17,6 @@ class TransferForm
         return $schema
             ->components([
                 DateTimePicker::make('date')
-                    ->closeOnDateSelection(true)
                     ->default(now())
                     ->seconds(false)
                     ->format('d-m-Y h:i A')

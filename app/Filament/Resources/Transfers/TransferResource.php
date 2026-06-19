@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Filament\Resources\Transfers;
+
+use App\Filament\Resources\Transfers\Pages\CreateTransfer;
+use App\Filament\Resources\Transfers\Pages\EditTransfer;
+use App\Filament\Resources\Transfers\Pages\ListTransfers;
+use App\Filament\Resources\Transfers\Pages\ViewTransfer;
+use App\Filament\Resources\Transfers\Schemas\TransferForm;
+use App\Filament\Resources\Transfers\Schemas\TransferInfolist;
+use App\Filament\Resources\Transfers\Tables\TransfersTable;
+use App\Models\Transfer;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use UnitEnum;
+
+class TransferResource extends Resource
+{
+    protected static ?string $model = Transfer::class;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-computer-desktop';
+
+    protected static ?string $recordTitleAttribute = 'Transfer Items';
+
+    protected static UnitEnum|string|null $navigationGroup = 'TRANSFER ITEMS';
+
+    
+
+    public static function form(Schema $schema): Schema
+    {
+        return TransferForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return TransferInfolist::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return TransfersTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListTransfers::route('/'),
+            // 'create' => CreateTransfer::route('/create'),
+            // 'view' => ViewTransfer::route('/{record}'),
+            // 'edit' => EditTransfer::route('/{record}/edit'),
+        ];
+    }
+}

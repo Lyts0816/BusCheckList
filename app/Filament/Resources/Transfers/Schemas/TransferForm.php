@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
 
 
 class TransferForm
@@ -15,30 +16,55 @@ class TransferForm
         return $schema
             ->components([
                 DatePicker::make('date')
-                    ->required(),
+                    ->default(now())
+                    ->closeOnDateSelection()
+                    ->required()
+                    ->columnSpan(1),
+
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Transferred' => 'Transferred',
+                        'Cancelled' => 'Cancelled',
+                    ])
+                    ->default('Transferred')
+                    ->required()
+                    ->columnSpan(1),
 
                 TextInput::make('from')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->default('MIS')
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->maxLength(50)
-                    ->required(),
+                    ->required()
+                    ->columnSpan(2),
 
                 TextInput::make('to')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->autofocus()
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->maxLength(50)
-                    ->required(),
+                    ->required()
+                    ->columnSpan(1),
 
                 TextInput::make('prepared_by')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->datalist([
+                        'MACRHYS RHYANNE MONDEJAR',
+                        'MARK TOMAS',
+                    ])
                     ->maxLength(30)
-                    ->required(),
+                    ->required()
+                    ->columnSpan(1),
 
                 TextInput::make('guard_on_duty')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->maxLength(30),
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->maxLength(30)
+                    ->columnSpan(1),
 
                 TextInput::make('received_by')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->maxLength(30),
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->maxLength(30)
+                    ->columnSpan(1),
 
 
                 Repeater::make('items')
@@ -59,6 +85,7 @@ class TransferForm
                     ->collapsible()
                     ->reorderableWithButtons()
                     ->required(),
-            ]);
+
+            ])->columns(4);
     }
 }

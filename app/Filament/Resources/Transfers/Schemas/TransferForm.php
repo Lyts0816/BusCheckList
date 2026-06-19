@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Transfers\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Schema;
@@ -15,9 +16,11 @@ class TransferForm
     {
         return $schema
             ->components([
-                DatePicker::make('date')
+                DateTimePicker::make('date')
+                    ->closeOnDateSelection(true)
                     ->default(now())
-                    ->closeOnDateSelection()
+                    ->seconds(false)
+                    ->format('d-m-Y h:i A')
                     ->required()
                     ->columnSpan(1),
 

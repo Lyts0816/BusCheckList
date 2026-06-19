@@ -19,7 +19,7 @@ class TransfersTable
                 TextColumn::make('date')
                     ->toggleable()
                     ->label('Date Transferred')
-                    ->date()
+                    ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('status')

@@ -20,7 +20,7 @@ class Transfer extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'datetime',
     ];
 
     public function items()

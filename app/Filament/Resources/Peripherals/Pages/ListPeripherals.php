@@ -78,6 +78,10 @@ class ListPeripherals extends ListRecords
                 ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Projector', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'Projector', 'and')->count('*')),
 
+            'CCTV' => Tab::make('CCTV')
+                ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'CCTV', 'and'))
+                ->badge(fn () => Peripherals::where('item_type', '=', 'CCTV', 'and')->count('*')),
+
             'OTHER' => Tab::make('OTHER')
                 ->modifyQueryUsing(fn ($query) => $query->where('item_type', '=', 'Other', 'and'))
                 ->badge(fn () => Peripherals::where('item_type', '=', 'Other', 'and')->count('*')),

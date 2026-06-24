@@ -27,6 +27,7 @@ class PeripheralsForm
                         'Router' => 'Router',
                         'Switch' => 'Switch',
                         'Projector' => 'Projector',
+                        'CCTV' => 'CCTV',
                         'Other' => 'Other',
                     ])
                     ->required(),

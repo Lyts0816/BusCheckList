@@ -17,6 +17,7 @@ class Peripherals extends Model
         'description',
         'assigned_to',
         'department_id',
+        'status'
     ];
 
     public function department()

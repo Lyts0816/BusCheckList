@@ -48,6 +48,24 @@ class PeripheralsTable
                     ->counts('maintenanceLogs')
                     ->colors(['primary']),
 
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'Good Condition' => 'success',
+                            'In Maintenance' => 'warning',
+                            'For Repair' => 'info',
+                            'Damaged' => 'danger',
+                            'Lost' => 'gray',
+                            'Disposed' => 'gray',
+                            default => 'gray',
+                        };
+                    })
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('item_type')
                     ->searchable()
                     ->toggleable(),
@@ -236,7 +254,7 @@ class PeripheralsTable
                     ->label('Has Maintenance')
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
-                    
+
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
                     ->options(function (): array {

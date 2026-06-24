@@ -46,6 +46,19 @@ class PeripheralsForm
                     ->maxLength(50)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
 
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Disposed' => 'Disposed',
+                    ])
+                    ->default('Good Condition')
+                    ->required(),
+
                 DatePicker::make('date_acquired')
                     ->default('N/A')
                     ->helperText('Leave blank if date aquired date is not available'),

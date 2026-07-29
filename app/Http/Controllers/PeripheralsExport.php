@@ -118,11 +118,13 @@ class PeripheralsExport extends Controller
     private function generatePeripheralsCSVFormat(Collection $peripherals): string
     {
         $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
-        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Created At,Updated At\n";
+        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Days Since Maintenance,Years In Service,Created At,Updated At\n";
 
         foreach ($peripherals as $peripheral) {
             $department = $peripheral->department_sort ?? '';
             $assignedTo = $peripheral->assigned_to_sort ?? '';
+            $daysSinceMaintenance = $this->getDaysSinceMaintenance($peripheral);
+            $yearsInService = $this->getYearsInService($peripheral);
             $csv .= '"' . $this->escapeCsvValue($peripheral->id) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->item_type) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->asset_code) . '",';
@@ -132,11 +134,63 @@ class PeripheralsExport extends Controller
             $csv .= '"' . $this->escapeCsvValue($peripheral->description) . '",';
             $csv .= '"' . $this->escapeCsvValue($assignedTo) . '",';
             $csv .= '"' . $this->escapeCsvValue($department) . '",';
+            $csv .= '"' . $this->escapeCsvValue($daysSinceMaintenance) . '",';
+            $csv .= '"' . $this->escapeCsvValue($yearsInService) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->created_at) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->updated_at) . '"';
             $csv .= "\n";
         }
 
         return $csv;
+    }
+
+    private function getDaysSinceMaintenance(Peripherals $peripheral): string
+    {
+        $latestMaintenanceDate = $peripheral->maintenanceLogs()
+            ->whereNotNull('maintenance_date')
+            ->max('maintenance_date');
+
+        if (! $latestMaintenanceDate) {
+            return 'No maintenance yet';
+        }
+
+        $maintenanceDate = Carbon::parse($latestMaintenanceDate)->startOfDay();
+        $today = now()->startOfDay();
+
+        if ($maintenanceDate->greaterThan($today)) {
+            return 'Scheduled in ' . $today->diffInDays($maintenanceDate) . ' days';
+        }
+
+        $totalDays = $maintenanceDate->diffInDays($today);
+        $parts = $maintenanceDate->diff($today);
+
+        $segments = [];
+
+        if ($parts->m > 0) {
+            $segments[] = $parts->m . ' month' . ($parts->m > 1 ? 's' : '');
+        }
+
+        if ($parts->d > 0 || empty($segments)) {
+            $segments[] = $parts->d . ' day' . ($parts->d > 1 ? 's' : '');
+        }
+
+        return $totalDays . ' days (' . implode(', ', $segments) . ')';
+    }
+
+    private function getYearsInService(Peripherals $peripheral): string
+    {
+        if (! $peripheral->date_acquired) {
+            return 'N/A';
+        }
+
+        $diff = Carbon::parse($peripheral->date_acquired)->diff(now());
+
+        $years = $diff->y;
+        $months = $diff->m;
+
+        $yearLabel = $years === 1 ? 'year' : 'years';
+        $monthLabel = $months === 1 ? 'month' : 'months';
+
+        return "{$years} {$yearLabel}, {$months} {$monthLabel}";
     }
 }

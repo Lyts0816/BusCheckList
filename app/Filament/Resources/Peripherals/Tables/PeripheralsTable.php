@@ -503,7 +503,7 @@ class PeripheralsTable
                                     'For Repair' => 'For Repair',
                                     'Damaged' => 'Damaged',
                                     'Lost' => 'Lost',
-                                    'Disposed' => 'Disposed',
+                                    'Retire' => 'Retire',
                                     'Spare' => 'Spare',
                                 ])
                                 ->required()

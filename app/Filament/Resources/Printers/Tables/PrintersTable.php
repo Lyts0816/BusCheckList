@@ -19,6 +19,7 @@ use Filament\Actions\BulkAction;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -36,12 +37,32 @@ class PrintersTable
                 TextColumn::make('maintenance_logs_count')
                     ->toggleable()
                     ->sortable()
+                    ->wrapHeader()
                     ->alignCenter()
                     ->grow(false)
                     ->label('Maintenance logs')
                     ->badge()
                     ->counts('maintenanceLogs')
                     ->colors(['primary']),
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'Good Condition' => 'success',
+                            'In Maintenance' => 'warning',
+                            'For Repair' => 'info',
+                            'Damaged' => 'danger',
+                            'Lost' => 'gray',
+                            'Retire' => 'danger',
+                            'Spare' => 'primary', // Blue
+                            default => 'gray',
+                        };
+                    })
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('department.name')
                     ->toggleable()
@@ -50,26 +71,31 @@ class PrintersTable
                     ->sortable(),
 
                 TextColumn::make('printer_host')
+                    ->wrapHeader()
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_model')
+                    ->wrapHeader()
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('asset_code')
+                    ->wrapHeader()
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('printer_serial_number')
+                    ->wrapHeader()
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('date_aquired')
+                    ->wrapHeader()
                     ->toggleable()
                     ->date()
                     ->label('Date Acquired')
@@ -81,11 +107,13 @@ class PrintersTable
 
 
                 TextColumn::make('created_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -100,6 +128,18 @@ class PrintersTable
                     ->label('Has Maintenance')
                     ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
+                    ]),
 
                 SelectFilter::make('department_id')
                     ->label('Department')
@@ -179,7 +219,7 @@ class PrintersTable
                         ->tooltip('Edit record'),
 
                     Action::make('maintenance')
-                        ->color('warning')
+                        ->color('primary')
                         ->hiddenLabel()
                         ->icon('heroicon-o-wrench-screwdriver')
                         ->tooltip('Maintenance history')
@@ -187,6 +227,33 @@ class PrintersTable
                             'record' => $record,
                             'relation' => 'maintenance',
                         ])),
+
+                    Action::make('changeStatus')
+                        ->label('Set Status')
+                        ->color('primary')
+                        ->icon('heroicon-o-tag')
+                        ->form([
+                            Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'Good Condition' => 'Good Condition',
+                                    'In Maintenance' => 'In Maintenance',
+                                    'For Repair' => 'For Repair',
+                                    'Damaged' => 'Damaged',
+                                    'Lost' => 'Lost',
+                                    'Disposed' => 'Disposed',
+                                    'Spare' => 'Spare',
+                                ])
+                                ->required()
+                                ->default(fn($record) => $record->status),
+                        ])
+                        ->action(function ($record, array $data): void {
+                            $record->update([
+                                'status' => $data['status'],
+                            ]);
+                        })
+                        ->successNotificationTitle('Status updated successfully'),
+
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)
                     ->dropdownPlacement('bottom-start')

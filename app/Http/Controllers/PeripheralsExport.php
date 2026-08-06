@@ -118,7 +118,7 @@ class PeripheralsExport extends Controller
     private function generatePeripheralsCSVFormat(Collection $peripherals): string
     {
         $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
-        $csv .= "ID,Item Type,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Days Since Maintenance,Years In Service,Created At,Updated At\n";
+        $csv .= "ID,Item Type,Status,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Days Since Maintenance,Years In Service,Created At,Updated At\n";
 
         foreach ($peripherals as $peripheral) {
             $department = $peripheral->department_sort ?? '';
@@ -127,6 +127,7 @@ class PeripheralsExport extends Controller
             $yearsInService = $this->getYearsInService($peripheral);
             $csv .= '"' . $this->escapeCsvValue($peripheral->id) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->item_type) . '",';
+            $csv .= '"' . $this->escapeCsvValue($peripheral->status ?? '') . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->asset_code) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->serial_number) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->model) . '",';

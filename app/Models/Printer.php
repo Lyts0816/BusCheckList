@@ -10,6 +10,7 @@ class Printer extends Model
 
     protected $fillable = [
         'department_id',
+        'status',
         'printer_host',
         'printer_model',
         'asset_code',

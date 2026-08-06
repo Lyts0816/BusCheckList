@@ -23,6 +23,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
+use Filament\Notifications\Notification;
 
 
 class SystemUnitsTable
@@ -34,30 +35,52 @@ class SystemUnitsTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('maintenance_logs_count')
                     ->toggleable()
                     ->sortable()
+                    ->wrapHeader()
                     ->alignCenter()
                     ->grow(false)
                     ->label('Maintenance logs')
                     ->badge()
                     ->counts('maintenanceLogs')
                     ->colors(['primary']),
-                
+
                 TextColumn::make('asset_type')
                     ->label('Asset Type')
                     ->sortable()
+                    ->wrapHeader()
                     ->badge()
-                    ->color(fn (string $state): string => match (strtolower($state)) {
+                    ->color(fn(string $state): string => match (strtolower($state)) {
                         'system unit' => 'success',
                         'laptop' => 'info',
                         default => 'gray',
                     })
                     ->toggleable(),
 
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'Good Condition' => 'success',
+                            'In Maintenance' => 'warning',
+                            'For Repair' => 'info',
+                            'Damaged' => 'danger',
+                            'Lost' => 'gray',
+                            'Retire' => 'danger',
+                            'Spare' => 'primary', // Blue
+                            default => 'gray',
+                        };
+                    })
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('assignedComputer.assigned_to')
                     ->label('Assigned To')
+                    ->wrapHeader()
                     ->toggleable()
                     // ->searchable()
                     ->getStateUsing(function (SystemUnit $record) {
@@ -65,7 +88,7 @@ class SystemUnitsTable
 
                         // Only return if there is an assigned computer
                         if ($assignedComputer) {
-                                return $assignedComputer->assigned_to;
+                            return $assignedComputer->assigned_to;
                         }
 
                         if (! empty($record->assigned_to)) {
@@ -96,16 +119,19 @@ class SystemUnitsTable
 
                 TextColumn::make('asset_code')
                     ->sortable()
+                    ->wrapHeader()
                     ->searchable()
                     ->toggleable(),
 
                 TextColumn::make('serial_number')
+                    ->wrapHeader()
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
 
                 TextColumn::make('ip_address')
                     ->label('IP Address')
+                    ->wrapHeader()
                     ->searchable()
                     ->sortable()
                     ->badge()
@@ -131,11 +157,13 @@ class SystemUnitsTable
                     ->toggleable(),
 
                 TextColumn::make('date_aquired')
+                    ->wrapHeader()
                     ->date()
                     ->toggleable(),
 
                 TextColumn::make('years_in_service')
                     ->label('Years in Service')
+                    ->wrapHeader()
                     ->toggleable()
                     ->getStateUsing(function (SystemUnit $record) {
                         if (! $record->date_aquired) {
@@ -177,24 +205,38 @@ class SystemUnitsTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', direction: 'desc')
             ->reorderableColumns()
-            
+
 
             ->filters([
                 Filter::make('has_maintenance')
                     ->label('Has Maintenance')
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
+                    ]),
 
                 Filter::make('duplicate_ip_address')
                     ->label('Duplicate IP Address')
@@ -400,56 +442,33 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-user-plus')
                         ->tooltip('Assign to user and department')
-                        ->visible(fn(SystemUnit $record) => !$record->assignedComputer)
+                        ->visible(fn(SystemUnit $record) => empty($record->assignedComputer))
                         ->form([
                             TextInput::make('assigned_to')
                                 ->label('Assigned To')
                                 ->required(),
                             Select::make('department_id')
                                 ->label('Department')
-                                ->options(fn () => Departments::pluck('name', 'id')->toArray())
+                                ->options(fn() => Departments::pluck('name', 'id')->toArray())
                                 ->searchable()
-                                ->required(),
-                            TextInput::make('computer_name')
-                                ->label('Computer Name')
-                                ->default(fn (SystemUnit $record) => $record->asset_code ?: ($record->serial_number ?: 'Computer'))
                                 ->required(),
                         ])
                         ->fillForm(function (SystemUnit $record): array {
-                            $existing = AssignedComputer::where('system_unit_id', '=', $record->id, 'and')->first();
+                            $assignment = $record->assignedComputer;
 
                             return [
-                                'assigned_to' => $existing?->assigned_to,
-                                'department_id' => $existing?->department_id,
-                                'computer_name' => $existing?->computer_name ?: ($record->asset_code ?: ($record->serial_number ?: 'Computer')),
+                                'assigned_to' => $assignment?->assigned_to ?: $record->assigned_to,
+                                'department_id' => $assignment?->department_id ?: $record->department_id,
                             ];
                         })
                         ->action(function (SystemUnit $record, array $data): void {
-                            $existing = AssignedComputer::where('system_unit_id', '=', $record->id, 'and')->first();
-
-                            if ($existing) {
-                                $existing->assigned_to = $data['assigned_to'];
-                                $existing->department_id = (int) $data['department_id'];
-                                $existing->computer_name = $data['computer_name'];
-                                $existing->save();
-
-                                return;
-                            }
-
-                            AssignedComputer::create([
-                                'system_unit_id' => $record->id,
-                                'keyboard_id' => null,
-                                'mouse_id' => null,
-                                'monitor_id' => null,
-                                'ups_id' => null,
-                                'assigned_to' => $data['assigned_to'],
-                                'computer_name' => $data['computer_name'],
-                                'department_id' => (int) $data['department_id'],
-                            ]);
-                        }),
+                            $record->assigned_to = $data['assigned_to'];
+                            $record->department_id = (int) $data['department_id'];
+                            $record->save();
+                        })->successNotificationTitle('Assigned successfully'),
 
                     Action::make('maintenance')
-                        ->color('warning')
+                        ->color('primary')
                         ->hiddenLabel()
                         ->icon('heroicon-o-wrench-screwdriver')
                         ->tooltip('Maintenance history')
@@ -457,6 +476,33 @@ class SystemUnitsTable
                             'record' => $record,
                             'relation' => 'maintenance',
                         ])),
+
+                    Action::make('changeStatus')
+                        ->label('Set Status')
+                        ->icon('heroicon-o-tag')
+                        ->color('primary')
+                        ->form([
+                            Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'Good Condition' => 'Good Condition',
+                                    'In Maintenance' => 'In Maintenance',
+                                    'For Repair' => 'For Repair',
+                                    'Damaged' => 'Damaged',
+                                    'Lost' => 'Lost',
+                                    'Disposed' => 'Disposed',
+                                    'Spare' => 'Spare',
+                                ])
+                                ->required()
+                                ->default(fn($record) => $record->status),
+                        ])
+                        ->action(function ($record, array $data): void {
+                            $record->update([
+                                'status' => $data['status'],
+                            ]);
+                        })
+                        ->successNotificationTitle('Status updated successfully'),
+
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)
                     ->dropdownPlacement('bottom-start')
@@ -514,6 +560,6 @@ class SystemUnitsTable
                         }),
                 ]),
             ])
-            ;
+        ;
     }
 }

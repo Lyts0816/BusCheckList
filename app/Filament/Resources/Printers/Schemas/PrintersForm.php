@@ -14,6 +14,20 @@ class PrintersForm
     {
         return $schema
             ->components([
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
+                    ])
+                    ->default('Good Condition')
+                    ->required(),
+
                Select::make('department_id')
                     ->label('Department')
                     ->relationship('department', 'name')

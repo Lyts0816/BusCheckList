@@ -74,6 +74,7 @@ class PrinterExport extends Controller
         $headers = [
             'ID',
             'Printer Host',
+            'Status',
             'Department',
             'Printer Model',
             'Printer Asset Code',
@@ -93,6 +94,7 @@ class PrinterExport extends Controller
             $row = [
                 $printer->id,
                 $printer->printer_host ?? 'N/A',
+                $printer->status ?? 'N/A',
                 $printer->department?->name ?? 'N/A',
                 $printer->printer_model ?? 'N/A',
                 $printer->printer_asset_code ?? 'N/A',

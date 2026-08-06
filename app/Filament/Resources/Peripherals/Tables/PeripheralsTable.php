@@ -39,6 +39,7 @@ class PeripheralsTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('maintenance_logs_count')
+                    ->wrapHeader()
                     ->toggleable()
                     ->sortable()
                     ->alignCenter()
@@ -58,7 +59,8 @@ class PeripheralsTable
                             'For Repair' => 'info',
                             'Damaged' => 'danger',
                             'Lost' => 'gray',
-                            'Disposed' => 'gray',
+                            'Retire' => 'danger',
+                            'Spare' => 'primary', // Blue
                             default => 'gray',
                         };
                     })
@@ -71,6 +73,7 @@ class PeripheralsTable
                     ->toggleable(),
 
                 TextColumn::make('assignedComputers.assigned_to')
+                    ->wrapHeader()
                     ->label('Assigned To')
                     ->toggleable()
                     // ->searchable()
@@ -109,11 +112,13 @@ class PeripheralsTable
                     }),
 
                 TextColumn::make('asset_code')
+                    ->wrapHeader()
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('recent_maintenance_date')
+                    ->wrapHeader()
                     ->label('Recent Maintenance Date')
                     ->toggleable()
                     ->getStateUsing(function (Peripherals $record): string {
@@ -135,6 +140,7 @@ class PeripheralsTable
                     }),
 
                 TextColumn::make('days_since_maintenance')
+                    ->wrapHeader()
                     ->label('Days Since Maintenance')
                     ->toggleable()
                     ->getStateUsing(function (Peripherals $record): string {
@@ -194,6 +200,7 @@ class PeripheralsTable
                     }),
 
                 TextColumn::make('serial_number')
+                    ->wrapHeader()
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
@@ -204,11 +211,13 @@ class PeripheralsTable
                     ->searchable(),
 
                 TextColumn::make('date_acquired')
+                    ->wrapHeader()
                     ->toggleable()
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('years_in_service')
+                    ->wrapHeader()
                     ->toggleable()
                     ->label('Years in Service')
                     ->getStateUsing(function (Peripherals $record) {
@@ -236,11 +245,13 @@ class PeripheralsTable
                     ->searchable(),
 
                 TextColumn::make('created_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
+                    ->wrapHeader()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -254,6 +265,18 @@ class PeripheralsTable
                     ->label('Has Maintenance')
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
+                    ]),
 
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
@@ -455,10 +478,10 @@ class PeripheralsTable
                             $record->assigned_to = $data['assigned_to'];
                             $record->department_id = (int) $data['department_id'];
                             $record->save();
-                        }),
+                        })->successNotificationTitle('Peripheral Assigned Successfully'),
 
                     Action::make('maintenance')
-                        ->color('warning')
+                        ->color('primary')
                         ->hiddenLabel()
                         ->icon('heroicon-o-wrench-screwdriver')
                         ->tooltip('Maintenance history')
@@ -466,6 +489,33 @@ class PeripheralsTable
                             'record' => $record,
                             'relation' => 'maintenance',
                         ])),
+
+                    Action::make('changeStatus')
+                        ->color('primary')
+                        ->label('Set Status')
+                        ->icon('heroicon-o-tag')
+                        ->form([
+                            Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'Good Condition' => 'Good Condition',
+                                    'In Maintenance' => 'In Maintenance',
+                                    'For Repair' => 'For Repair',
+                                    'Damaged' => 'Damaged',
+                                    'Lost' => 'Lost',
+                                    'Disposed' => 'Disposed',
+                                    'Spare' => 'Spare',
+                                ])
+                                ->required()
+                                ->default(fn($record) => $record->status),
+                        ])
+                        ->action(function ($record, array $data): void {
+                            $record->update([
+                                'status' => $data['status'],
+                            ]);
+                        })
+                        ->successNotificationTitle('Status updated successfully'),
+
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)
                     ->dropdownPlacement('bottom-start')

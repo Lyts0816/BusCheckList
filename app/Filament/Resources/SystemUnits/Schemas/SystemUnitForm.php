@@ -16,14 +16,14 @@ class SystemUnitForm
 
                 TextInput::make('asset_code')
                     ->unique(ignoreRecord: true)
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->columnSpan(2)
                     ->maxLength(50),
 
                 TextInput::make('serial_number')
                     ->columnSpan(2)
                     ->maxLength(50)
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->unique(ignoreRecord: true),
 
                 Select::make('asset_type')
@@ -37,7 +37,7 @@ class SystemUnitForm
                 TextInput::make('model')
                     ->maxLength(50)
                     ->columnSpan(2)
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state)),
 
                 DatePicker::make('date_aquired')
                     ->columnSpan(2)
@@ -58,20 +58,35 @@ class SystemUnitForm
                     ]),
 
                 TextInput::make('windows_serial_number')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->columnSpan(4)
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->columnSpan(3)
                     ->maxLength(50),
 
                 TextInput::make('microsoft_serial_number')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->columnSpan(4)
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->columnSpan(3)
                     ->maxLength(50),
+
+                Select::make('status')
+                    ->columnSpan(2)
+                    ->label('Status')
+                    ->options([
+                        'Good Condition' => 'Good Condition',
+                        'In Maintenance' => 'In Maintenance',
+                        'For Repair' => 'For Repair',
+                        'Damaged' => 'Damaged',
+                        'Lost' => 'Lost',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
+                    ])
+                    ->default('Good Condition')
+                    ->required(),
 
                 TextInput::make('ram')
                     ->columnSpan(2)
                     ->maxLength(20)
                     ->label('RAM')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->datalist([
                         '2GB',
                         '4GB',
@@ -87,12 +102,12 @@ class SystemUnitForm
                     ->columnSpan(2)
                     ->maxLength(20)
                     ->label('Storage')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state)),
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state)),
 
                 Select::make('processor')
                     ->columnSpan(3)
                     ->label('Processor')
-                    ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
                     ->options([
                         'Intel Core i3' => 'Intel Core i3',
                         'Intel Core i5' => 'Intel Core i5',

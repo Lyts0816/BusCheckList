@@ -12,7 +12,7 @@ class SystemUnitExport extends Controller
         public function exportAssignedSystemUnits(Request $request)
     {
         // Start with base query for system units
-        $query = SystemUnit::with('assignedComputer'); // Eager load relationship
+        $query = SystemUnit::with(['assignedComputer', 'department']); // Eager load relationships
 
         // Bulk export: if ids are provided, only export those
         if ($request->has('ids') && !empty($request->ids)) {
@@ -82,6 +82,7 @@ class SystemUnitExport extends Controller
         $headers = [
             'ID',
             'Asset Type',
+            'Status',
             'Assigned To',
             'Department',
             'Asset Code',
@@ -117,17 +118,22 @@ class SystemUnitExport extends Controller
                 $yearsInService = "{$years} {$yearLabel}, {$months} {$monthLabel}";
             }
 
+            $assignedTo = $unit->assignedComputer?->assigned_to ?: ($unit->assigned_to ?: 'Unassigned');
+
             $department = 'N/A';
             if ($unit->assignedComputer) {
                 $department = $unit->assignedComputer->department_id
                     ? ($unit->assignedComputer->department()->first()?->name ?? $unit->assignedComputer->department)
                     : ($unit->assignedComputer->department ?? 'N/A');
+            } elseif ($unit->department_id) {
+                $department = $unit->department?->name ?? 'N/A';
             }
 
             $row = [
                 $unit->id,
                 $unit->asset_type ?? 'N/A',
-                $unit->assignedComputer?->assigned_to ?? 'Unassigned',
+                $unit->status ?? 'N/A',
+                $assignedTo,
                 $department,
                 $unit->asset_code ?? 'N/A',
                 $unit->serial_number ?? 'N/A',

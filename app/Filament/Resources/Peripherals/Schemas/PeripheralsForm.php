@@ -54,7 +54,8 @@ class PeripheralsForm
                         'For Repair' => 'For Repair',
                         'Damaged' => 'Damaged',
                         'Lost' => 'Lost',
-                        'Disposed' => 'Disposed',
+                        'Retire' => 'Retire',
+                        'Spare' => 'Spare',
                     ])
                     ->default('Good Condition')
                     ->required(),

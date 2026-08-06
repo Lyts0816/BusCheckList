@@ -256,7 +256,7 @@ class PrintersTable
 
                 ])->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)
-                    ->dropdownPlacement('bottom-start')
+                    ->dropdownPlacement('top-start')
                     ->color('primary')
             ], position: RecordActionsPosition::BeforeCells)
 

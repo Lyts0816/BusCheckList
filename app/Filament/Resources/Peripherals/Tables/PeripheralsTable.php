@@ -25,6 +25,7 @@ use Filament\Support\Enums\Size;
 use Illuminate\Support\Facades\Log;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Columns\ImageColumn;
 
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -117,6 +118,11 @@ class PeripheralsTable
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
+
+                ImageColumn::make('image')
+                    ->label('Image')
+                    ->disk('public')
+                    ->circular(),
 
                 TextColumn::make('recent_maintenance_date')
                     ->wrapHeader()
@@ -267,37 +273,37 @@ class PeripheralsTable
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
 
-                    SelectFilter::make('replacement_item')
-                        ->label('Replacement Item')
-                        ->searchable()
-                        ->options(function (): array {
-                            return OfficeSupplies::query()
-                                ->orderBy('name', 'asc')
-                                ->get()
-                                ->mapWithKeys(function ($supply) {
-                                    $baseName = $supply->name ?: 'Supply #' . $supply->id;
+                SelectFilter::make('replacement_item')
+                    ->label('Replacement Item')
+                    ->searchable()
+                    ->options(function (): array {
+                        return OfficeSupplies::query()
+                            ->orderBy('name', 'asc')
+                            ->get()
+                            ->mapWithKeys(function ($supply) {
+                                $baseName = $supply->name ?: 'Supply #' . $supply->id;
 
-                                    $label = $supply->brand
-                                        ? $baseName . ' (' . $supply->brand . ')'
-                                        : $baseName;
+                                $label = $supply->brand
+                                    ? $baseName . ' (' . $supply->brand . ')'
+                                    : $baseName;
 
-                                    return [$supply->id => $label];
-                                })
-                                ->toArray();
-                        })
-                        ->query(function (Builder $query, array $data): Builder {
-                            $officeSupplyId = $data['value'] ?? null;
+                                return [$supply->id => $label];
+                            })
+                            ->toArray();
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        $officeSupplyId = $data['value'] ?? null;
 
-                            if (! $officeSupplyId) {
-                                return $query;
-                            }
+                        if (! $officeSupplyId) {
+                            return $query;
+                        }
 
-                            return $query->whereHas('maintenanceLogs', function (Builder $maintenanceQuery) use ($officeSupplyId) {
-                                $maintenanceQuery
-                                    ->where('maintenance_type', 'replacement')
-                                    ->where('office_supply_id', (int) $officeSupplyId);
-                            });
-                        }),
+                        return $query->whereHas('maintenanceLogs', function (Builder $maintenanceQuery) use ($officeSupplyId) {
+                            $maintenanceQuery
+                                ->where('maintenance_type', 'replacement')
+                                ->where('office_supply_id', (int) $officeSupplyId);
+                        });
+                    }),
 
                 SelectFilter::make('status')
                     ->label('Status')

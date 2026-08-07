@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Peripherals\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Infolists\Components\ImageEntry;
 
 class PeripheralsInfolist
 {
@@ -12,6 +13,9 @@ class PeripheralsInfolist
         return $schema
             ->components([
                 TextEntry::make('item_type'),
+
+                ImageEntry::make('image')
+                ->disk('public'),
 
                 TextEntry::make('asset_code'),
 

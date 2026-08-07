@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Peripherals\Tables;
 use App\Filament\Resources\Peripherals\PeripheralsResource;
 use App\Models\AssignedComputer;
 use App\Models\Departments;
+use App\Models\OfficeSupplies;
 use App\Models\Peripherals;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -265,6 +266,38 @@ class PeripheralsTable
                     ->label('Has Maintenance')
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
+
+                    SelectFilter::make('replacement_item')
+                        ->label('Replacement Item')
+                        ->searchable()
+                        ->options(function (): array {
+                            return OfficeSupplies::query()
+                                ->orderBy('name', 'asc')
+                                ->get()
+                                ->mapWithKeys(function ($supply) {
+                                    $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                                    $label = $supply->brand
+                                        ? $baseName . ' (' . $supply->brand . ')'
+                                        : $baseName;
+
+                                    return [$supply->id => $label];
+                                })
+                                ->toArray();
+                        })
+                        ->query(function (Builder $query, array $data): Builder {
+                            $officeSupplyId = $data['value'] ?? null;
+
+                            if (! $officeSupplyId) {
+                                return $query;
+                            }
+
+                            return $query->whereHas('maintenanceLogs', function (Builder $maintenanceQuery) use ($officeSupplyId) {
+                                $maintenanceQuery
+                                    ->where('maintenance_type', 'replacement')
+                                    ->where('office_supply_id', (int) $officeSupplyId);
+                            });
+                        }),
 
                 SelectFilter::make('status')
                     ->label('Status')

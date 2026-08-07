@@ -124,6 +124,8 @@ class PeripheralsTable
                     ->disk('public')
                     ->circular(),
 
+                    
+
                 TextColumn::make('recent_maintenance_date')
                     ->wrapHeader()
                     ->label('Recent Maintenance Date')

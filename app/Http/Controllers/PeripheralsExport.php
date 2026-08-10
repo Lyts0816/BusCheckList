@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Peripherals;
+use App\Models\OfficeSupplies;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -48,6 +49,38 @@ class PeripheralsExport extends Controller
             ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept, p_dept.name) as department_sort')
             ->selectRaw('COALESCE(ac_k.assigned_to, ac_m.assigned_to, ac_mon.assigned_to, ac_u.assigned_to, peripherals.assigned_to) as assigned_to_sort')
             ->with(['maintenanceLogs.officeSupply']);
+
+        if ($request->filled('status')) {
+            $query->where('peripherals.status', $request->string('status'));
+        }
+
+        if ($request->filled('replacement_item')) {
+            $replacementItemId = (int) $request->input('replacement_item');
+
+            $query->whereHas('maintenanceLogs', function ($maintenanceQuery) use ($replacementItemId) {
+                $maintenanceQuery
+                    ->where('maintenance_type', 'replacement')
+                    ->where('office_supply_id', $replacementItemId);
+            });
+        }
+
+        if ($request->filled('assigned_to')) {
+            $assignedTo = $request->string('assigned_to');
+
+            $query->whereRaw(
+                'COALESCE(ac_k.assigned_to, ac_m.assigned_to, ac_mon.assigned_to, ac_u.assigned_to, peripherals.assigned_to) = ?',
+                [$assignedTo]
+            );
+        }
+
+        if ($request->filled('department')) {
+            $department = $request->string('department');
+
+            $query->whereRaw(
+                'COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept, p_dept.name) = ?',
+                [$department]
+            );
+        }
 
         // BULK (selected IDs) vs FULL (all)
         if ($request->has('ids') && !empty($request->ids)) {
@@ -197,6 +230,23 @@ class PeripheralsExport extends Controller
         return $replacementLog->officeSupply->brand
             ? $replacementLog->officeSupply->name . ' (' . $replacementLog->officeSupply->brand . ')'
             : $replacementLog->officeSupply->name;
+    }
+
+    public function replacementItemOptions(): array
+    {
+        return OfficeSupplies::query()
+            ->orderBy('name', 'asc')
+            ->get()
+            ->mapWithKeys(function ($supply) {
+                $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                $label = $supply->brand
+                    ? $baseName . ' (' . $supply->brand . ')'
+                    : $baseName;
+
+                return [$supply->id => $label];
+            })
+            ->toArray();
     }
 
     private function getYearsInService(Peripherals $peripheral): string

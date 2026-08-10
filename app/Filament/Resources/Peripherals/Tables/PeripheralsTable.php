@@ -569,34 +569,139 @@ class PeripheralsTable
                     ->label('Export all records')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
-                    ->action(function () {
-                        // Get the current page URL with all query parameters
+                    ->modalHeading('Export peripherals')
+                    ->modalDescription('Choose export options before downloading the CSV.')
+                    ->modalSubmitActionLabel('Export')
+                    ->form([
+                        Select::make('status')
+                            ->label('Status')
+                            ->placeholder('Any status')
+                            ->options([
+                                'Good Condition' => 'Good Condition',
+                                'In Maintenance' => 'In Maintenance',
+                                'For Repair' => 'For Repair',
+                                'Damaged' => 'Damaged',
+                                'Lost' => 'Lost',
+                                'Retire' => 'Retire',
+                                'Spare' => 'Spare',
+                            ])
+                            ->searchable(),
+
+                        Select::make('replacement_item')
+                            ->label('Replacement Item')
+                            ->placeholder('Any replacement item')
+                            ->searchable()
+                            ->options(function (): array {
+                                return OfficeSupplies::query()
+                                    ->orderBy('name', 'asc')
+                                    ->get()
+                                    ->mapWithKeys(function ($supply) {
+                                        $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                                        $label = $supply->brand
+                                            ? $baseName . ' (' . $supply->brand . ')'
+                                            : $baseName;
+
+                                        return [$supply->id => $label];
+                                    })
+                                    ->toArray();
+                            }),
+
+                        Select::make('assigned_to')
+                            ->label('Assigned To')
+                            ->placeholder('Any assigned user')
+                            ->searchable()
+                            ->options(function (): array {
+                                $fromAssignments = AssignedComputer::query()
+                                    ->whereNotNull('assigned_to', 'and')
+                                    ->where('assigned_to', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('assigned_to', 'asc')
+                                    ->pluck('assigned_to', 'assigned_to')
+                                    ->toArray();
+
+                                $fromPeripherals = Peripherals::query()
+                                    ->whereNotNull('assigned_to', 'and')
+                                    ->where('assigned_to', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('assigned_to', 'asc')
+                                    ->pluck('assigned_to', 'assigned_to')
+                                    ->toArray();
+
+                                return $fromAssignments + $fromPeripherals;
+                            }),
+
+                        Select::make('department')
+                            ->label('Department')
+                            ->placeholder('Any department')
+                            ->searchable()
+                            ->options(function (): array {
+                                $departmentIds = AssignedComputer::query()
+                                    ->whereNotNull('department_id', 'and')
+                                    ->distinct()
+                                    ->pluck('department_id')
+                                    ->toArray();
+
+                                $fromAssignments = Departments::query()
+                                    ->whereIn('id', $departmentIds, 'and', false)
+                                    ->whereNotNull('name', 'and')
+                                    ->where('name', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('name', 'asc')
+                                    ->pluck('name', 'name')
+                                    ->toArray();
+
+                                $fromPeripherals = Departments::query()
+                                    ->whereIn('id', Peripherals::query()->whereNotNull('department_id', 'and')->distinct()->pluck('department_id')->toArray(), 'and', false)
+                                    ->whereNotNull('name', 'and')
+                                    ->where('name', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('name', 'asc')
+                                    ->pluck('name', 'name')
+                                    ->toArray();
+
+                                return $fromAssignments + $fromPeripherals;
+                            }),
+                    ])
+                    ->action(function (array $data) {
                         $currentUrl = request()->fullUrl();
                         $parsedUrl = parse_url($currentUrl);
 
-                        // Parse query parameters
                         $queryParams = [];
                         if (isset($parsedUrl['query'])) {
                             parse_str($parsedUrl['query'], $queryParams);
                         }
 
-                        // Build export URL with current filters
-                        $exportUrl = route('export.peripherals');
                         $exportParams = [];
 
-                        // Extract search parameter from tableSearch
                         if (isset($queryParams['tableSearch'])) {
                             $exportParams['search'] = $queryParams['tableSearch'];
                         }
 
-                        // Build final URL
-                        if (!empty($exportParams)) {
+                        if (! empty($data['status'])) {
+                            $exportParams['status'] = $data['status'];
+                        }
+
+                        if (! empty($data['replacement_item'])) {
+                            $exportParams['replacement_item'] = $data['replacement_item'];
+                        }
+
+                        if (! empty($data['assigned_to'])) {
+                            $exportParams['assigned_to'] = $data['assigned_to'];
+                        }
+
+                        if (! empty($data['department'])) {
+                            $exportParams['department'] = $data['department'];
+                        }
+
+                        $exportUrl = route('export.peripherals');
+
+                        if (! empty($exportParams)) {
                             $exportUrl .= '?' . http_build_query($exportParams);
                         }
 
-                        // Redirect to export URL
                         return redirect($exportUrl);
-                    }),
+                    })->successNotificationTitle('Data Exported Successfully'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -605,11 +710,126 @@ class PeripheralsTable
                         ->label('Export Selected')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
-                        ->action(function ($records) {
+                        ->modalHeading('Export selected peripherals')
+                        ->modalDescription('Choose export options before downloading the selected records.')
+                        ->modalSubmitActionLabel('Export selected')
+                        ->form([
+                            Select::make('status')
+                                ->label('Status')
+                                ->placeholder('Any status')
+                                ->options([
+                                    'Good Condition' => 'Good Condition',
+                                    'In Maintenance' => 'In Maintenance',
+                                    'For Repair' => 'For Repair',
+                                    'Damaged' => 'Damaged',
+                                    'Lost' => 'Lost',
+                                    'Retire' => 'Retire',
+                                    'Spare' => 'Spare',
+                                ])
+                                ->searchable(),
+
+                            Select::make('replacement_item')
+                                ->label('Replacement Item')
+                                ->placeholder('Any replacement item')
+                                ->searchable()
+                                ->options(function (): array {
+                                    return OfficeSupplies::query()
+                                        ->orderBy('name', 'asc')
+                                        ->get()
+                                        ->mapWithKeys(function ($supply) {
+                                            $baseName = $supply->name ?: 'Supply #' . $supply->id;
+
+                                            $label = $supply->brand
+                                                ? $baseName . ' (' . $supply->brand . ')'
+                                                : $baseName;
+
+                                            return [$supply->id => $label];
+                                        })
+                                        ->toArray();
+                                }),
+
+                            Select::make('assigned_to')
+                                ->label('Assigned To')
+                                ->placeholder('Any assigned user')
+                                ->searchable()
+                                ->options(function (): array {
+                                    $fromAssignments = AssignedComputer::query()
+                                        ->whereNotNull('assigned_to', 'and')
+                                        ->where('assigned_to', '!=', '')
+                                        ->distinct()
+                                        ->orderBy('assigned_to', 'asc')
+                                        ->pluck('assigned_to', 'assigned_to')
+                                        ->toArray();
+
+                                    $fromPeripherals = Peripherals::query()
+                                        ->whereNotNull('assigned_to', 'and')
+                                        ->where('assigned_to', '!=', '')
+                                        ->distinct()
+                                        ->orderBy('assigned_to', 'asc')
+                                        ->pluck('assigned_to', 'assigned_to')
+                                        ->toArray();
+
+                                    return $fromAssignments + $fromPeripherals;
+                                }),
+
+                            Select::make('department')
+                                ->label('Department')
+                                ->placeholder('Any department')
+                                ->searchable()
+                                ->options(function (): array {
+                                    $departmentIds = AssignedComputer::query()
+                                        ->whereNotNull('department_id', 'and')
+                                        ->distinct()
+                                        ->pluck('department_id')
+                                        ->toArray();
+
+                                    $fromAssignments = Departments::query()
+                                        ->whereIn('id', $departmentIds, 'and', false)
+                                        ->whereNotNull('name', 'and')
+                                        ->where('name', '!=', '')
+                                        ->distinct()
+                                        ->orderBy('name', 'asc')
+                                        ->pluck('name', 'name')
+                                        ->toArray();
+
+                                    $fromPeripherals = Departments::query()
+                                        ->whereIn('id', Peripherals::query()->whereNotNull('department_id', 'and')->distinct()->pluck('department_id')->toArray(), 'and', false)
+                                        ->whereNotNull('name', 'and')
+                                        ->where('name', '!=', '')
+                                        ->distinct()
+                                        ->orderBy('name', 'asc')
+                                        ->pluck('name', 'name')
+                                        ->toArray();
+
+                                    return $fromAssignments + $fromPeripherals;
+                                }),
+                        ])
+                        ->action(function ($records, array $data) {
                             $ids = $records->pluck('id')->toArray();
-                            $exportUrl = route('export.peripherals') . '?ids=' . implode(',', $ids);
+                            $exportParams = [
+                                'ids' => implode(',', $ids),
+                            ];
+
+                            if (! empty($data['status'])) {
+                                $exportParams['status'] = $data['status'];
+                            }
+
+                            if (! empty($data['replacement_item'])) {
+                                $exportParams['replacement_item'] = $data['replacement_item'];
+                            }
+
+                            if (! empty($data['assigned_to'])) {
+                                $exportParams['assigned_to'] = $data['assigned_to'];
+                            }
+
+                            if (! empty($data['department'])) {
+                                $exportParams['department'] = $data['department'];
+                            }
+
+                            $exportUrl = route('export.peripherals') . '?' . http_build_query($exportParams);
+
                             return redirect($exportUrl);
-                        }),
+                        })->successNotificationTitle('Data Exported Successfully'),
                 ]),
             ]);
     }

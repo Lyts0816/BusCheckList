@@ -46,7 +46,8 @@ class PeripheralsExport extends Controller
             ->leftJoin('departments as p_dept', 'peripherals.department_id', '=', 'p_dept.id')
             ->select('peripherals.*')
             ->selectRaw('COALESCE(ac_k.dept, ac_m.dept, ac_mon.dept, ac_u.dept, p_dept.name) as department_sort')
-            ->selectRaw('COALESCE(ac_k.assigned_to, ac_m.assigned_to, ac_mon.assigned_to, ac_u.assigned_to, peripherals.assigned_to) as assigned_to_sort');
+            ->selectRaw('COALESCE(ac_k.assigned_to, ac_m.assigned_to, ac_mon.assigned_to, ac_u.assigned_to, peripherals.assigned_to) as assigned_to_sort')
+            ->with(['maintenanceLogs.officeSupply']);
 
         // BULK (selected IDs) vs FULL (all)
         if ($request->has('ids') && !empty($request->ids)) {
@@ -118,11 +119,12 @@ class PeripheralsExport extends Controller
     private function generatePeripheralsCSVFormat(Collection $peripherals): string
     {
         $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
-        $csv .= "ID,Item Type,Status,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Days Since Maintenance,Years In Service,Created At,Updated At\n";
+        $csv .= "ID,Item Type,Status,Asset Code,Serial Number,Model,Date Acquired,Description,Assigned To,Department,Replacement Item,Days Since Maintenance,Years In Service,Created At,Updated At\n";
 
         foreach ($peripherals as $peripheral) {
             $department = $peripheral->department_sort ?? '';
             $assignedTo = $peripheral->assigned_to_sort ?? '';
+            $replacementItem = $this->getReplacementItem($peripheral);
             $daysSinceMaintenance = $this->getDaysSinceMaintenance($peripheral);
             $yearsInService = $this->getYearsInService($peripheral);
             $csv .= '"' . $this->escapeCsvValue($peripheral->id) . '",';
@@ -135,6 +137,7 @@ class PeripheralsExport extends Controller
             $csv .= '"' . $this->escapeCsvValue($peripheral->description) . '",';
             $csv .= '"' . $this->escapeCsvValue($assignedTo) . '",';
             $csv .= '"' . $this->escapeCsvValue($department) . '",';
+            $csv .= '"' . $this->escapeCsvValue($replacementItem) . '",';
             $csv .= '"' . $this->escapeCsvValue($daysSinceMaintenance) . '",';
             $csv .= '"' . $this->escapeCsvValue($yearsInService) . '",';
             $csv .= '"' . $this->escapeCsvValue($peripheral->created_at) . '",';
@@ -176,6 +179,24 @@ class PeripheralsExport extends Controller
         }
 
         return $totalDays . ' days (' . implode(', ', $segments) . ')';
+    }
+
+    private function getReplacementItem(Peripherals $peripheral): string
+    {
+        $replacementLog = $peripheral->maintenanceLogs()
+            ->with('officeSupply')
+            ->where('maintenance_type', 'replacement')
+            ->whereNotNull('office_supply_id')
+            ->latest('maintenance_date')
+            ->first();
+
+        if (! $replacementLog?->officeSupply) {
+            return 'N/A';
+        }
+
+        return $replacementLog->officeSupply->brand
+            ? $replacementLog->officeSupply->name . ' (' . $replacementLog->officeSupply->brand . ')'
+            : $replacementLog->officeSupply->name;
     }
 
     private function getYearsInService(Peripherals $peripheral): string

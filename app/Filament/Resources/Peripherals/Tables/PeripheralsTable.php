@@ -275,6 +275,28 @@ class PeripheralsTable
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
 
+                SelectFilter::make('item_type')
+                    ->label('Item Type')
+                    ->options([
+                        'Keyboard' => 'Keyboard',
+                        'Mouse' => 'Mouse',
+                        'Monitor' => 'Monitor',
+                        'UPS' => 'UPS',
+                        'Headset' => 'Headset',
+                        'Webcam' => 'Webcam',
+                        'Charger' => 'Charger',
+                        'Docking Station' => 'Docking Station',
+                        'Microphone/Speaker' => 'Microphone/Speaker',
+                        'Router' => 'Router',
+                        'Switch' => 'Switch',
+                        'Projector' => 'Projector',
+                        'CCTV' => 'CCTV',
+                        'BUS CCTV' => 'BUS CCTV',
+                        'BUS SSD' => 'BUS SSD',
+                        'BUS DVR' => 'BUS DVR',
+                        'Other' => 'Other',
+                    ]),
+
                 SelectFilter::make('replacement_item')
                     ->label('Replacement Item')
                     ->searchable()

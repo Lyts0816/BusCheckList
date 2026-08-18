@@ -29,6 +29,9 @@ class PeripheralsForm
                         'Switch' => 'Switch',
                         'Projector' => 'Projector',
                         'CCTV' => 'CCTV',
+                        'BUS CCTV' => 'BUS CCTV',
+                        'BUS SSD' => 'BUS SSD',
+                        'BUS DVR' => 'BUS DVR',
                         'Other' => 'Other',
                     ])
                     ->required(),

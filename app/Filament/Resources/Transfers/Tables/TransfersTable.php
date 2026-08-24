@@ -43,7 +43,7 @@ class TransfersTable
                     ->badge()
                     ->counts('items') //relationship-aware
                     ->colors(['primary']),
-            ])
+            ])->defaultSort('id', direction: 'desc')
             ->filters([
                 //
             ])

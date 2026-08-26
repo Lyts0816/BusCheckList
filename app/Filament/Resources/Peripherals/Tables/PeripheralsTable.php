@@ -292,6 +292,7 @@ class PeripheralsTable
                         'Projector' => 'Projector',
                         'CCTV' => 'CCTV',
                         'BUS CCTV' => 'BUS CCTV',
+                        'BUS TFT LCD MONITOR' => 'BUS TFT LCD MONITOR',
                         'BUS SSD' => 'BUS SSD',
                         'BUS DVR' => 'BUS DVR',
                         'Other' => 'Other',

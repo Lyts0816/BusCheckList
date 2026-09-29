@@ -275,7 +275,7 @@ class PeripheralsTable
                     // ->toggle()
                     ->query(fn($query) => $query->whereHas('maintenanceLogs')),
 
-                SelectFilter::make('item_type')
+                    SelectFilter::make('item_type')
                     ->label('Item Type')
                     ->options([
                         'Keyboard' => 'Keyboard',

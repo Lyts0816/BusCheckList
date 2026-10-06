@@ -26,7 +26,7 @@ class SupplyTransaction extends Model
     //     static::created(function ($transaction) {
     //         foreach ($transaction->items as $item) {
     //             $supply = $item->supply;
-                
+
     //             if ($transaction->type === 'IN') {
     //                 $supply->stock += $item->quantity;
     //             } elseif ($transaction->type === 'OUT') {

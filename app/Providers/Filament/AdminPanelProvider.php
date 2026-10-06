@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->brandName('MIS SYSTEM')
             ->favicon(asset('images/bus.png'))
-            ->spa()
+            ->spa(hasPrefetching: true)
             ->id('admin')
             ->path('admin')
             ->font('Poppins')

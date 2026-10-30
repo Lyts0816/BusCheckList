@@ -328,23 +328,15 @@ class PeripheralsTable
                     ->label('Assigned To')
                     ->searchable()
                     ->options(function (): array {
-                        $fromAssignments = AssignedComputer::query()
+                        $assigned = AssignedComputer::query()
                             ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
-                            ->where(function ($query) {
-                                $query->whereNotNull('keyboard_id')
-                                    ->orWhereNotNull('mouse_id')
-                                    ->orWhereNotNull('monitor_id')
-                                    ->orWhereNotNull('ups_id')
-                                    ->orWhereNotNull('peripheral_id');
-                            })
                             ->distinct()
                             ->orderBy('assigned_to', 'asc')
                             ->pluck('assigned_to', 'assigned_to')
                             ->toArray();
 
-                        // Add "Unassigned" option
-                        return ['unassigned' => 'Unassigned'] + $fromAssignments;
+                        return ['unassigned' => 'Unassigned'] + $assigned;
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
@@ -373,39 +365,25 @@ class PeripheralsTable
                     ->label('Department')
                     ->searchable()
                     ->options(function (): array {
-                        $fromAssignments = AssignedComputer::query()
-                            ->where(function ($query): void {
-                                $query->whereNotNull('keyboard_id', 'and')
-                                    ->orWhereNotNull('mouse_id', 'and')
-                                    ->orWhereNotNull('monitor_id', 'and')
-                                    ->orWhereNotNull('ups_id', 'and');
-                            })
-                            ->whereNotNull('department_id', 'and')
-                            ->distinct()
-                            ->pluck('department_id')
-                            ->toArray();
-
-                        $departments = Departments::query()
-                            ->whereIn('id', $fromAssignments, 'and', false)
+                        return Departments::query()
                             ->whereNotNull('name', 'and')
                             ->where('name', '!=', '')
-                            ->distinct()
                             ->orderBy('name', 'asc')
                             ->pluck('name', 'name')
                             ->toArray();
-
-                        return $departments;
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
 
                         if ($value) {
                             return $query->where(function (Builder $q) use ($value) {
-                                $q->whereHas('assignedKeyboards', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
+                                $departmentQuery = fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value));
+
+                                $q->whereHas('assignedKeyboards', $departmentQuery)
                                     ->orWhereHas('assignedMice', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
                                     ->orWhereHas('assignedMonitors', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
                                     ->orWhereHas('assignedUps', fn($query) => $query->whereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value)))
-                                    ->orWhereHas('department', fn($departmentQuery) => $departmentQuery->where('name', '=', $value));
+                                    ->orWhereHas('assignedPeripherals', $departmentQuery);
                             });
                         }
 

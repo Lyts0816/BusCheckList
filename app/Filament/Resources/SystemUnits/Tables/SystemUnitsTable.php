@@ -228,7 +228,6 @@ class SystemUnitsTable
                     ->searchable()
                     ->options(function (): array {
                         $assigned = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('system_unit_id', 'and')
                             ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
                             ->distinct()
@@ -258,25 +257,13 @@ class SystemUnitsTable
                     ->label('Department')
                     ->searchable()
                     ->options(function (): array {
-                        // Prefer departments referenced by foreign key
-                        $deptIds = \App\Models\AssignedComputer::query()
-                            ->whereNotNull('system_unit_id', 'and')
-                            ->whereNotNull('department_id', 'and')
-                            ->pluck('department_id')
-                            ->filter()
-                            ->unique()
-                            ->toArray();
-
-                        $departments = [];
-                        if (! empty($deptIds)) {
-                            $departments = \App\Models\Departments::query()
-                                ->whereIn('id', $deptIds, 'and', false)
+                        return ['unassigned' => 'Unassigned']
+                            + \App\Models\Departments::query()
+                                ->whereNotNull('name', 'and')
+                                ->where('name', '!=', '')
                                 ->orderBy('name', 'asc')
                                 ->pluck('name', 'id')
                                 ->toArray();
-                        }
-
-                        return ['unassigned' => 'Unassigned'] + $departments;
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;

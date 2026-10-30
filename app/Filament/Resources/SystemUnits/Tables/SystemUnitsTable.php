@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\SystemUnits\Tables;
 
-use App\Models\AssignedComputer;
 use App\Models\Departments;
 use App\Models\SystemUnit;
 use Filament\Actions\BulkActionGroup;
@@ -11,7 +10,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
@@ -23,7 +21,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Support\Enums\Size;
-use Filament\Notifications\Notification;
 
 
 class SystemUnitsTable
@@ -83,39 +80,13 @@ class SystemUnitsTable
                     ->wrapHeader()
                     ->toggleable()
                     // ->searchable()
-                    ->getStateUsing(function (SystemUnit $record) {
-                        $assignedComputer = $record->assignedComputer;
+                    ->placeholder('Unassigned'),
 
-                        // Only return if there is an assigned computer
-                        if ($assignedComputer) {
-                            return $assignedComputer->assigned_to;
-                        }
-
-                        if (! empty($record->assigned_to)) {
-                            return $record->assigned_to;
-                        }
-
-                        return 'Unassigned';
-                    }),
-
-                TextColumn::make('department')
+                TextColumn::make('assignedComputer.department.name')
                     ->label('Department')
                     ->toggleable()
                     // ->searchable()
-                    ->getStateUsing(function (SystemUnit $record) {
-                        $assignedComputer = $record->assignedComputer;
-
-                        // Only return if there is an assigned computer
-                        if ($assignedComputer) {
-                            return $assignedComputer->department_name ?? 'N/A';
-                        }
-
-                        if ($record->department_id) {
-                            return $record->department?->name ?? 'N/A';
-                        }
-
-                        return 'N/A';
-                    }),
+                    ->placeholder('N/A'),
 
                 TextColumn::make('asset_code')
                     ->sortable()
@@ -254,6 +225,7 @@ class SystemUnitsTable
 
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
+                    ->searchable()
                     ->options(function (): array {
                         $assigned = \App\Models\AssignedComputer::query()
                             ->whereNotNull('assigned_to', 'and')
@@ -283,6 +255,7 @@ class SystemUnitsTable
 
                 SelectFilter::make('department')
                     ->label('Department')
+                    ->searchable()
                     ->options(function (): array {
                         // Prefer departments referenced by foreign key
                         $deptIds = \App\Models\AssignedComputer::query()
@@ -435,37 +408,6 @@ class SystemUnitsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-
-                    Action::make('assign')
-                        ->label('Assign')
-                        ->color('success')
-                        ->hiddenLabel()
-                        ->icon('heroicon-o-user-plus')
-                        ->tooltip('Assign to user and department')
-                        ->visible(fn(SystemUnit $record) => empty($record->assignedComputer))
-                        ->form([
-                            TextInput::make('assigned_to')
-                                ->label('Assigned To')
-                                ->required(),
-                            Select::make('department_id')
-                                ->label('Department')
-                                ->options(fn() => Departments::pluck('name', 'id')->toArray())
-                                ->searchable()
-                                ->required(),
-                        ])
-                        ->fillForm(function (SystemUnit $record): array {
-                            $assignment = $record->assignedComputer;
-
-                            return [
-                                'assigned_to' => $assignment?->assigned_to ?: $record->assigned_to,
-                                'department_id' => $assignment?->department_id ?: $record->department_id,
-                            ];
-                        })
-                        ->action(function (SystemUnit $record, array $data): void {
-                            $record->assigned_to = $data['assigned_to'];
-                            $record->department_id = (int) $data['department_id'];
-                            $record->save();
-                        })->successNotificationTitle('Assigned successfully'),
 
                     Action::make('maintenance')
                         ->color('primary')

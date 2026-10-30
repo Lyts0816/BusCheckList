@@ -3,6 +3,10 @@
 namespace App\Filament\Resources\AssignedComputers;
 
 use App\Filament\Resources\AssignedComputers\Pages\ListAssignedComputers;
+use App\Filament\Resources\AssignedComputers\Pages\CreateAssignedComputer;
+use App\Filament\Resources\AssignedComputers\Pages\EditAssignedComputer;
+use App\Filament\Resources\AssignedComputers\Pages\ViewAssignedComputer;
+use App\Filament\Resources\AssignedComputers\RelationManagers\TransferHistoriesRelationManager;
 use App\Filament\Resources\AssignedComputers\Schemas\AssignedComputerForm;
 use App\Filament\Resources\AssignedComputers\Schemas\AssignedComputerInfolist;
 use App\Filament\Resources\AssignedComputers\Tables\AssignedComputersTable;
@@ -41,7 +45,7 @@ class AssignedComputerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'transferHistory' => TransferHistoriesRelationManager::class,
         ];
     }
 
@@ -49,9 +53,9 @@ class AssignedComputerResource extends Resource
     {
         return [
             'index' => ListAssignedComputers::route('/'),
-            // 'create' => CreateAssignedComputer::route('/create'),
-            // 'view' => ViewAssignedComputer::route('/{record}'),
-            // 'edit' => EditAssignedComputer::route('/{record}/edit'),
+            'create' => CreateAssignedComputer::route('/create'),
+            'view' => ViewAssignedComputer::route('/{record}'),
+            'edit' => EditAssignedComputer::route('/{record}/edit'),
         ];
     }
 }

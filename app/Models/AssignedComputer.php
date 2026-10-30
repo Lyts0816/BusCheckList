@@ -17,6 +17,8 @@ class AssignedComputer extends Model
         'assigned_to',
         'computer_name',
         'department_id',
+        'assignment_type',
+        'peripheral_id',
     ];
 
     public function systemUnit()
@@ -42,6 +44,16 @@ class AssignedComputer extends Model
     public function ups()
     {
         return $this->belongsTo(Peripherals::class, 'ups_id');
+    }
+
+    public function peripheral()
+    {
+        return $this->belongsTo(Peripherals::class, 'peripheral_id');
+    }
+
+    public function transferHistories()
+    {
+        return $this->hasMany(AssignmentTransferHistory::class, 'assigned_computer_id');
     }
 
     public function departmentRelation()

@@ -10,6 +10,11 @@ class ViewAssignedComputer extends ViewRecord
 {
     protected static string $resource = AssignedComputerResource::class;
 
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

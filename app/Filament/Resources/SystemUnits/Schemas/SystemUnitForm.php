@@ -107,23 +107,24 @@ class SystemUnitForm
                 Select::make('processor')
                     ->columnSpan(3)
                     ->label('Processor')
-                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->formatStateUsing(fn (?string $state): ?string => $state === null ? null : strtoupper($state))
+                    ->dehydrateStateUsing(fn (?string $state): ?string => $state === null ? null : strtoupper($state))
                     ->options([
-                        'Intel Core i3' => 'Intel Core i3',
-                        'Intel Core i5' => 'Intel Core i5',
-                        'Intel Core i7' => 'Intel Core i7',
-                        'Intel Core i9' => 'Intel Core i9',
-                        'Intel Pentium' => 'Intel Pentium',
-                        'Intel Celeron' => 'Intel Celeron',
-                        'Intel Atom' => 'Intel Atom',
-                        'AMD Ryzen 3' => 'AMD Ryzen 3',
-                        'AMD Ryzen 5' => 'AMD Ryzen 5',
-                        'AMD Ryzen 7' => 'AMD Ryzen 7',
-                        'AMD Ryzen 9' => 'AMD Ryzen 9',
-                        'AMD Athlon' => 'AMD Athlon',
-                        'AMD A-Series' => 'AMD A-Series',
-                        'Other' => 'Other',
-                        'Cant find Processor' => 'Cant find Processor',
+                        'INTEL CORE I3' => 'Intel Core i3',
+                        'INTEL CORE I5' => 'Intel Core i5',
+                        'INTEL CORE I7' => 'Intel Core i7',
+                        'INTEL CORE I9' => 'Intel Core i9',
+                        'INTEL PENTIUM' => 'Intel Pentium',
+                        'INTEL CELERON' => 'Intel Celeron',
+                        'INTEL ATOM' => 'Intel Atom',
+                        'AMD RYZEN 3' => 'AMD Ryzen 3',
+                        'AMD RYZEN 5' => 'AMD Ryzen 5',
+                        'AMD RYZEN 7' => 'AMD Ryzen 7',
+                        'AMD RYZEN 9' => 'AMD Ryzen 9',
+                        'AMD ATHLON' => 'AMD Athlon',
+                        'AMD A-SERIES' => 'AMD A-Series',
+                        'OTHER' => 'Other',
+                        'CANT FIND PROCESSOR' => 'Cant find Processor',
                     ]),
 
                 TextInput::make('ip_address')

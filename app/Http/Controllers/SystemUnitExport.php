@@ -118,16 +118,8 @@ class SystemUnitExport extends Controller
                 $yearsInService = "{$years} {$yearLabel}, {$months} {$monthLabel}";
             }
 
-            $assignedTo = $unit->assignedComputer?->assigned_to ?: ($unit->assigned_to ?: 'Unassigned');
-
-            $department = 'N/A';
-            if ($unit->assignedComputer) {
-                $department = $unit->assignedComputer->department_id
-                    ? ($unit->assignedComputer->department()->first()?->name ?? $unit->assignedComputer->department)
-                    : ($unit->assignedComputer->department ?? 'N/A');
-            } elseif ($unit->department_id) {
-                $department = $unit->department?->name ?? 'N/A';
-            }
+            $assignedTo = $unit->assignedComputer?->assigned_to ?? 'Unassigned';
+            $department = $unit->assignedComputer?->department?->name ?? 'N/A';
 
             $row = [
                 $unit->id,

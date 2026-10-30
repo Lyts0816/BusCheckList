@@ -335,7 +335,8 @@ class PeripheralsTable
                                 $query->whereNotNull('keyboard_id')
                                     ->orWhereNotNull('mouse_id')
                                     ->orWhereNotNull('monitor_id')
-                                    ->orWhereNotNull('ups_id');
+                                    ->orWhereNotNull('ups_id')
+                                    ->orWhereNotNull('peripheral_id');
                             })
                             ->distinct()
                             ->orderBy('assigned_to', 'asc')
@@ -352,7 +353,8 @@ class PeripheralsTable
                             return $query->whereDoesntHave('assignedKeyboards')
                                 ->whereDoesntHave('assignedMice')
                                 ->whereDoesntHave('assignedMonitors')
-                                ->whereDoesntHave('assignedUps');
+                                ->whereDoesntHave('assignedUps')
+                                ->whereDoesntHave('assignedPeripherals');
                         }
 
                         if ($value) {
@@ -360,7 +362,8 @@ class PeripheralsTable
                                 $q->whereHas('assignedKeyboards', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMice', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMonitors', fn($query) => $query->where('assigned_to', $value))
-                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value));
+                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value))
+                                    ->orWhereHas('assignedPeripherals', fn($query) => $query->where('assigned_to', $value));
                             });
                         }
 

@@ -228,6 +228,7 @@ class SystemUnitsTable
                     ->searchable()
                     ->options(function (): array {
                         $assigned = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('system_unit_id', 'and')
                             ->whereNotNull('assigned_to', 'and')
                             ->where('assigned_to', '!=', '')
                             ->distinct()
@@ -259,6 +260,7 @@ class SystemUnitsTable
                     ->options(function (): array {
                         // Prefer departments referenced by foreign key
                         $deptIds = \App\Models\AssignedComputer::query()
+                            ->whereNotNull('system_unit_id', 'and')
                             ->whereNotNull('department_id', 'and')
                             ->pluck('department_id')
                             ->filter()

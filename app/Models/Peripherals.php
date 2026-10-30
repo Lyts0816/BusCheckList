@@ -41,6 +41,11 @@ class Peripherals extends Model
         return $this->hasMany(AssignedComputer::class, 'ups_id');
     }
 
+    public function assignedPeripherals()
+    {
+        return $this->hasMany(AssignedComputer::class, 'peripheral_id');
+    }
+
     // Corrected method to get all assigned computers for this peripheral
     public function getAssignedComputersAttribute()
     {
@@ -48,6 +53,7 @@ class Peripherals extends Model
             ->orWhere('mouse_id', '=', $this->id)
             ->orWhere('monitor_id', '=', $this->id)
             ->orWhere('ups_id', '=', $this->id)
+            ->orWhere('peripheral_id', '=', $this->id)
             ->get();
     }
 

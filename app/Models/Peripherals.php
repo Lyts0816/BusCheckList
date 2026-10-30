@@ -15,8 +15,6 @@ class Peripherals extends Model
         'model',
         'date_acquired',
         'description',
-        'assigned_to',
-        'department_id',
         'status',
         'image',
     ];

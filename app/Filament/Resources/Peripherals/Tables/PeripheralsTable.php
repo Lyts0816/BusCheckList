@@ -82,16 +82,7 @@ class PeripheralsTable
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
 
-                        // Only return if there are assigned computers
-                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                            return $assignedComputers->first()->assigned_to;
-                        }
-
-                        if (! empty($record->assigned_to)) {
-                            return $record->assigned_to;
-                        }
-
-                        return 'Unassigned';
+                        return $assignedComputers->first()?->assigned_to ?? 'Unassigned';
                     }),
 
                 TextColumn::make('department')
@@ -101,16 +92,7 @@ class PeripheralsTable
                     ->getStateUsing(function (Peripherals $record) {
                         $assignedComputers = $record->assignedComputers;
 
-                        // Only return if there are assigned computers
-                        if ($assignedComputers && $assignedComputers->isNotEmpty()) {
-                            return $assignedComputers->first()->department_name ?? 'N/A';
-                        }
-
-                        if ($record->department_id) {
-                            return $record->department?->name ?? 'N/A';
-                        }
-
-                        return 'N/A';
+                        return $assignedComputers->first()?->department?->name ?? 'N/A';
                     }),
 
                 TextColumn::make('asset_code')
@@ -344,6 +326,7 @@ class PeripheralsTable
 
                 SelectFilter::make('assigned_to')
                     ->label('Assigned To')
+                    ->searchable()
                     ->options(function (): array {
                         $fromAssignments = AssignedComputer::query()
                             ->whereNotNull('assigned_to', 'and')
@@ -359,18 +342,8 @@ class PeripheralsTable
                             ->pluck('assigned_to', 'assigned_to')
                             ->toArray();
 
-                        $fromPeripherals = Peripherals::query()
-                            ->whereNotNull('assigned_to', 'and')
-                            ->where('assigned_to', '!=', '')
-                            ->distinct()
-                            ->orderBy('assigned_to', 'asc')
-                            ->pluck('assigned_to', 'assigned_to')
-                            ->toArray();
-
-                        $assigned = $fromAssignments + $fromPeripherals;
-
                         // Add "Unassigned" option
-                        return ['unassigned' => 'Unassigned'] + $assigned;
+                        return ['unassigned' => 'Unassigned'] + $fromAssignments;
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
@@ -379,11 +352,7 @@ class PeripheralsTable
                             return $query->whereDoesntHave('assignedKeyboards')
                                 ->whereDoesntHave('assignedMice')
                                 ->whereDoesntHave('assignedMonitors')
-                                ->whereDoesntHave('assignedUps')
-                                ->where(function (Builder $q) {
-                                    $q->whereNull('assigned_to')
-                                        ->orWhere('assigned_to', '');
-                                });
+                                ->whereDoesntHave('assignedUps');
                         }
 
                         if ($value) {
@@ -391,8 +360,7 @@ class PeripheralsTable
                                 $q->whereHas('assignedKeyboards', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMice', fn($query) => $query->where('assigned_to', $value))
                                     ->orWhereHas('assignedMonitors', fn($query) => $query->where('assigned_to', $value))
-                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value))
-                                    ->orWhere('assigned_to', '=', $value);
+                                    ->orWhereHas('assignedUps', fn($query) => $query->where('assigned_to', $value));
                             });
                         }
 
@@ -400,6 +368,7 @@ class PeripheralsTable
                     }),
                 SelectFilter::make('department')
                     ->label('Department')
+                    ->searchable()
                     ->options(function (): array {
                         $fromAssignments = AssignedComputer::query()
                             ->where(function ($query): void {
@@ -413,16 +382,8 @@ class PeripheralsTable
                             ->pluck('department_id')
                             ->toArray();
 
-                        $fromPeripherals = Peripherals::query()
-                            ->whereNotNull('department_id', 'and')
-                            ->distinct()
-                            ->pluck('department_id')
-                            ->toArray();
-
-                        $departmentIds = array_unique(array_merge($fromAssignments, $fromPeripherals));
-
                         $departments = Departments::query()
-                            ->whereIn('id', $departmentIds, 'and', false)
+                            ->whereIn('id', $fromAssignments, 'and', false)
                             ->whereNotNull('name', 'and')
                             ->where('name', '!=', '')
                             ->distinct()
@@ -512,37 +473,6 @@ class PeripheralsTable
                         ->hiddenLabel()
                         ->icon('heroicon-o-pencil-square')
                         ->tooltip('Edit record'),
-
-                    Action::make('assign')
-                        ->label('Assign')
-                        ->color('success')
-                        ->hiddenLabel()
-                        ->icon('heroicon-o-user-plus')
-                        ->tooltip('Assign to user and department')
-                        ->visible(fn(Peripherals $record) => $record->assignedComputers->isEmpty())
-                        ->form([
-                            TextInput::make('assigned_to')
-                                ->label('Assigned To')
-                                ->required(),
-                            Select::make('department_id')
-                                ->label('Department')
-                                ->options(fn() => Departments::pluck('name', 'id')->toArray())
-                                ->searchable()
-                                ->required(),
-                        ])
-                        ->fillForm(function (Peripherals $record): array {
-                            $assignment = $record->assignedComputers->first();
-
-                            return [
-                                'assigned_to' => $assignment?->assigned_to ?: $record->assigned_to,
-                                'department_id' => $assignment?->department_id ?: $record->department_id,
-                            ];
-                        })
-                        ->action(function (Peripherals $record, array $data): void {
-                            $record->assigned_to = $data['assigned_to'];
-                            $record->department_id = (int) $data['department_id'];
-                            $record->save();
-                        })->successNotificationTitle('Peripheral Assigned Successfully'),
 
                     Action::make('maintenance')
                         ->color('primary')
@@ -643,15 +573,7 @@ class PeripheralsTable
                                     ->pluck('assigned_to', 'assigned_to')
                                     ->toArray();
 
-                                $fromPeripherals = Peripherals::query()
-                                    ->whereNotNull('assigned_to', 'and')
-                                    ->where('assigned_to', '!=', '')
-                                    ->distinct()
-                                    ->orderBy('assigned_to', 'asc')
-                                    ->pluck('assigned_to', 'assigned_to')
-                                    ->toArray();
-
-                                return $fromAssignments + $fromPeripherals;
+                                return $fromAssignments;
                             }),
 
                         Select::make('department')
@@ -674,16 +596,7 @@ class PeripheralsTable
                                     ->pluck('name', 'name')
                                     ->toArray();
 
-                                $fromPeripherals = Departments::query()
-                                    ->whereIn('id', Peripherals::query()->whereNotNull('department_id', 'and')->distinct()->pluck('department_id')->toArray(), 'and', false)
-                                    ->whereNotNull('name', 'and')
-                                    ->where('name', '!=', '')
-                                    ->distinct()
-                                    ->orderBy('name', 'asc')
-                                    ->pluck('name', 'name')
-                                    ->toArray();
-
-                                return $fromAssignments + $fromPeripherals;
+                                return $fromAssignments;
                             }),
                     ])
                     ->action(function (array $data) {
@@ -784,15 +697,7 @@ class PeripheralsTable
                                         ->pluck('assigned_to', 'assigned_to')
                                         ->toArray();
 
-                                    $fromPeripherals = Peripherals::query()
-                                        ->whereNotNull('assigned_to', 'and')
-                                        ->where('assigned_to', '!=', '')
-                                        ->distinct()
-                                        ->orderBy('assigned_to', 'asc')
-                                        ->pluck('assigned_to', 'assigned_to')
-                                        ->toArray();
-
-                                    return $fromAssignments + $fromPeripherals;
+                                    return $fromAssignments;
                                 }),
 
                             Select::make('department')
@@ -815,16 +720,7 @@ class PeripheralsTable
                                         ->pluck('name', 'name')
                                         ->toArray();
 
-                                    $fromPeripherals = Departments::query()
-                                        ->whereIn('id', Peripherals::query()->whereNotNull('department_id', 'and')->distinct()->pluck('department_id')->toArray(), 'and', false)
-                                        ->whereNotNull('name', 'and')
-                                        ->where('name', '!=', '')
-                                        ->distinct()
-                                        ->orderBy('name', 'asc')
-                                        ->pluck('name', 'name')
-                                        ->toArray();
-
-                                    return $fromAssignments + $fromPeripherals;
+                                    return $fromAssignments;
                                 }),
                         ])
                         ->action(function ($records, array $data) {

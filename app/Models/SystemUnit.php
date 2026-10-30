@@ -22,8 +22,6 @@ class SystemUnit extends Model
         'processor',
         'ip_address',
         'description',
-        'assigned_to',
-        'department_id',
         'status',
     ];
 

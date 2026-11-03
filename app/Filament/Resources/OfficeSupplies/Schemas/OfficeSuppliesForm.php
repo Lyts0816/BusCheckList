@@ -18,21 +18,19 @@ class OfficeSuppliesForm
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->dehydrateStateUsing(fn ($state) => strtoupper($state))
-                    ->rule('regex:/^[A-Za-z\s]+$/')
                     ->validationMessages([
                         'required' => 'Item name is required',
                         'maxValue' => 'Item name cannot be greater than 50 characters.',
                         'unique' => 'Item name already exists.',
-                        'regex' => 'The item name may only contain letters and spaces.',
                     ]),
 
-                // TextInput::make('brand')
-                //     ->label('Brand')
-                //     ->required()
-                //     ->maxLength(100)
-                //     ->validationMessages([
-                //         'required' => 'Brand is required',
-                //     ]),
+                TextInput::make('brand')
+                    ->label('Brand')
+                    ->required()
+                    ->maxLength(100)
+                    ->validationMessages([
+                        'required' => 'Brand is required',
+                    ]),
                     
 
                 Select::make('category')

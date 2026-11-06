@@ -18,8 +18,66 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
 class TransfersTable
 {
+    protected static function streamCsv(Builder $query): StreamedResponse
+    {
+        $filename = 'transfers-' . now()->format('Y-m-d_His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $out = fopen('php://output', 'w');
+
+            // Byte-order mark so Excel opens it with the right encoding
+            fwrite($out, "\xEF\xBB\xBF");
+
+            fputcsv($out, [
+                'Transfer No.',
+                'Date',
+                'Status',
+                'From',
+                'To',
+                'Prepared By',
+                'Guard On Duty',
+                'Received By',
+                'Item Name',
+                'Asset Code',
+                'Serial Number',
+            ]);
+
+            // Stops Excel from treating text starting with = + - @ as a formula
+            $safe = fn($value) => is_string($value) && preg_match('/^[=+\-@]/', $value)
+                ? "'" . $value
+                : $value;
+
+            $query->with('items')->chunk(200, function ($transfers) use ($out, $safe) {
+                foreach ($transfers as $transfer) {
+                    foreach ($transfer->items as $item) {
+                        fputcsv($out, [
+                            $transfer->id,
+                            Carbon::parse($transfer->date)->format('Y-m-d h:i A'),
+                            $transfer->status,
+                            $safe($transfer->from),
+                            $safe($transfer->to),
+                            $safe($transfer->prepared_by),
+                            $safe($transfer->guard_on_duty),
+                            $safe($transfer->received_by),
+                            $safe($item->item_name),
+                            $safe($item->asset_code),
+                            $safe($item->serial_number),
+                        ]);
+                    }
+                }
+            });
+
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
     public static function configure(Table $table): Table
     {
         return $table
@@ -39,13 +97,13 @@ class TransfersTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'warning',
                         'Transferred' => 'success',
                         'Cancelled' => 'danger',
                         default => 'gray',
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-m-clock',
                         'Transferred' => 'heroicon-m-check-circle',
                         'Cancelled' => 'heroicon-m-x-circle',
@@ -56,7 +114,7 @@ class TransfersTable
                 // "To" is the main text; "From" shows underneath. Searching this column checks both.
                 TextColumn::make('to')
                     ->label('Transferred to')
-                    ->description(fn ($record): string => 'From: ' . $record->from)
+                    ->description(fn($record): string => 'From: ' . $record->from)
                     ->weight('medium')
                     ->searchable(['to', 'from'])
                     ->sortable(),
@@ -111,14 +169,14 @@ class TransfersTable
                 SelectFilter::make('to')
                     ->label('Transferred to')
                     ->searchable()
-                    ->options(fn () => Transfer::query()
+                    ->options(fn() => Transfer::query()
                         ->whereNotNull('to')->distinct()->orderBy('to')
                         ->pluck('to', 'to')->all()),
 
                 SelectFilter::make('prepared_by')
                     ->label('Prepared by')
                     ->searchable()
-                    ->options(fn () => Transfer::query()
+                    ->options(fn() => Transfer::query()
                         ->whereNotNull('prepared_by')->distinct()->orderBy('prepared_by')
                         ->pluck('prepared_by', 'prepared_by')->all()),
 
@@ -128,9 +186,9 @@ class TransfersTable
                         DatePicker::make('date_from')->label('From date')->native(false),
                         DatePicker::make('date_until')->label('Until date')->native(false),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
-                        ->when($data['date_from'] ?? null, fn (Builder $q, $d) => $q->whereDate('date', '>=', $d))
-                        ->when($data['date_until'] ?? null, fn (Builder $q, $d) => $q->whereDate('date', '<=', $d)))
+                    ->query(fn(Builder $query, array $data): Builder => $query
+                        ->when($data['date_from'] ?? null, fn(Builder $q, $d) => $q->whereDate('date', '>=', $d))
+                        ->when($data['date_until'] ?? null, fn(Builder $q, $d) => $q->whereDate('date', '<=', $d)))
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
 
@@ -193,7 +251,23 @@ class TransfersTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+
+                    BulkAction::make('exportSelected')
+                        ->label('Export selected to CSV')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn(Collection $records) => self::streamCsv(
+                            Transfer::query()->whereKey($records->modelKeys())
+                        )),
                 ]),
+            ])
+
+            ->headerActions([
+                Action::make('exportCsv')
+                    ->label('Export to CSV')
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->color('gray')
+                    ->action(fn($livewire) => self::streamCsv($livewire->getFilteredSortedTableQuery())),
             ]);
     }
 }

@@ -64,7 +64,7 @@ class TransferForm
             ->mapWithKeys(fn($m) => ["unit:{$m->id}" => trim("{$m->asset_code} - {$m->asset_type} {$m->model}")])
             ->all();
 
-        $peripherals = Peripheralss::query()
+        $peripherals = Peripherals::query()
             ->where(fn($q) => $q
                 ->where('asset_code', 'like', $like)
                 ->orWhere('serial_number', 'like', $like)

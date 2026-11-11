@@ -110,7 +110,7 @@ class TransferForm
                 'serial_number' => $m->serial_number,
             ] : null,
 
-            'peripheral' => ($m = Peripheral::find($id)) ? [
+            'peripheral' => ($m = Peripherals::find($id)) ? [
                 'item_name' => trim("{$m->item_type} {$m->model}"),
                 'asset_code' => $m->asset_code,
                 'serial_number' => $m->serial_number,

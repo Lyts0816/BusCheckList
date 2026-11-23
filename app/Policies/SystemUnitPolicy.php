@@ -13,7 +13,7 @@ class SystemUnitPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -21,7 +21,7 @@ class SystemUnitPolicy
      */
     public function view(User $user, SystemUnit $systemUnit): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -29,7 +29,7 @@ class SystemUnitPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -37,7 +37,7 @@ class SystemUnitPolicy
      */
     public function update(User $user, SystemUnit $systemUnit): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -45,7 +45,7 @@ class SystemUnitPolicy
      */
     public function delete(User $user, SystemUnit $systemUnit): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -53,7 +53,7 @@ class SystemUnitPolicy
      */
     public function restore(User $user, SystemUnit $systemUnit): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -61,6 +61,6 @@ class SystemUnitPolicy
      */
     public function forceDelete(User $user, SystemUnit $systemUnit): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 }

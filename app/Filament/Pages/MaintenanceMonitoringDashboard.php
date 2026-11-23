@@ -45,9 +45,9 @@ class MaintenanceMonitoringDashboard extends BaseDashboard implements HasTable
 
     protected static UnitEnum|string|null $navigationGroup = 'COMPUTER & PERIPHERALS';
 
-    public static function canAccess(): bool
+   public static function canAccess(): bool
     {
-        return Auth::user()->role === User::ROLE_ADMIN;
+        return  Auth::user()->role === User::ROLE_ADMIN ||Auth::user()->role === User::ROLE_USER_MIS;
     }
 
     public function mount(): void

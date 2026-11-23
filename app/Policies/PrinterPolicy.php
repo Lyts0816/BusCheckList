@@ -13,7 +13,7 @@ class PrinterPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -21,7 +21,7 @@ class PrinterPolicy
      */
     public function view(User $user, Printer $printer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -29,7 +29,7 @@ class PrinterPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -37,7 +37,7 @@ class PrinterPolicy
      */
     public function update(User $user, Printer $printer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -45,7 +45,7 @@ class PrinterPolicy
      */
     public function delete(User $user, Printer $printer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -53,7 +53,7 @@ class PrinterPolicy
      */
     public function restore(User $user, Printer $printer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -61,6 +61,6 @@ class PrinterPolicy
      */
     public function forceDelete(User $user, Printer $printer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 }

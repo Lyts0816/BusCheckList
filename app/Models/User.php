@@ -120,8 +120,7 @@ class User extends Authenticatable
 
     public function canViewleaveModule(): bool
     {
-        return $this->isAdmin() || $this->isHrDepartment() || $this->isOperationsDepartment()
-         || $this->isMisDepartment() || $this->isProductionDepartment()
+        return $this->isAdmin() || $this->isHrDepartment() || $this->isOperationsDepartment() || $this->isProductionDepartment()
           || $this->isAccountingDepartment() || $this->isCashDepartment();
     }
 
@@ -137,8 +136,7 @@ class User extends Authenticatable
 
     public function canViewEmployeeModule(): bool
     {
-        return $this->isAdmin() || $this->isAdminLeave() || $this->isHrDepartment() || $this->isOperationsDepartment()
-         || $this->isMisDepartment() || $this->isProductionDepartment()
+        return $this->isAdmin() || $this->isAdminLeave() || $this->isHrDepartment() || $this->isOperationsDepartment() || $this->isProductionDepartment()
           || $this->isAccountingDepartment() || $this->isCashDepartment();
     }
 

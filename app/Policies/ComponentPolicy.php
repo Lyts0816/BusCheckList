@@ -13,7 +13,7 @@ class ComponentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -21,7 +21,7 @@ class ComponentPolicy
      */
     public function view(User $user, Component $component): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -29,7 +29,7 @@ class ComponentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -37,7 +37,7 @@ class ComponentPolicy
      */
     public function update(User $user, Component $component): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -45,7 +45,7 @@ class ComponentPolicy
      */
     public function delete(User $user, Component $component): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -53,7 +53,7 @@ class ComponentPolicy
      */
     public function restore(User $user, Component $component): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 
     /**
@@ -61,6 +61,6 @@ class ComponentPolicy
      */
     public function forceDelete(User $user, Component $component): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isMisDepartment();
     }
 }

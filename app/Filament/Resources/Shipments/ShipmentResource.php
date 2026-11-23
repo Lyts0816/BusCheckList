@@ -27,6 +27,11 @@ class ShipmentResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'SHIPMENTS';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasSuperAdminLeaveModule() ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ShipmentForm::configure($schema);
